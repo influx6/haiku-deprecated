@@ -1,0 +1,14 @@
+{
+	"ImportPath": "github.com/influx6/frpcore/reactive",
+	"GoVersion": "go1.5",
+	"Deps": [
+		{
+			"ImportPath": "github.com/influx6/flux",
+			"Rev": "52c106387ffc58d1455d99318b33c48c8014dcb0"
+		},
+		{
+			"ImportPath": "github.com/op/go-logging",
+			"Rev": "e8d5414f0947014548c2334044a0fac13187dfee"
+		}
+	]
+}

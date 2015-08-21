@@ -1,0 +1,5 @@
+package: main
+import:
+  - package: github.com/influx6/flux
+    repo:    https://github.com/influx6/flux
+    vcs:     git

@@ -3,3 +3,6 @@ import:
   - package: github.com/influx6/flux
     repo:    https://github.com/influx6/flux
     vcs:     git
+  - package: github.com/op/go-logging
+    repo:    https://github.com/op/go-logging
+    vcs:     git

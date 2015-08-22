@@ -10,37 +10,40 @@ import (
 
 type (
 
-	//MutationStack represents a emission stack
-	// MutationStack flux.Stacks
+	//Event provides a detail of time
+	Event time.Duration
 
-	//Immutable defines an interface method rules for immutables types. All types meeting this rule must be single type values
-	Immutable interface {
-		Value() interface{}
-		Clone() Immutable
-		set(interface{}) bool
-		Type() reflect.Kind
+	//EventIterator provides an iterator for Immutable event lists
+	EventIterator interface {
+		Reset()
+		Next() error
+		Previous() error
+		Event() Immutable
 	}
 
-	//Mutation defines the basic operation change that occurs with an object
-	Mutation struct {
-		Immutable
-		timestamp time.Time
+	//ReactorStore provides an interface for storing reactor states
+	ReactorStore interface {
+		SnapFrom(Event) (EventIterator, error)
+		SnapRange(Event, Event) (EventIterator, error)
+		All() (EventIterator, error)
+		Last() (Immutable, error)
+		Mutate(v interface{}) (Immutable, bool)
+		ForceSave()
 	}
 
-	//Observer defines a basic reactive value
-	Observer struct {
+	//ReactorObserver provides an interface for storing reactor states
+	ReactorObserver interface {
+		ReactorStore
+		Get() interface{}
+		Set(interface{})
+	}
+
+	//Reactor represent the struct type for time-travel
+	Reactor struct {
 		flux.Stacks
-		data Immutable
+		ReactorStore
 	}
 )
-
-//NewMutation returns a new mutation marked with a stamp
-func NewMutation(m Immutable) *Mutation {
-	return &Mutation{
-		Immutable: m,
-		timestamp: time.Now(),
-	}
-}
 
 const (
 	//ErrUnacceptedTypeMessage defines the message for types that are not part of the basic units/types in go
@@ -48,7 +51,7 @@ const (
 )
 
 //MakeType validates accepted types and returns the (Immutable, error)
-func MakeType(val interface{}) (Immutable, error) {
+func MakeType(val interface{}, chain bool) (Immutable, error) {
 	switch reflect.TypeOf(val).Kind() {
 	case reflect.Struct:
 		return nil, fmt.Errorf(ErrUnacceptedTypeMessage, "struct")
@@ -60,12 +63,12 @@ func MakeType(val interface{}) (Immutable, error) {
 		return nil, fmt.Errorf(ErrUnacceptedTypeMessage, "slice")
 	}
 
-	return Atom(val), nil
+	return StrictAtom(val, chain), nil
 }
 
 //OnlyImmutable returns a stack that vets all data within it is a mutation
 func OnlyImmutable(m flux.Stacks) flux.Stacks {
-	return m.Stack(func(data interface{}, _ flux.Stacks) interface{} {
+	return m.Stack(func(_ flux.Stacks, data flux.Signal) interface{} {
 		mo, ok := data.(Immutable)
 		if !ok {
 			return nil
@@ -74,87 +77,78 @@ func OnlyImmutable(m flux.Stacks) flux.Stacks {
 	}, true)
 }
 
-//OnlyMutation returns a stack that vets all data within it is a mutation
-func OnlyMutation(m flux.Stacks) flux.Stacks {
-	return m.Stack(func(data interface{}, _ flux.Stacks) interface{} {
-		mo, ok := data.(*Mutation)
-		if !ok {
-			return nil
-		}
-		return mo
-	}, true)
-}
-
-//Transform returns a new Reactive instance from an interface
-func Transform(m interface{}) (*Observer, error) {
-	var im Immutable
-	var err error
-
-	if im, err = MakeType(m); err != nil {
-		return nil, err
-	}
-
-	return Reactive(im), nil
-}
-
-//Reactive returns a new Reactive instance
-func Reactive(m Immutable) *Observer {
-	return &Observer{
-		Stacks: flux.IdentityStack(),
-		data:   m,
-	}
-}
-
-func (r *Observer) mutate(ndata interface{}) bool {
-	clone := r.data.Clone()
-
-	//can we make the change or his this change proper
-	if !clone.set(ndata) {
-		return false
-	}
-
-	r.data = clone
-	// r.Stacks.Call(clone)
-	return true
-}
-
-//Set resets the value of the object
-func (r *Observer) Set(ndata interface{}) {
-	if r.mutate(ndata) {
-		r.Stacks.Call(r.data.Value())
-	}
-	return
-}
-
 //Identity provides a wrapper over stack.Isolate
-func (r *Observer) Identity(ndata interface{}) interface{} {
-	r.mutate(ndata)
-	return r.Stacks.Identity(r.data.Value())
+func (r *Reactor) Identity(ndata interface{}) interface{} {
+	var m Immutable
+	var ok bool
+
+	if m, ok = r.ReactorStore.Mutate(ndata); ok {
+		return r.Stacks.Identity(m.Value())
+	}
+	return m.Value()
 }
 
 //Isolate provides a wrapper over stack.Isolate
-func (r *Observer) Isolate(ndata interface{}) interface{} {
-	r.mutate(ndata)
-	return r.data.Value()
+func (r *Reactor) Isolate(ndata interface{}) interface{} {
+	m, _ := r.Mutate(ndata)
+	return m.Value()
 }
 
 //Apply provides a wrapper over stack.Apply
-func (r *Observer) Apply(ndata interface{}) interface{} {
-	if r.mutate(ndata) {
-		return r.data.Value()
+func (r *Reactor) Apply(ndata interface{}) interface{} {
+	if m, ok := r.ReactorStore.Mutate(ndata); ok {
+		return r.Stacks.Apply(m.Value())
 	}
 	return nil
+}
+
+//Mutate calls the internal .Call function
+func (r *Reactor) Mutate(ndata interface{}) (Immutable, bool) {
+	data := r.Call(ndata)
+	l, _ := r.Last()
+
+	if data == nil {
+		return l, false
+	}
+
+	return l, true
 }
 
 //Call provides a wrapper over stack.Call
-func (r *Observer) Call(ndata interface{}) interface{} {
-	if r.mutate(ndata) {
-		return r.data
+func (r *Reactor) Call(ndata interface{}) interface{} {
+	if m, ok := r.ReactorStore.Mutate(ndata); ok {
+		return r.Stacks.Call(m.Value())
 	}
 	return nil
 }
 
-//Get returns the internal value
-func (r *Observer) Get() interface{} {
-	return r.data.Value()
+//Get returns the value of the object
+func (r *Reactor) Get() interface{} {
+	m, _ := r.Last()
+	return m.Value()
+}
+
+//Set resets the value of the object
+func (r *Reactor) Set(ndata interface{}) {
+	_ = r.Call(ndata)
+}
+
+//BaseReactor returns a reactor instance
+func BaseReactor(max int, m Immutable) *Reactor {
+	return &Reactor{
+		Stacks:       flux.IdentityStack(),
+		ReactorStore: NewManager(m, max),
+	}
+}
+
+//TypeReactor returns a reactor instance
+func TypeReactor(max int, ktype interface{}) *Reactor {
+	var rm Immutable
+	if ktype == nil {
+		rm = UnstrictAtom("", true)
+	} else {
+		rm = StrictAtom(ktype, true)
+	}
+
+	return BaseReactor(max, rm)
 }

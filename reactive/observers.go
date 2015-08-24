@@ -1,22 +1,13 @@
-package react
+package reactive
 
 import "github.com/influx6/flux"
 
-type (
-
-	//Observer defines a basic reactive value
-	Observer struct {
-		flux.Stacks
-		data Immutable
-	}
-)
-
-//Transform returns a new Reactive instance from an interface
-func Transform(m interface{}, chain bool) (*Observer, error) {
+//ObserveTransform returns a new Reactive instance from an interface
+func ObserveTransform(m interface{}, chain bool, f Timer) (*Observer, error) {
 	var im Immutable
 	var err error
 
-	if im, err = MakeType(m, chain); err != nil {
+	if im, err = MakeType(m, chain, f); err != nil {
 		return nil, err
 	}
 
@@ -26,8 +17,8 @@ func Transform(m interface{}, chain bool) (*Observer, error) {
 //Reactive returns a new Reactive instance
 func Reactive(m Immutable) *Observer {
 	return &Observer{
-		Stacks: flux.IdentityStack(),
-		data:   m,
+		ReactiveStacks: flux.ReactIdentity(),
+		data:           m,
 	}
 }
 
@@ -46,40 +37,10 @@ func (r *Observer) mutate(ndata interface{}) bool {
 //Set resets the value of the object
 func (r *Observer) Set(ndata interface{}) {
 	if r.mutate(ndata) {
-		r.Stacks.Call(r.data.Value())
+		flux.GoDefer("Set-Reactive-Data", func() {
+			r.In() <- r.data.Value()
+		})
 	}
-}
-
-//Identity provides a wrapper over stack.Isolate
-func (r *Observer) Identity(ndata interface{}) interface{} {
-	if r.mutate(ndata) {
-		return r.Stacks.Identity(r.data.Value())
-	}
-	return r.data.Value()
-}
-
-//Isolate provides a wrapper over stack.Isolate
-func (r *Observer) Isolate(ndata interface{}) interface{} {
-	r.mutate(ndata)
-	return r.data.Value()
-}
-
-//Apply provides a wrapper over stack.Apply
-func (r *Observer) Apply(ndata interface{}) interface{} {
-	if r.mutate(ndata) {
-		return r.Stacks.Apply(r.data.Value())
-		// return r.data.Value()
-	}
-	return nil
-}
-
-//Call provides a wrapper over stack.Call
-func (r *Observer) Call(ndata interface{}) interface{} {
-	if r.mutate(ndata) {
-		r.Stacks.Call(r.data.Value())
-		return r.data.Value()
-	}
-	return nil
 }
 
 //Get returns the internal value

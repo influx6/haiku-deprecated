@@ -1,15 +1,20 @@
 package reactive
 
-import "time"
+import (
+	"math/rand"
+	"time"
+)
 
 type (
-	//Lamport provides a simple lamport timer which ensures the next time is greater than the previous time
+	//Lamport provides a simple lamport timer which ensures the next time is greater than the previous time using a minute precise clock
 	Lamport struct {
 		seq              int
 		lastSeenDuration time.Duration
 		lastSeenTime     time.Time
 		lastSeenSeq      int
 		offset           time.Duration
+		shiftOffset      time.Duration
+		// rsec             *rand.Rand
 	}
 
 	//TimeStamp provide stamp details
@@ -37,9 +42,18 @@ func NewLamport(op time.Duration) *Lamport {
 	}
 }
 
+func (l *Lamport) addOffset() {
+	l.offset += time.Duration(rand.Intn(30)) * time.Second
+	if l.offset > sixty {
+		l.offset = 0
+	}
+	l.offset += l.shiftOffset
+}
+
 //Minutes returns the minute since EPOCH with an offset
 func (l *Lamport) minutes() time.Duration {
-	ms := int64(time.Now().Sub(EPOCH).Minutes()) / 60000000
+	l.addOffset()
+	ms := int64(time.Now().Sub(EPOCH).Nanoseconds()) / 60000000
 	ms += int64(l.offset.Seconds())
 	return time.Duration(ms) * time.Minute
 }
@@ -82,5 +96,5 @@ func (l *Lamport) GetTime() *TimeStamp {
 //AdjustTime adjust the lamport stamp offset by the total difference of the given time from the current time
 func (l *Lamport) AdjustTime(ms time.Time) {
 	jo := time.Duration(ms.Sub(time.Now()).Minutes()) * time.Minute
-	l.offset = jo
+	l.shiftOffset = jo
 }

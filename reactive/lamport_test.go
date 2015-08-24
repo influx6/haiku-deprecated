@@ -31,8 +31,8 @@ func Test2Lamport(t *testing.T) {
 	ms := m1.GetTime()
 	md := m2.GetTime()
 
-	if !ms.Stamp.Equal(md.Stamp) {
-		t.Fatalf("%s and %s are not equal", ms, md)
+	if ms.Stamp.Equal(md.Stamp) {
+		t.Fatalf("%s and %s should not be equal", ms, md)
 	}
 
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func TestImmutable(t *testing.T) {
-	models, err := ObserveTransform("model", false, nil)
+	models, err := ObserveTransform("model", false)
 
 	if err != nil {
 		t.Fatal(err)

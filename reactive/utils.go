@@ -14,7 +14,7 @@ func AcceptableKind(ktype reflect.Kind, m interface{}) bool {
 }
 
 //MakeType validates accepted types and returns the (Immutable, error)
-func MakeType(val interface{}, chain bool, m Timer) (Immutable, error) {
+func MakeType(val interface{}, chain bool) (Immutable, error) {
 	switch reflect.TypeOf(val).Kind() {
 	case reflect.Struct:
 		return nil, fmt.Errorf(ErrUnacceptedTypeMessage, "struct")
@@ -26,5 +26,5 @@ func MakeType(val interface{}, chain bool, m Timer) (Immutable, error) {
 		return nil, fmt.Errorf(ErrUnacceptedTypeMessage, "slice")
 	}
 
-	return StrictAtom(val, chain, m), nil
+	return StrictAtom(val, chain), nil
 }

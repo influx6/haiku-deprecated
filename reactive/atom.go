@@ -6,6 +6,21 @@ import (
 	"time"
 )
 
+//LinkAllowed returns true/false if this allows mutation links
+func (a *atom) LinkAllowed() bool {
+	return a.link
+}
+
+//Restricted returns true/false if kind check is on
+func (a *atom) Restricted() bool {
+	return a.dotype
+}
+
+//AdjustFuture allows a atom timer to be adjusted for the next mutation
+func (a *atom) AdjustFuture(ms time.Time) {
+	a.timer.AdjustTime(ms)
+}
+
 //Allowed changes the value of the atom
 func (a *atom) Allowed(m interface{}) bool {
 	if a.dotype {
@@ -19,7 +34,7 @@ func (a *atom) Allowed(m interface{}) bool {
 
 //String returns the value in fmt.formatted fashion
 func (a *atom) String() string {
-	return fmt.Sprintf("%q", a.val)
+	return fmt.Sprintf("%+v", a.val)
 }
 
 //Value returns the data
@@ -61,7 +76,7 @@ func (a *atom) next() Immutable {
 
 //Clone returns a new Immutable
 func (a *atom) clone() *atom {
-	m := makeAtom(a.val, a.dotype, a.link, a.timer)
+	m := MakeAtom(a.val, a.dotype, a.link, a.timer)
 
 	if a.link {
 		m.prv = a
@@ -72,12 +87,24 @@ func (a *atom) clone() *atom {
 	return m
 }
 
+func (a *atom) destroy() {
+	if a.nxt != nil && a.nxt != a {
+		a.nxt.destroy()
+		a.nxt = nil
+	}
+	if a.prv != nil && a.prv != a {
+		a.prv.destroy()
+		a.prv = nil
+	}
+}
+
 //Type returns the type of kind
 func (a *atom) Kind() reflect.Kind {
 	return a.kind
 }
 
-func makeAtom(data interface{}, dt, link bool, tm Timer) *atom {
+//MakeAtom provides more control on the creation of an atom
+func MakeAtom(data interface{}, dt, link bool, tm Timer) *atom {
 
 	if tm == nil {
 		tm = NewLamport(0)
@@ -94,11 +121,11 @@ func makeAtom(data interface{}, dt, link bool, tm Timer) *atom {
 }
 
 //StrictAtom returns a base type for golang base types(int,string,...etc)
-func StrictAtom(data interface{}, link bool, m Timer) Immutable {
-	return makeAtom(data, true, link, m)
+func StrictAtom(data interface{}, link bool) Immutable {
+	return MakeAtom(data, true, link, nil)
 }
 
 //UnstrictAtom returns a base type for golang base types(int,string,...etc)
-func UnstrictAtom(data interface{}, link bool, m Timer) Immutable {
-	return makeAtom(data, false, link, m)
+func UnstrictAtom(data interface{}, link bool) Immutable {
+	return MakeAtom(data, false, link, nil)
 }

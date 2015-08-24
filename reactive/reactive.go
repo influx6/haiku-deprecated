@@ -11,51 +11,21 @@ import (
 type (
 
 	// Event provides a detail of time
-	Event time.Duration
-
-	//EventIterator provides an iterator for Immutable event lists
-	EventIterator interface {
-		Reset()
-		Next() error
-		Previous() error
-		Event() Immutable
-	}
-
-	//Observer defines a basic reactive value
-	Observer struct {
-		flux.ReactiveStacks
-		data Immutable
-	}
-
-	//ReactorStore provides an interface for storing reactor states
-	ReactorStore interface {
-		SnapFrom(Event) (EventIterator, error)
-		SnapRange(Event, Event) (EventIterator, error)
-		All() (EventIterator, error)
-		Last() (Immutable, error)
-		Mutate(v interface{}) (Immutable, bool)
-		ForceSave()
-	}
-
-	//ReactorObserver provides an interface for storing reactor states
-	ReactorObserver interface {
-		ReactorStore
-	}
-
-	//CoreImmutable defines an interface method rules for immutables types. All types meeting this rule must be single type values
-	CoreImmutable interface {
-		Value() interface{}
-		Mutate(interface{}) (Immutable, bool)
-		Allowed(interface{}) bool
-		Stamp() time.Time
-		Seq() int
-	}
+	// Event time.Duration
 
 	//Immutable defines an interface method rules for immutables types. All types meeting this rule must be single type values
 	Immutable interface {
-		CoreImmutable
 		next() Immutable
 		previous() Immutable
+		Value() interface{}
+		Mutate(interface{}) (Immutable, bool)
+		Allowed(interface{}) bool
+		LinkAllowed() bool
+		Restricted() bool
+		Stamp() time.Time
+		AdjustFuture(time.Time)
+		Seq() int
+		destroy()
 	}
 
 	//atom provides a base type for golang base types
@@ -70,37 +40,63 @@ type (
 		timer  Timer
 	}
 
-	//MList represent a list of immutes
-	MList struct {
+	//Observer defines a basic reactive value
+	Observer struct {
+		flux.ReactiveStacks
+		data Immutable
+	}
+
+	//MIterator represent an iterator for MList
+	MIterator struct {
+		imap    *MutationRange
+		current Immutable
+		started int64
+		endless bool
+		reverse bool
+	}
+
+	//MutationRange represent a list of immutes
+	MutationRange struct {
 		root Immutable
 		tail Immutable
 		size int64
 	}
 
-	//MIterator represent an iterator for MList
-	MIterator struct {
-		from    Immutable
-		current Immutable
-		end     time.Time
-		started int64
-		endless bool
+	//ListManager defines the managment of mutation changes and provides a simple interface to query the changes over a span of time range
+	ListManager struct {
+		mranges  []*MutationRange
+		maxsplit int
 	}
 
-	//TimeRange provides a time duration range store
-	TimeRange struct {
-		Index    int
-		Min, Max time.Time
+	//EventIterator provides an iterator for Immutable event lists
+	EventIterator interface {
+		Reset()
+		Next() error
+		Reverse() EventIterator
+		Event() Immutable
 	}
 
-	//MListManager defines the management of MutationLists. Managers use a maxrange for each MList i.e the total size of a linked Immutable list which decides the proportionality of the largness or smallness of the time ranges,so care must be choosen to choose a good range
-	MListManager struct {
-		stamps   []*TimeRange
-		mranges  []*MList
-		maxrange int
+	//ReactorStore provides an interface for storing reactor states
+	ReactorStore interface {
+		Last() (Immutable, error)
+		First() (Immutable, error)
+		SnapFrom(time.Duration) (EventIterator, error)
+		SnapRange(s, e time.Duration) (EventIterator, error)
+		All() (EventIterator, error)
+		Mutate(v interface{}) (Immutable, bool)
+	}
+
+	//TimeReactor provides a reactor based on time change
+	TimeReactor struct {
+		flux.ReactiveStacks
+		store  ReactorStore
+		paused bool
 	}
 )
 
 var (
+	//ErrEmptyList defines when the list is empty
+	ErrEmptyList = errors.New("EmptyList")
 	//ErrEndIndex defines an error when an iterator can move past a range
 	ErrEndIndex = errors.New("End Of Index")
 	//ErrEventNotFound defines an error when an event range was not found
@@ -110,4 +106,5 @@ var (
 const (
 	//ErrUnacceptedTypeMessage defines the message for types that are not part of the basic units/types in go
 	ErrUnacceptedTypeMessage = "Type %s is not acceptable"
+	sixty                    = 1 * time.Minute
 )

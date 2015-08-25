@@ -15,41 +15,22 @@ func ObserveTransform(m interface{}, chain bool) (*Observer, error) {
 }
 
 //TimeTransform returns a time reactor
-func TimeTransform(mix flux.ReactiveStacks) (t *TimeReactor) {
-	rc := flux.Reactive(func(s flux.ReactiveStacks) {
-	loop:
-		for {
-			select {
-			case <-s.Closed():
-				break loop
-			case <-s.Feed().Closed():
-				s.End()
-				break loop
-			case data := <-s.In():
-				if !t.paused {
-					t.store.Mutate(data)
-					flux.GoDefer("TimeTransform-Delivery", func() {
-						s.Out() <- data
-					})
-				} else {
-					flux.GoDefer("TimeTransform-AfterPause-Delivery", func() {
-						s.Out() <- data
-					})
-				}
-			case data := <-s.Feed().Out():
-				t.store.Mutate(data)
-				if !t.paused {
-					flux.GoDefer("TimeTransform-Delivery", func() {
-						s.Out() <- data
-					})
-				}
-			}
+func TimeTransform(mx flux.Reactors) (t *TimeReactor) {
+
+	proc := func(signal flux.Signal) flux.Signal {
+		mux, ok := t.store.Mutate(signal)
+		if ok && !t.paused {
+			return mux
 		}
-	}, mix)
+		return nil
+	}
+
+	stream := mx.React(flux.DataReactProcessor(proc))
 
 	t = &TimeReactor{
-		ReactiveStacks: rc,
-		store:          NewListManager(100, nil),
+		Reactors:    flux.ReactIdentity(),
+		store:       NewListManager(100, nil),
+		transformer: stream,
 	}
 
 	return t

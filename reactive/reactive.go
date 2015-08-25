@@ -10,9 +10,6 @@ import (
 
 type (
 
-	// Event provides a detail of time
-	// Event time.Duration
-
 	//Immutable defines an interface method rules for immutables types. All types meeting this rule must be single type values
 	Immutable interface {
 		next() Immutable
@@ -42,7 +39,7 @@ type (
 
 	//Observer defines a basic reactive value
 	Observer struct {
-		flux.ReactiveStacks
+		flux.Reactors
 		data Immutable
 	}
 
@@ -88,9 +85,10 @@ type (
 
 	//TimeReactor provides a reactor based on time change
 	TimeReactor struct {
-		flux.ReactiveStacks
-		store  ReactorStore
-		paused bool
+		flux.Reactors
+		store       ReactorStore
+		transformer flux.Reactors
+		paused      bool
 	}
 )
 

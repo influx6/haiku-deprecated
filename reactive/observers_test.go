@@ -17,16 +17,19 @@ func TestImmutable(t *testing.T) {
 		t.Fatal("Wrong returned value:", models.Get())
 	}
 
-	channel := models.React(flux.ReactReceive())
+	stream := flux.SignalCollector()
+	channel := models.React(flux.ChannelReactProcessor(stream))
 
 	models.Set("user")
 
-	if data := <-channel.Out(); "user" != data {
+	if data := <-stream.Signals(); "user" != data {
 		t.Fatal("Wrong channel returned value:", data)
 	}
 
 	if models.Get() == "model" {
 		t.Fatal("Wrong returned value:", models.Get())
 	}
+
+	channel.SendClose(0)
 
 }

@@ -5,8 +5,8 @@ import "github.com/influx6/flux"
 //Reactive returns a new Reactive instance
 func Reactive(m Immutable) *Observer {
 	return &Observer{
-		ReactiveStacks: flux.ReactIdentity(),
-		data:           m,
+		Reactors: flux.ReactIdentity(),
+		data:     m,
 	}
 }
 
@@ -25,9 +25,7 @@ func (r *Observer) mutate(ndata interface{}) bool {
 //Set resets the value of the object
 func (r *Observer) Set(ndata interface{}) {
 	if r.mutate(ndata) {
-		flux.GoDefer("Set-Reactive-Data", func() {
-			r.In() <- r.data.Value()
-		})
+		r.Send(r.data.Value())
 	}
 }
 

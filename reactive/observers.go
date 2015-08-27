@@ -2,11 +2,29 @@ package reactive
 
 import "github.com/influx6/flux"
 
+// Observer defines a basic reactive value
+type Observer struct {
+	flux.Reactor
+	data Immutable
+}
+
+//ObserveTransform returns a new Reactive instance from an interface
+func ObserveTransform(m interface{}, chain bool) (*Observer, error) {
+	var im Immutable
+	var err error
+
+	if im, err = MakeType(m, chain); err != nil {
+		return nil, err
+	}
+
+	return Reactive(im), nil
+}
+
 //Reactive returns a new Reactive instance
 func Reactive(m Immutable) *Observer {
 	return &Observer{
-		Reactors: flux.ReactIdentity(),
-		data:     m,
+		Reactor: flux.ReactIdentity(),
+		data:    m,
 	}
 }
 

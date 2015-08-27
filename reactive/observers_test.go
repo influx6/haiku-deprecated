@@ -1,12 +1,16 @@
 package reactive
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/influx6/flux"
 )
 
 func TestImmutable(t *testing.T) {
+	var ws sync.WaitGroup
+	ws.Add(1)
+
 	models, err := ObserveTransform("model", false)
 
 	if err != nil {
@@ -17,19 +21,23 @@ func TestImmutable(t *testing.T) {
 		t.Fatal("Wrong returned value:", models.Get())
 	}
 
-	stream := flux.SignalCollector()
-	channel := models.React(flux.ChannelReactProcessor(stream))
+	models.React(func(r flux.Reactor, err error, data interface{}) {
+		if "user" != data {
+			flux.FatalFailed(t, "Wrong channel returned value: %s", data)
+		}
+		ws.Done()
+	}, true)
 
 	models.Set("user")
 
-	if data := <-stream.Signals(); "user" != data {
-		t.Fatal("Wrong channel returned value:", data)
-	}
+	ws.Wait()
 
 	if models.Get() == "model" {
-		t.Fatal("Wrong returned value:", models.Get())
+		flux.FatalFailed(t, "Wrong returned value:", models.Get())
 	}
 
-	channel.SendClose(0)
+	flux.LogPassed(t, "Completed atom updated")
+
+	models.Close()
 
 }

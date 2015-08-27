@@ -5,35 +5,29 @@ import (
 	"time"
 )
 
-type (
-	//Lamport provides a simple lamport timer which ensures the next time is greater than the previous time using a minute precise clock
-	Lamport struct {
-		seq              int
-		lastSeenDuration time.Duration
-		lastSeenTime     time.Time
-		lastSeenSeq      int
-		offset           time.Duration
-		shiftOffset      time.Duration
-		// rsec             *rand.Rand
-	}
-
-	//TimeStamp provide stamp details
-	TimeStamp struct {
-		Stamp time.Time
-		Seq   int
-	}
-
-	//Timer provides an interface for time generators
-	Timer interface {
-		GetTime() *TimeStamp
-		AdjustTime(time.Time)
-	}
-)
-
 var (
 	//EPOCH since unix-set date time
 	EPOCH, _ = time.Parse("UTF", "Wed, 01 Jan 2014 00:00:00 GMT")
+
+	sixty = 1 * time.Minute
 )
+
+//Timer provides an interface for time generators
+type Timer interface {
+	GetTime() *TimeStamp
+	AdjustTime(time.Time)
+}
+
+//Lamport provides a simple lamport timer which ensures the next time is greater than the previous time using a minute precise clock
+type Lamport struct {
+	seq              int
+	lastSeenDuration time.Duration
+	lastSeenTime     time.Time
+	lastSeenSeq      int
+	offset           time.Duration
+	shiftOffset      time.Duration
+	// rsec             *rand.Rand
+}
 
 //NewLamport returns a lamport timer
 func NewLamport(op time.Duration) *Lamport {
@@ -61,6 +55,12 @@ func (l *Lamport) minutes() time.Duration {
 //Seconds returns the minute since EPOCH with an offset
 func (l *Lamport) seconds() time.Duration {
 	return time.Duration(l.minutes().Seconds())
+}
+
+//TimeStamp provide stamp details
+type TimeStamp struct {
+	Stamp time.Time
+	Seq   int
 }
 
 //GetTime returns a new timestamp

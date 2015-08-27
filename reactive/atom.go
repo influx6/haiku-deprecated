@@ -6,6 +6,33 @@ import (
 	"time"
 )
 
+//Immutable defines an interface method rules for immutables types. All types meeting this rule must be single type values
+type Immutable interface {
+	next() Immutable
+	previous() Immutable
+	Value() interface{}
+	Mutate(interface{}) (Immutable, bool)
+	Allowed(interface{}) bool
+	LinkAllowed() bool
+	Restricted() bool
+	Stamp() time.Time
+	AdjustFuture(time.Time)
+	Seq() int
+	destroy()
+}
+
+//atom provides a base type for golang base types
+type atom struct {
+	val    interface{}
+	kind   reflect.Kind
+	dotype bool
+	link   bool
+	nxt    Immutable
+	prv    Immutable
+	stamp  *TimeStamp
+	timer  Timer
+}
+
 //LinkAllowed returns true/false if this allows mutation links
 func (a *atom) LinkAllowed() bool {
 	return a.link

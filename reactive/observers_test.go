@@ -17,12 +17,7 @@ type foobar struct {
 
 // TestObserverPayload test the capability of loading data into an Observer using yaml data payload
 func TestObserverPayload(t *testing.T) {
-
-	name, err := ObserveTransform("", false)
-
-	if err != nil {
-		flux.FatalFailed(t, "Unable to create observer: %s", err.Error())
-	}
+	name, _ := ObserveTransform("", false)
 
 	bar := &foobar{Name: name}
 
@@ -64,11 +59,7 @@ func TestImmutable(t *testing.T) {
 	var ws sync.WaitGroup
 	ws.Add(1)
 
-	models, err := ObserveTransform("model", false)
-
-	if err != nil {
-		t.Fatal(err)
-	}
+	models, _ := ObserveTransform("model", false)
 
 	if models.Get() != "model" {
 		t.Fatal("Wrong returned value:", models.Get())

@@ -34,16 +34,52 @@ type DataTree struct {
 	flux.Reactor `yaml:"-" json:"-"`
 	//dirties contain a auto-generated list of field names that have indeed become dirty/received and accepted changes
 	trackers map[string]reactive.Observers
-	// ro sync.RWMutex
 }
 
-// NewDataTree returs a new instance of datatree
+// StructTree returns a new tree with a struct setup for reactivity
+func StructTree(b interface{}) (DataTrees, error) {
+	stb := BuildDataTree(b)
+	if err := RegisterStructObservers(stb, b); err != nil {
+		return nil, err
+	}
+	return stb, nil
+}
+
+//MapTree returns a new datatree for a map[string]interface{}
+func MapTree(b map[string]interface{}) (DataTrees, error) {
+	stb := BuildDataTree(b)
+	if err := RegisterMapObservers(stb, b); err != nil {
+		return nil, err
+	}
+	return stb, nil
+}
+
+//ListTree returns a new datatree for a []interface{}
+func ListTree(b []interface{}) (DataTrees, error) {
+	stb := BuildDataTree(b)
+	if err := RegisterListObservers(stb, b); err != nil {
+		return nil, err
+	}
+	return stb, nil
+}
+
+// NewDataTree returns a new instance of datatree
 func NewDataTree() *DataTree {
-	dt := DataTree{
-		Reactor:  flux.ReactIdentity(),
+	return BuildDataTree(nil)
+}
+
+// BuildDataTree returns a new instance of datatree
+func BuildDataTree(sub interface{}) (b *DataTree) {
+	b = &DataTree{
 		trackers: make(map[string]reactive.Observers),
 	}
-	return &dt
+
+	if sub == nil {
+		sub = b
+	}
+
+	b.Reactor = flux.FlatAlways(sub)
+	return
 }
 
 // Track returns the reactor with the fieldname if it exists else return an error
@@ -74,41 +110,18 @@ func (b *DataTree) registerObserver(name string, ob reactive.Observers) {
 
 	b.trackers[name] = ob
 
-	ob.React(func(r flux.Reactor, err error, _ interface{}) {
-		if err != nil {
-			b.SendError(err)
-			return
-		}
-		b.Send(b)
-	}, true)
+	// ob.React(flux.IdentityValueMuxer(b), true)
+	ob.Bind(b, true)
 }
 
 // ErrSelfRegister is returned when a tree tries to register itself
 var ErrSelfRegister = errors.New("DataTree can not register self")
 
+// ErrNotStruct is returned when a interface is not a struct
+var ErrNotStruct = errors.New("interface is not a struct kind")
+
 // ErrNotReactor is returned when a interface is not a reactor
 var ErrNotReactor = errors.New("interface is not reactive.Observers type")
-
-// RegisterReflectWith registers the name and reflect.Value if its a flux.Reactor with a DataTree
-func RegisterReflectWith(tree DataTreeRegister, name string, rot reflect.Value) error {
-
-	if rot.Interface() == tree {
-		return ErrSelfRegister
-	}
-
-	// rot := reflect.ValueOf(data)
-	if rot.Kind() == reflect.Ptr {
-		rot = rot.Elem()
-	}
-
-	if !rot.Type().Implements(ReactorType) {
-		return ErrNotReactor
-	}
-
-	rcfl := rot.Elem().Interface().(reactive.Observers)
-	tree.registerObserver(name, rcfl)
-	return nil
-}
 
 // RegisterStructObservers takes an interface who's type is a struct and searches within if for any flux.Observers and registers them with a DataTreeRegister to enable self reactivity in the tree
 func RegisterStructObservers(tree DataTreeRegister, treeable interface{}) error {
@@ -116,37 +129,17 @@ func RegisterStructObservers(tree DataTreeRegister, treeable interface{}) error 
 		return ErrSelfRegister
 	}
 
-	rot := reflect.ValueOf(treeable)
+	mo := reflect.TypeOf(treeable)
 
-	if rot.Kind() == reflect.Ptr {
-		rot = rot.Elem()
+	if mo.Kind() == reflect.Ptr {
+		mo = mo.Elem()
 	}
 
-	rotto := rot.Type()
-	for i := 0; i < rot.NumField(); i++ {
-		//get the field
-		fl := rot.Field(i)
-		//get the type field from the struct
-		flo := rotto.Field(i)
-
-		// since the kind is always indescriminate we cant use it
-		// if fl.Kind() != reflect.Struct {
-		// 	continue
-		// }
-
-		if fl.Elem().Interface() == tree {
-			continue
-		}
-
-		if !fl.Type().Implements(ReactorType) {
-			continue
-		}
-
-		rcfl := fl.Elem().Interface().(reactive.Observers)
-		tree.registerObserver(flo.Name, rcfl)
+	if mo.Kind() != reflect.Struct {
+		return ErrNotStruct
 	}
 
-	return nil
+	return RegisterFieldsObservers(tree, treeable)
 }
 
 // RegisterListObservers registers a slice/array elements where the elements are flux.Reactors with a DataTree,all indexes are stringed,so if you want 1 do "1"
@@ -182,5 +175,69 @@ func RegisterMapObservers(tree DataTreeRegister, dlist map[string]interface{}) e
 
 		tree.registerObserver(id, fl)
 	}
+	return nil
+}
+
+// RegisterFieldsObservers takes an interface who's type is a struct and searches within if for any flux.Observers and registers them with a DataTreeRegister to enable self reactivity in the tree
+func RegisterFieldsObservers(tree DataTreeRegister, treeable interface{}) error {
+	if tree == treeable {
+		return ErrSelfRegister
+	}
+
+	rot := reflect.ValueOf(treeable)
+
+	if rot.Kind() == reflect.Ptr {
+		rot = rot.Elem()
+	}
+
+	rotto := rot.Type()
+	for i := 0; i < rot.NumField(); i++ {
+		//get the field
+		fl := rot.Field(i)
+		//get the type field from the struct
+		flo := rotto.Field(i)
+
+		// since the kind is always indescriminate we cant use it
+		// if fl.Kind() != reflect.Struct {
+		// 	continue
+		// }
+
+		if fl.Kind() != reflect.Interface && fl.Kind() != reflect.Ptr {
+			continue
+		}
+
+		if fl.Elem().Interface() == tree {
+			continue
+		}
+
+		if !fl.Type().Implements(ReactorType) {
+			continue
+		}
+
+		rcfl := fl.Elem().Interface().(reactive.Observers)
+		tree.registerObserver(flo.Name, rcfl)
+	}
+
+	return nil
+}
+
+// RegisterReflectWith registers the name and reflect.Value if its a flux.Reactor with a DataTree
+func RegisterReflectWith(tree DataTreeRegister, name string, rot reflect.Value) error {
+
+	if rot.Interface() == tree {
+		return ErrSelfRegister
+	}
+
+	// rot := reflect.ValueOf(data)
+	if rot.Kind() == reflect.Ptr {
+		rot = rot.Elem()
+	}
+
+	if !rot.Type().Implements(ReactorType) {
+		return ErrNotReactor
+	}
+
+	rcfl := rot.Elem().Interface().(reactive.Observers)
+	tree.registerObserver(name, rcfl)
 	return nil
 }

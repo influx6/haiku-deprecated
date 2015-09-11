@@ -1,5 +1,8 @@
 package: main
 import:
+  - package: github.com/oxtoacart/bpool
+    repo: https://github.com/oxtoacart/bpool
+    vcs:  git
   - package: github.com/influx6/flux
     repo:    https://github.com/influx6/flux
     vcs:     git

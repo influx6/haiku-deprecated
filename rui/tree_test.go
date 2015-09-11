@@ -13,11 +13,7 @@ type foo struct {
 
 func TestDataTreeReaction(t *testing.T) {
 
-	name, err := reactive.ObserveTransform("yo!", false)
-
-	if err != nil {
-		flux.FatalFailed(t, "Error creating observer: %s", err.Error())
-	}
+	name, _ := reactive.ObserveTransform("yo!", false)
 
 	bar := &foo{name}
 
@@ -46,11 +42,7 @@ func TestDataTreeReaction(t *testing.T) {
 
 func TestDataTreeWithStruct(t *testing.T) {
 
-	name, err := reactive.ObserveTransform("yo!", false)
-
-	if err != nil {
-		flux.FatalFailed(t, "Error creating observer: %s", err.Error())
-	}
+	name, _ := reactive.ObserveTransform("yo!", false)
 
 	bar := &foo{name}
 
@@ -72,11 +64,7 @@ func TestDataTreeWithStruct(t *testing.T) {
 
 func TestDataTreeWithMap(t *testing.T) {
 
-	dog, err := reactive.ObserveTransform("bullwilder", false)
-
-	if err != nil {
-		flux.FatalFailed(t, "Error creating observer: %s", err.Error())
-	}
+	dog, _ := reactive.ObserveTransform("bullwilder", false)
 
 	bar := map[string]interface{}{
 		"jerry": dog,
@@ -106,11 +94,7 @@ func TestDataTreeWithMap(t *testing.T) {
 
 func TestDataTreeWithList(t *testing.T) {
 
-	dog, err := reactive.ObserveTransform("bullwilder", false)
-
-	if err != nil {
-		flux.FatalFailed(t, "Error creating observer: %s", err.Error())
-	}
+	dog, _ := reactive.ObserveTransform("bullwilder", false)
 
 	bar := []interface{}{"astracian", dog}
 

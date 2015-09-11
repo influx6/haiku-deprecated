@@ -20,6 +20,7 @@ type Observers interface {
 	Get() interface{}
 	Set(interface{})
 	String() string
+	Equals(interface{}) bool
 }
 
 // Observer defines a basic reactive value
@@ -28,6 +29,11 @@ type Observer struct {
 	// flux.Reactor
 	data Immutable
 }
+
+//ObserveTransform returns a new Reactive instance from an interface
+// func ObserveTransform(m interface{}, chain bool) *Observer {
+// 	return Reactive(StrictAtom(m, chain))
+// }
 
 //ObserveTransform returns a new Reactive instance from an interface
 func ObserveTransform(m interface{}, chain bool) (*Observer, error) {
@@ -39,6 +45,11 @@ func ObserveTransform(m interface{}, chain bool) (*Observer, error) {
 	}
 
 	return Reactive(im), nil
+}
+
+//ObserveAtom returns a new Reactive instance from an interface
+func ObserveAtom(m interface{}, chain bool) (*Observer, error) {
+	return Reactive(StrictAtom(m, chain)), nil
 }
 
 //Reactive returns a new Reactive instance
@@ -59,6 +70,11 @@ func (r *Observer) mutate(ndata interface{}) bool {
 
 	r.data = clone
 	return true
+}
+
+// Equals return true/false if the value equals the data
+func (r *Observer) Equals(n interface{}) bool {
+	return r.Get() == n
 }
 
 // MarshalJSON returns the json representation of the observer

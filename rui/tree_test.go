@@ -28,8 +28,11 @@ func TestDataTreeReaction(t *testing.T) {
 	}
 
 	tree.React(func(r flux.Reactor, err error, m interface{}) {
-		dt, err := m.(DataTrees).Track("Name")
-		dm := dt.(*reactive.Observer)
+		dm, err := m.(DataTrees).Track("Name")
+
+		if err != nil {
+			flux.FatalFailed(t, "Error getting observer with field Name: %s", err.Error())
+		}
 
 		if dm.Get() != "dude!" {
 			flux.FatalFailed(t, "data with incorrect value expected 'dude!': %s", dm.Get())

@@ -6,24 +6,26 @@ import (
 	"reflect"
 
 	"github.com/influx6/flux"
+	"github.com/influx6/prox/reactive"
 )
 
 //Reactive data components that are able to react to changes within the given fields they have so an action can be initiated
 
 // ReactorType is the reflect.TypeOf value of the flux.Reactor interface
-var ReactorType = reflect.TypeOf((*flux.Reactor)(nil)).Elem()
+var ReactorType = reflect.TypeOf((*reactive.Observers)(nil)).Elem()
+
+// DataTreeRegister provides a interface that defines a registering method for datatrees
+type DataTreeRegister interface {
+	registerObserver(string, reactive.Observers)
+}
 
 // DataTrees define a simple datatree type
 type DataTrees interface {
 	flux.Reactor
-	Track(string) (flux.Reactor, error)
+	DataTreeRegister
+	Track(string) (reactive.Observers, error)
 	Tracking(string) bool
 	HasTracks() bool
-}
-
-// DataTreeRegister provides a interface that defines a registering method for datatrees
-type DataTreeRegister interface {
-	registerObserver(string, flux.Reactor)
 }
 
 // DataTree reprsent a base struct for reactivity of which other structs compose to allow reactive data behaviours
@@ -31,7 +33,7 @@ type DataTree struct {
 	//Reactor for the tree that emits itself everytime a child Reactor changes
 	flux.Reactor `yaml:"-" json:"-"`
 	//dirties contain a auto-generated list of field names that have indeed become dirty/received and accepted changes
-	trackers map[string]flux.Reactor
+	trackers map[string]reactive.Observers
 	// ro sync.RWMutex
 }
 
@@ -39,13 +41,13 @@ type DataTree struct {
 func NewDataTree() *DataTree {
 	dt := DataTree{
 		Reactor:  flux.ReactIdentity(),
-		trackers: make(map[string]flux.Reactor),
+		trackers: make(map[string]reactive.Observers),
 	}
 	return &dt
 }
 
 // Track returns the reactor with the fieldname if it exists else return an error
-func (b *DataTree) Track(attr string) (flux.Reactor, error) {
+func (b *DataTree) Track(attr string) (reactive.Observers, error) {
 	bx, ok := b.trackers[attr]
 	if !ok {
 		return nil, ErrNotReactor
@@ -65,11 +67,7 @@ func (b *DataTree) HasTracks() bool {
 }
 
 // registerObserver registers a reactor with the tree for change notifications
-func (b *DataTree) registerObserver(name string, ob flux.Reactor) {
-	if b == ob {
-		return
-	}
-
+func (b *DataTree) registerObserver(name string, ob reactive.Observers) {
 	if _, ok := b.trackers[name]; ok {
 		return
 	}
@@ -89,7 +87,7 @@ func (b *DataTree) registerObserver(name string, ob flux.Reactor) {
 var ErrSelfRegister = errors.New("DataTree can not register self")
 
 // ErrNotReactor is returned when a interface is not a reactor
-var ErrNotReactor = errors.New("interface is not flux.Reactor type")
+var ErrNotReactor = errors.New("interface is not reactive.Observers type")
 
 // RegisterReflectWith registers the name and reflect.Value if its a flux.Reactor with a DataTree
 func RegisterReflectWith(tree DataTreeRegister, name string, rot reflect.Value) error {
@@ -107,7 +105,7 @@ func RegisterReflectWith(tree DataTreeRegister, name string, rot reflect.Value) 
 		return ErrNotReactor
 	}
 
-	rcfl := rot.Elem().Interface().(flux.Reactor)
+	rcfl := rot.Elem().Interface().(reactive.Observers)
 	tree.registerObserver(name, rcfl)
 	return nil
 }
@@ -144,7 +142,7 @@ func RegisterStructObservers(tree DataTreeRegister, treeable interface{}) error 
 			continue
 		}
 
-		rcfl := fl.Elem().Interface().(flux.Reactor)
+		rcfl := fl.Elem().Interface().(reactive.Observers)
 		tree.registerObserver(flo.Name, rcfl)
 	}
 
@@ -158,7 +156,7 @@ func RegisterListObservers(tree DataTreeRegister, list []interface{}) error {
 			continue
 		}
 
-		fl, ok := target.(flux.Reactor)
+		fl, ok := target.(reactive.Observers)
 
 		if !ok {
 			continue
@@ -176,7 +174,7 @@ func RegisterMapObservers(tree DataTreeRegister, dlist map[string]interface{}) e
 			continue
 		}
 
-		fl, ok := target.(flux.Reactor)
+		fl, ok := target.(reactive.Observers)
 
 		if !ok {
 			continue

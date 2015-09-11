@@ -16,6 +16,7 @@ var ReactorType = reflect.TypeOf((*flux.Reactor)(nil)).Elem()
 // DataTrees define a simple datatree type
 type DataTrees interface {
 	flux.Reactor
+	Track(string) (flux.Reactor, error)
 	Tracking(string) bool
 	HasTracks() bool
 }
@@ -30,7 +31,7 @@ type DataTree struct {
 	//Reactor for the tree that emits itself everytime a child Reactor changes
 	flux.Reactor `yaml:"-" json:"-"`
 	//dirties contain a auto-generated list of field names that have indeed become dirty/received and accepted changes
-	trackers map[string]bool
+	trackers map[string]flux.Reactor
 	// ro sync.RWMutex
 }
 
@@ -38,9 +39,18 @@ type DataTree struct {
 func NewDataTree() *DataTree {
 	dt := DataTree{
 		Reactor:  flux.ReactIdentity(),
-		trackers: make(map[string]bool),
+		trackers: make(map[string]flux.Reactor),
 	}
 	return &dt
+}
+
+// Track returns the reactor with the fieldname if it exists else return an error
+func (b *DataTree) Track(attr string) (flux.Reactor, error) {
+	bx, ok := b.trackers[attr]
+	if !ok {
+		return nil, ErrNotReactor
+	}
+	return bx, nil
 }
 
 // Tracking returns true/false if a field matching the name is being tracked
@@ -64,7 +74,7 @@ func (b *DataTree) registerObserver(name string, ob flux.Reactor) {
 		return
 	}
 
-	b.trackers[name] = true
+	b.trackers[name] = ob
 
 	ob.React(func(r flux.Reactor, err error, _ interface{}) {
 		if err != nil {

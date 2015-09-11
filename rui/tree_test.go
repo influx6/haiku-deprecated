@@ -11,6 +11,36 @@ type foo struct {
 	Name reactive.Observers
 }
 
+func TestDataTreeReaction(t *testing.T) {
+
+	name, err := reactive.ObserveTransform("yo!", false)
+
+	if err != nil {
+		flux.FatalFailed(t, "Error creating observer: %s", err.Error())
+	}
+
+	bar := &foo{name}
+
+	tree := NewDataTree()
+
+	if err := RegisterStructObservers(tree, bar); err != nil {
+		flux.FatalFailed(t, "Unable to register observers: %s", err.Error())
+	}
+
+	tree.React(func(r flux.Reactor, err error, m interface{}) {
+		dt, err := m.(DataTrees).Track("Name")
+		dm := dt.(*reactive.Observer)
+
+		if dm.Get() != "dude!" {
+			flux.FatalFailed(t, "data with incorrect value expected 'dude!': %s", dm.Get())
+		}
+
+		flux.LogPassed(t, "datatree has change with Name field with value: %s", dm.Get())
+	}, true)
+
+	bar.Name.Set("dude!")
+}
+
 func TestDataTreeWithStruct(t *testing.T) {
 
 	name, err := reactive.ObserveTransform("yo!", false)

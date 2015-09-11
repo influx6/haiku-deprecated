@@ -1,7 +1,6 @@
 package rui
 
 import (
-	"log"
 	"testing"
 	"time"
 
@@ -40,6 +39,7 @@ func TestTemplateRendering(t *testing.T) {
 	tmpl, err := SourceTemplator("base.tml", `
     <div>{{.Name}}</div>
     <div>{{.Age}}</div>
+    <div>{{.Date}}</div>
   `)
 
 	if err != nil {
@@ -59,11 +59,15 @@ func TestTemplateRendering(t *testing.T) {
 		flux.FatalFailed(t, "Unable to create templateRenderer: %s", err.Error())
 	}
 
-	log.Printf("Render: %s", tol.Render())
+	cur := tol.Render()
 
 	tol.React(func(r flux.Reactor, err error, d interface{}) {
-		log.Printf("tol: %s", d)
+		if cur == d {
+			flux.FatalFailed(t, "both %s and %s should not be equal", cur, d)
+		}
+
+		flux.LogPassed(t, "both %s and %s are not be equal", cur, d)
 	}, true)
 
-	name.Set("ron!")
+	name.Set("Ron!")
 }

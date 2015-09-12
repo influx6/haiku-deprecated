@@ -75,9 +75,10 @@ func (a *atom) Mutate(v interface{}) (Immutable, bool) {
 		return a.nxt.Mutate(v)
 	}
 
-	if !a.Allowed(v) {
+	if !a.Allowed(v) || a.val == v {
 		return a, false
 	}
+
 	mc := a.clone()
 	mc.val = v
 	return mc, true

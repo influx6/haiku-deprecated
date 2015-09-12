@@ -70,4 +70,5 @@ func TestTemplateRendering(t *testing.T) {
 	}, true)
 
 	name.Set("Ron!")
+	name.Set("Ron!")
 }

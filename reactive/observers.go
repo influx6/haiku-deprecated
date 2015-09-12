@@ -63,7 +63,7 @@ func Reactive(m Immutable) *Observer {
 func (r *Observer) mutate(ndata interface{}) bool {
 	clone, done := r.data.Mutate(ndata)
 
-	//can we make the change or his this change proper
+	//can we make the change(do the type fit if we are type strict and is it a different value from the last)
 	if !done {
 		return false
 	}

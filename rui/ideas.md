@@ -53,12 +53,12 @@
         }
 
         //the name-tag for the element to have
-        atom = Renderer(domNode,(`
+        atom = Renderer((`
            <div class={{DataTree.name}}>
              <label>Rates: {{DataTree.rates.rate}}</label>
              <label>Count: {{DataTree.rates.counter}}</label>
            </div>
-        `)).use(DataTree) /* =>
+        `)).use(DataTree:instance) /* =>
            <div class=alex>
              <label>Rates: 1</label>
              <label>Count: 43</label>

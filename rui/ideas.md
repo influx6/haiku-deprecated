@@ -17,8 +17,8 @@
 
  Examples:
 
-  - Behavioural Reactivity: Behavioural reactivity should be have effect within the dom alone except for behaviours
-  that can be capable of working in both dom and non-dom environment
+  - Behavioural Reactivity: Behavioural reactivity should have effect within the dom alone except for behaviours
+  that can be capable of working in both dom and non-dom environment. This defines attributes that change behaviours of elements when added or removed. To equally achieve this, we need to make use of html.MutationObservers to get nodes who receive and release behavioural attributes
 
       an ordinary div:
         ```html
@@ -26,6 +26,7 @@
         ```
 
       should be able to become behavioural when it recieves an attributal change:
+      e.g an attribute that makes a div produce a vibration effect when clicked
 
       ```html
         <div class="cloud" vibrate></div>

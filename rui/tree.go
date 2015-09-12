@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sync"
 
 	"github.com/influx6/flux"
 	"github.com/influx6/prox/reactive"
@@ -34,6 +35,7 @@ type DataTree struct {
 	flux.Reactor `yaml:"-" json:"-"`
 	//dirties contain a auto-generated list of field names that have indeed become dirty/received and accepted changes
 	trackers map[string]reactive.Observers
+	rw       sync.RWMutex
 }
 
 // StructTree returns a new tree with a struct setup for reactivity
@@ -84,7 +86,9 @@ func BuildDataTree(sub interface{}) (b *DataTree) {
 
 // Track returns the reactor with the fieldname if it exists else return an error
 func (b *DataTree) Track(attr string) (reactive.Observers, error) {
+	b.rw.RLock()
 	bx, ok := b.trackers[attr]
+	b.rw.RUnlock()
 	if !ok {
 		return nil, ErrNotReactor
 	}
@@ -93,22 +97,33 @@ func (b *DataTree) Track(attr string) (reactive.Observers, error) {
 
 // Tracking returns true/false if a field matching the name is being tracked
 func (b *DataTree) Tracking(attr string) bool {
+	b.rw.RLock()
 	_, ok := b.trackers[attr]
+	b.rw.RUnlock()
 	return ok
 }
 
 // HasTracks returns true/false if the tree is being tracked
 func (b *DataTree) HasTracks() bool {
+	b.rw.RLock()
+	defer b.rw.RLock()
 	return len(b.trackers) > 0
 }
 
 // registerObserver registers a reactor with the tree for change notifications
 func (b *DataTree) registerObserver(name string, ob reactive.Observers) {
-	if _, ok := b.trackers[name]; ok {
+	var ok bool
+	b.rw.RLock()
+	_, ok = b.trackers[name]
+	b.rw.RUnlock()
+
+	if ok {
 		return
 	}
 
+	b.rw.Lock()
 	b.trackers[name] = ob
+	b.rw.Unlock()
 
 	// ob.React(flux.IdentityValueMuxer(b), true)
 	ob.Bind(b, true)

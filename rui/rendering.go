@@ -11,8 +11,8 @@ import (
 
 // Renderer provides a interface that defines rendering methods custom renderers
 type Renderer interface {
-	Render() []byte
-	Dirty() bool
+	Render() string
+	IsDirty() bool
 }
 
 // Templator returns a generator which it returns a new instance  of TemplateRender for rendering templates
@@ -52,6 +52,7 @@ type TemplateRender struct {
 	template *template.Template
 	Tree     DataTrees
 	target   interface{}
+	dirty    bool
 }
 
 func (t *Templator) buildTempler(to interface{}) (*TemplateRender, error) {
@@ -78,7 +79,7 @@ func (t *Templator) buildTempler(to interface{}) (*TemplateRender, error) {
 	return tlr, nil
 }
 
-// BuildName returns a new TemplateRender set to use the current template and the given reactive object
+// BuildName returns a new TemplateRender set to use the current template marked by the base(name of the template if we were using ParseFiles or wish to target a specific template) and the given reactive object
 func (t *Templator) BuildName(to interface{}, base string) (*TemplateRender, error) {
 	tol, err := t.buildTempler(to)
 
@@ -134,6 +135,22 @@ func (t *Templator) Build(to interface{}) (*TemplateRender, error) {
 // Set is made empty to ensure only internal observer can handle such an operation
 func (t *TemplateRender) Set() {}
 
+// IsDirty returns true/false if the template has being updated
+func (t *TemplateRender) IsDirty() bool {
+	return !!t.dirty
+}
+
+//Get sets the dirty variable as fale and returns the current/last render of the template
+func (t *TemplateRender) Get() interface{} {
+	t.dirty = false
+	return t.Observers.Get()
+}
+
+// Render renders the template or returns a cache if not yet fully rendered
+func (t *TemplateRender) Render() string {
+	return fmt.Sprintf("%v", t.Get())
+}
+
 func (t *TemplateRender) renderExecTmpl(base string, dx interface{}) error {
 	var buf bytes.Buffer
 
@@ -144,6 +161,7 @@ func (t *TemplateRender) renderExecTmpl(base string, dx interface{}) error {
 		return err
 	}
 
+	t.dirty = true
 	t.Observers.Set(string(buf.Bytes()))
 	return nil
 }
@@ -158,11 +176,7 @@ func (t *TemplateRender) renderExec(dx interface{}) error {
 		return err
 	}
 
+	t.dirty = true
 	t.Observers.Set(string(buf.Bytes()))
 	return nil
-}
-
-// Render renders the template or returns a cache if not yet fully rendered
-func (t *TemplateRender) Render() string {
-	return fmt.Sprintf("%v", t.Get())
 }

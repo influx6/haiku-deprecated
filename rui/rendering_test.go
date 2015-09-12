@@ -8,6 +8,7 @@ import (
 	"github.com/influx6/prox/reactive"
 )
 
+//basic model or template data that has reactive elements
 type sampleRob struct {
 	// DataTrees
 	Name reactive.Observers
@@ -15,6 +16,7 @@ type sampleRob struct {
 	Date time.Time
 }
 
+// TestBasicRendable creates a basic reactive struct whoes data contain some reactive elements which are then used to build a datatree which listens to each of these elements for change
 func TestBasicRendable(t *testing.T) {
 	name, _ := reactive.ObserveTransform("Alex", false)
 	age, _ := reactive.ObserveTransform(1, false)
@@ -25,15 +27,22 @@ func TestBasicRendable(t *testing.T) {
 		Date: time.Now(),
 	}
 
-	_, err := StructTree(bob)
+	box, err := StructTree(bob)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create struct tree: %s", err.Error())
 	}
 
+	box.React(func(r flux.Reactor, err error, d interface{}) {
+		if d != bob {
+			flux.FatalFailed(t, "target and structree reply is not equal: %s %s", d, bob)
+		}
+	}, true)
+
 	bob.Name.Set("Joe")
 }
 
+// TestTemplateRendering combines the template renderer for reactive structs with the data tree provider which is generated when a call to Build() with the supplied struct type (interface{})
 func TestTemplateRendering(t *testing.T) {
 
 	tmpl, err := SourceTemplator("base.tml", `

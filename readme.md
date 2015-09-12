@@ -1,6 +1,6 @@
 # Prox
 
-#ideas
+##Ideas
  We need to combine vdom and html templating as a means of providing a core means
  of creating reactive ui for go, for example like below with the current example
 

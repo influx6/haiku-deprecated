@@ -32,6 +32,20 @@ type StateResponse func(*StateStat)
 //StateValidator defines a function type used in the state validator process
 type StateValidator func(string, *StateStat) bool
 
+// States represent the interface defining a state type
+type States interface {
+	Active() bool
+	Tag() string
+	Addr() string
+	Engine() *StateEngine
+	Activate(*StateStat)
+	Acceptable(string, *StateStat) bool
+	Deactivate(*StateStat)
+	UseActivator(StateResponse) States
+	UseDeactivator(StateResponse) States
+	OverrideValidator(StateValidator) States
+}
+
 // State represents a single state of with a specific tag and address
 // where the address is a single piece 'home' item in the '.home.files' style state address
 type State struct {
@@ -78,6 +92,11 @@ func NewState(tag, addrPoint string) *State {
 // Tag returns the custom tag of this state unique to it
 func (s *State) Tag() string {
 	return s.tag
+}
+
+// Active returns true/false if this state is active
+func (s *State) Active() bool {
+	return atomic.LoadInt64(&s.active) == 1
 }
 
 // Addr returns the state address point eg home
@@ -166,19 +185,6 @@ func (s *State) Deactivate(so *StateStat) {
 	s.do.Unlock()
 }
 
-// States represent the interface defining a state type
-type States interface {
-	Tag() string
-	Addr() string
-	Engine() *StateEngine
-	Activate(*StateStat)
-	Acceptable(string, *StateStat) bool
-	Deactivate(*StateStat)
-	UseActivator(StateResponse) States
-	UseDeactivator(StateResponse) States
-	OverrideValidator(StateValidator) States
-}
-
 // StateEngine represents the engine that handles the state machine based operations for state-address based states
 type StateEngine struct {
 	states *flux.SyncCollector
@@ -211,6 +217,12 @@ func (se *StateEngine) AddState(tag, addr string) States {
 	se.states.Set(tag, sa)
 
 	return sa
+}
+
+// UseState adds a state into the StateEngine with a specific tag, the state address point is still used in matching against it
+func (se *StateEngine) UseState(tag string, s States) States {
+	se.states.Set(tag, s)
+	return s
 }
 
 // ShallowState returns the current state of the engine and not the final state i.e with a state address of '.home.files' from its root, it will return State(:home) object

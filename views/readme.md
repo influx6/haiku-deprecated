@@ -10,17 +10,18 @@ A basic demonstration of the view engine and state machine operation. Where the 
     *Examples will be laced and demostrated using html symantics and tag rules we can demostrate as below*
 
     State trees define the state of the state machine engine and the hierarchical nature of views:
-    Views are locked in by the tag they are giving so a FilesView with tag drop becomes a 'drop' state address point,making it easy to provide same view handlers except when specific to use the root address point 
+
+    Views are locked in by the tag they are giving so a FilesView with tag drop becomes a 'drop' state address point,making it easy to provide same view handlers except when specific to use the root address point
 
       ```go
         RootView(root: .)
-        | VideoView(video: .)
-        | HomeView(home: .home)
-            | AddressView(address: .)
-            | FilesView(files: .home.files)
-            | FilesView(drops: .home.drops)
-            | FolderView(folders: .home.folders)
-                | FilesViews(files: .home.folders.files)
+        |-VideoView(video: .)
+        |-HomeView(home: .home)
+            |-AddressView(address: .)
+            |-FilesView(files: .home.files)
+            |-FilesView(drops: .home.drops)
+            |-FolderView(folders: .home.folders)
+                |-FilesViews(files: .home.folders.files)
 
       ```
 
@@ -85,3 +86,39 @@ A basic demonstration of the view engine and state machine operation. Where the 
               </rootview>
 
           ```
+
+##Examples
+
+  - Basic View:
+    The basic view system built ontop of the state machine is simple, we can create separate views that connect to a large view and only have the currently active view to be present,allowing the system to behave accordingly
+
+    ```go
+
+    videos := View(`
+      <ul>
+        {{. range}}
+          <li>
+            <video src="{{.src}}">{{.name}}</video>
+          <li>
+        {{end}}
+      </ul>
+    `)
+
+      home := View(`
+        <html>
+          <head></head>
+          <body>
+            <div class="videos">
+              {{.View('video')}}
+            </video>
+
+            <div class="filesystem">
+              {{.View('home').View('folders')}}
+            </div>
+          </body>
+        </html>
+      `)
+
+
+     home.UseView("video",videos)
+    ```

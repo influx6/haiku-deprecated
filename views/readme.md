@@ -7,13 +7,12 @@
 ### Engine Rendering Rules
 A basic demonstration of the view engine and state machine operation. Where the (n: m) shows the relation of view tag and view state address i.e (books: .books) defines a view of tag 'books' with a state address of '.books' the 'root->books' order or in url speak, a '/books' path
 
-    *Examples will be laced and demostrated using html symantics and tag rules we can demostrate as below*
+      *Examples will be laced and demostrated using html symantics and tag rules we can demostrate as below*
 
-    State trees define the state of the state machine engine and the hierarchical nature of views:
 
-    Views are locked in by the tag they are giving so a FilesView with tag drop becomes a 'drop' state address point,making it easy to provide same view handlers except when specific to use the root address point
+    State trees define the state of the state machine engine and the hierarchical nature of views. Views are locked in by the tag they are giving so a FilesView with tag drop becomes a 'drop' state address point,making it easy to provide same view handlers except when specific to use the root address point
 
-      ```go
+       ```go
         RootView(root: .)
         |-VideoView(video: .)
         |-HomeView(home: .home)
@@ -23,13 +22,14 @@ A basic demonstration of the view engine and state machine operation. Where the 
             |-FolderView(folders: .home.folders)
                 |-FilesViews(files: .home.folders.files)
 
-      ```
+       ```
 
-    - **Partial Views (using the `.PartialView(string)` function)**
+
+ - **Partial Views (using the `.PartialView(string)` function)**
     Partial view entails the single rendering of a view and its sub views within a large hierarchy of views. That is when the state engine receives a state address of a specific subview, that view only renders its self and other subview that are linked as rootviews in it excluding any subview that is a distinct state address from it. Such examples using the state tree above are:
 
 
-        - **Engine: State->'.'**
+   - **Engine: State->'.'**
           When the engine is set to a '.' state, all views registerd under the rootView with a '.' state address will be active while others who have specific tags like '.home' will not since they do not match the root state address criteria.
 
           ```html
@@ -41,7 +41,7 @@ A basic demonstration of the view engine and state machine operation. Where the 
 
           ```
 
-        - **Engine: State->'.home'**
+   - **Engine: State->'.home'**
           When the engine is set to a '.home' state,all views matching '.home' and any subview matching under home with a '.' root path will be active but any sub view that are specific e.g '.home.files' or '.home.folders' will not be as they are specific in their state address
 
           ```html
@@ -70,9 +70,9 @@ A basic demonstration of the view engine and state machine operation. Where the 
           ```
 
         - **Engine: State->'.home.files'**
-          When the engine receives a state address ('.home.files'), it renders the selected root view and the sequentive state path ensuring to respect nesting and hierarchy, where the '.' renders then 'home' renders within the '.' root response and files renders within 'home' response
+           When the engine receives a state address ('.home.files'), it renders the selected root view and the sequentive state path ensuring to respect nesting and hierarchy, where the '.' renders then 'home' renders within the '.' root response and files renders within 'home' response
 
-          ```html
+           ```html
             /*Rendering:*/
 
               <rootview>
@@ -85,7 +85,7 @@ A basic demonstration of the view engine and state machine operation. Where the 
                 </homeview>
               </rootview>
 
-          ```
+           ```
 
 ##Examples
 

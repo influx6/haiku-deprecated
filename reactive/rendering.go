@@ -13,6 +13,7 @@ import (
 // Renderer provides a interface that defines rendering methods custom renderers
 type Renderer interface {
 	Render() string
+	RenderHTML() template.HTML
 	IsDirty() bool
 }
 
@@ -180,6 +181,11 @@ func (t *TemplateRender) IsDirty() bool {
 func (t *TemplateRender) Get() interface{} {
 	t.dirty = false
 	return t.Observers.Get()
+}
+
+// RenderHTML renders the output from .Render() as safe html unescaped
+func (t *TemplateRender) RenderHTML() template.HTML {
+	return template.HTML(t.Render())
 }
 
 // Render renders the template or returns a cache if not yet fully rendered

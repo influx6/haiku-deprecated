@@ -94,31 +94,73 @@ A basic demonstration of the view engine and state machine operation. Where the 
 
     ```go
 
-    videos := View(`
-      <ul>
-        {{. range}}
-          <li>
-            <video src="{{.src}}">{{.name}}</video>
-          <li>
-        {{end}}
-      </ul>
-    `)
+      	videoData := []map[string]interface{}{
+      		map[string]interface{}{
+      			"src":  "https://youtube.com/xF5R32YF4",
+      			"name": "Joyride Lewis!",
+      		},
+      		map[string]interface{}{
+      			"src":  "https://youtube.com/dox32YF4",
+      			"name": "Wonderlust Bombs!",
+      		},
+      	}
 
-      home := View(`
+      	videos, _ := NewTemplateRenderable(`
+          <ul>
+            {{ range . }}
+              <li>
+                <video src="{{.src}}">{{.name}}</video>
+              <li>
+            {{end}}
+          </ul>
+        `)
+
+      	home, _ := SourceView("homeView", `
+          <html>
+            <head></head>
+            <body>
+              <div class="videos">
+                {{ (.View "video").RenderHTML }}
+              </video>
+
+              <div class="filesystem">
+                {{ (.View "home").RenderHTML }}
+              </div>
+            </body>
+          </html>
+        `)
+
+      	videos.Execute(videoData)
+
+      	home.AddView("video", "video", videos)
+
+      	home.Render() => /*
+
         <html>
           <head></head>
           <body>
             <div class="videos">
-              {{.View('video')}}
+
+        <ul>
+
+            <li>
+              <video src="https://youtube.com/xF5R32YF4">Joyride Lewis!</video>
+            <li>
+
+            <li>
+              <video src="https://youtube.com/dox32YF4">Wonderlust Bombs!</video>
+            <li>
+
+        </ul>
+
             </video>
 
             <div class="filesystem">
-              {{.View('home').View('folders')}}
+              Render.Error: "home" view not found!
             </div>
           </body>
         </html>
-      `)
 
+  */
 
-     home.UseView("video",videos)
     ```

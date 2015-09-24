@@ -30,20 +30,19 @@ type StateStat struct {
 type StateResponse func(*StateStat)
 
 //StateValidator defines a function type used in the state validator process
-type StateValidator func(string, *StateStat) bool
+type StateValidator func(string, string, *StateStat) bool
 
 // States represent the interface defining a state type
 type States interface {
 	Active() bool
 	Tag() string
-	Addr() string
 	Engine() *StateEngine
 	Activate(*StateStat)
-	Acceptable(string, *StateStat) bool
 	Deactivate(*StateStat)
 	UseActivator(StateResponse) States
 	UseDeactivator(StateResponse) States
 	OverrideValidator(StateValidator) States
+	acceptable(string, string, *StateStat) bool
 }
 
 // State represents a single state of with a specific tag and address
@@ -54,12 +53,6 @@ type State struct {
 
 	// tag represent the identifier key used in a super-state
 	tag string
-
-	// stateAddr represent the concrent address point for this state e.g home
-	stateAddr string
-
-	// stateTraj represent the state trajectory from its root eg {root.stateTraj}.home where {root.stateTraj} is the roots trajectory
-	stateTraj string
 
 	// activator and deactivator provide actions to occur when the state is set to be active
 	activator   StateResponse
@@ -78,10 +71,9 @@ type State struct {
 }
 
 // NewState builds a new state with a tag and single address point .eg home or files ..etc
-func NewState(tag, addrPoint string) *State {
+func NewState(tag string) *State {
 	ns := State{
-		tag:       tag,
-		stateAddr: addrPoint,
+		tag: tag,
 	}
 
 	ns.engine = BuildStateEngine(&ns)
@@ -97,11 +89,6 @@ func (s *State) Tag() string {
 // Active returns true/false if this state is active
 func (s *State) Active() bool {
 	return atomic.LoadInt64(&s.active) == 1
-}
-
-// Addr returns the state address point eg home
-func (s *State) Addr() string {
-	return s.stateAddr
 }
 
 // Engine returns the internal nested StateEngine
@@ -131,23 +118,6 @@ func (s *State) OverrideValidator(so StateValidator) States {
 	s.optionalValidator = so
 	s.vo.Unlock()
 	return s
-}
-
-// Acceptable checks if the state matches the current point
-func (s *State) Acceptable(addr string, so *StateStat) bool {
-	fxo := s.optionalValidator
-
-	if fxo == nil {
-		if addr == s.stateAddr {
-			return true
-		}
-		return false
-	}
-
-	s.vo.Lock()
-	state := fxo(addr, so)
-	s.vo.Unlock()
-	return state
 }
 
 // Activate activates the state
@@ -185,11 +155,32 @@ func (s *State) Deactivate(so *StateStat) {
 	s.do.Unlock()
 }
 
+// acceptable checks if the state matches the current point
+func (s *State) acceptable(addr string, point string, so *StateStat) bool {
+	if s.optionalValidator == nil {
+		if addr == point {
+			return true
+		}
+		return false
+	}
+
+	s.vo.Lock()
+	state := s.optionalValidator(addr, point, so)
+	s.vo.Unlock()
+	return state
+}
+
 // StateEngine represents the engine that handles the state machine based operations for state-address based states
 type StateEngine struct {
 	states *flux.SyncCollector
 	owner  States
 	curr   States
+}
+
+// stateLocation is used to give state objects an address
+type stateLocation struct {
+	States
+	Addr string
 }
 
 // NewStateEngine returns a new engine with a default empty state
@@ -213,15 +204,26 @@ func (se *StateEngine) AddState(tag, addr string) States {
 		addr = tag
 	}
 
-	sa := NewState(tag, addr)
-	se.states.Set(tag, sa)
+	sa := NewState(tag)
+	se.states.Set(sa.Tag(), &stateLocation{
+		States: sa,
+		Addr:   addr,
+	})
 
 	return sa
 }
 
 // UseState adds a state into the StateEngine with a specific tag, the state address point is still used in matching against it
-func (se *StateEngine) UseState(tag string, s States) States {
-	se.states.Set(tag, s)
+func (se *StateEngine) UseState(addr string, s States) States {
+
+	if addr == "" {
+		addr = s.Tag()
+	}
+
+	se.states.Set(s.Tag(), &stateLocation{
+		States: s,
+		Addr:   addr,
+	})
 	return s
 }
 
@@ -278,66 +280,9 @@ func (se *StateEngine) All(addr string, data interface{}) error {
 	return se.trajectory(points, stat, false)
 }
 
-// preparePoints prepares the state address into a list of walk points
-func (se *StateEngine) prepare(addr string) ([]string, error) {
-	addr = excessStops.ReplaceAllString(addr, ".")
-	points := strings.Split(addr, ".")
-	polen := len(points)
-
-	//check if the length is below 1 then return appropriately
-	if polen < 1 {
-		return nil, ErrInvalidStateAddr
-	}
-
-	//if the first is an empty string, meaning the '.' root was supplied, then we shift so we just start from the first state point else we ignore and use the list as-is.
-	if points[0] == "" {
-		points = points[1:]
-	}
-
-	return points, nil
-}
-
-func (se *StateEngine) diffOnlySubs() []States {
-	var subs []States
-
-	se.states.Each(eachState(func(so States, tag string, _ func()) {
-		if so.Addr() == "." {
-			subs = append(subs, so)
-		}
-	}))
-
-	return subs
-}
-
-func (se *StateEngine) diffOnlyNotSubs() []States {
-	var subs []States
-
-	se.states.Each(eachState(func(so States, tag string, _ func()) {
-		if so.Addr() != "." {
-			subs = append(subs, so)
-		}
-	}))
-
-	return subs
-}
-
-func (se *StateEngine) diffSubs() ([]States, []States) {
-	var nosubs, subs []States
-
-	se.states.Each(eachState(func(so States, tag string, _ func()) {
-		if so.Addr() == "." {
-			subs = append(subs, so)
-		} else {
-			nosubs = append(nosubs, so)
-		}
-	}))
-
-	return subs, nosubs
-}
-
 // DeactivateAll deactivates all states connected to this engine
 func (se *StateEngine) DeactivateAll(dso *StateStat) {
-	se.states.Each(eachState(func(so States, tag string, _ func()) {
+	se.states.Each(eachState(func(so *stateLocation, tag string, _ func()) {
 		so.Deactivate(dso)
 	}))
 }
@@ -345,7 +290,7 @@ func (se *StateEngine) DeactivateAll(dso *StateStat) {
 // trajectory is the real engine which checks the path and passes down the StateStat to the sub-states and determines wether its a full view or partial view
 func (se *StateEngine) trajectory(points []string, so *StateStat, partial bool) error {
 
-	nosubs := se.diffOnlyNotSubs()
+	subs, nosubs := se.diffSubs()
 
 	//are we out of points to walk through? if so then fire acive and tell others to be inactive
 	if len(points) < 1 {
@@ -354,16 +299,17 @@ func (se *StateEngine) trajectory(points []string, so *StateStat, partial bool) 
 			ko.Deactivate(so)
 		}
 
-		// //activate all the subroot states first so they can
-		// //do any population they want
-		// for _, ko := range subs {
-		// 	ko.Activate(so)
-		// }
-
-		//then active the root itself,so it gets the result
+		//if the engine has a root state activate it since in doing so,it will activate its own children else manually activate the children
 		if se.owner != nil {
 			se.owner.Activate(so)
+		} else {
+			//activate all the subroot states first so they can
+			//do be ready for the root. We call this here incase the StateEngine has no root state
+			for _, ko := range subs {
+				ko.Activate(so)
+			}
 		}
+
 		return nil
 	}
 
@@ -374,12 +320,12 @@ func (se *StateEngine) trajectory(points []string, so *StateStat, partial bool) 
 		return ErrStateNotFound
 	}
 
-	state := se.states.Get(point).(States)
+	state := se.states.Get(point).(*stateLocation)
 
 	if state == nil {
 		for _, ko := range nosubs {
-			if sko, ok := ko.(States); ok {
-				if sko.Acceptable(point, so) {
+			if sko, ok := ko.(*stateLocation); ok {
+				if sko.acceptable(sko.Addr, point, so) {
 					state = sko
 					break
 				}
@@ -419,10 +365,78 @@ func (se *StateEngine) trajectory(points []string, so *StateStat, partial bool) 
 	return nil
 }
 
+// preparePoints prepares the state address into a list of walk points
+func (se *StateEngine) prepare(addr string) ([]string, error) {
+
+	var points []string
+	var polen int
+
+	if addr != "." {
+		addr = excessStops.ReplaceAllString(addr, ".")
+		points = strings.Split(addr, ".")
+		polen = len(points)
+	} else {
+		polen = 1
+		points = []string{""}
+	}
+
+	//check if the length is below 1 then return appropriately
+	if polen < 1 {
+		return nil, ErrInvalidStateAddr
+	}
+
+	//if the first is an empty string, meaning the '.' root was supplied, then we shift so we just start from the first state point else we ignore and use the list as-is.
+	if points[0] == "" {
+		points = points[1:]
+	}
+
+	return points, nil
+}
+
+// diffOnlyNotSubs returns all states with a '.' root state address
+func (se *StateEngine) diffOnlySubs() []States {
+	var subs []States
+
+	se.states.Each(eachState(func(so *stateLocation, tag string, _ func()) {
+		if so.Addr == "." {
+			subs = append(subs, so)
+		}
+	}))
+
+	return subs
+}
+
+// diffOnlyNotSubs returns all states not with a '.' root state address
+func (se *StateEngine) diffOnlyNotSubs() []States {
+	var subs []States
+
+	se.states.Each(eachState(func(so *stateLocation, tag string, _ func()) {
+		if so.Addr != "." {
+			subs = append(subs, so)
+		}
+	}))
+
+	return subs
+}
+
+func (se *StateEngine) diffSubs() ([]States, []States) {
+	var nosubs, subs []States
+
+	se.states.Each(eachState(func(so *stateLocation, tag string, _ func()) {
+		if so.Addr == "." {
+			subs = append(subs, so)
+		} else {
+			nosubs = append(nosubs, so)
+		}
+	}))
+
+	return subs, nosubs
+}
+
 // eachState provides a function decorator for calling ech on a flux.SyncCollector
-func eachState(fx func(States, string, func())) flux.StringEachfunc {
+func eachState(fx func(*stateLocation, string, func())) flux.StringEachfunc {
 	return func(item interface{}, key string, stop func()) {
-		if so, ok := item.(States); ok {
+		if so, ok := item.(*stateLocation); ok {
 			fx(so, key, stop)
 		}
 	}

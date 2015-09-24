@@ -67,6 +67,12 @@ func TestTemplateRendering(t *testing.T) {
 		flux.FatalFailed(t, "Unable to create templateRenderer: %s", err.Error())
 	}
 
+	err = UseExecLogic(tol)
+
+	if err != nil {
+		flux.FatalFailed(t, "Unable to add templateRenderer exec logic: %s", err.Error())
+	}
+
 	cur := tol.Render()
 
 	tol.React(func(r flux.Reactor, err error, d interface{}) {

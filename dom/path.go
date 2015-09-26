@@ -52,26 +52,6 @@ func HashChangePath() *PathObserver {
 	return path
 }
 
-// LinkPath represents a path href link of a 'a' tag
-// type LinkPath string
-
-// LinkPath returns a path observer that watches normal a link tags with relative hrefs and intercept them and send them as url path
-// func LinkPath() *PathObserver {
-// panicBrowserDetect()
-// path := Path()
-
-// js.Global.Set("onhashchange",func(){
-//   go func(){
-//     loc := js.Global.Get("location")
-//     pathn := loc.Get("pathname").String()
-//     hash := loc.Get("hash").String()
-//     path.Send(HashPath(fmt.Sprintf("%s%s",pathn,hash)))
-//   }()
-// })
-
-// return path
-// }
-
 // PopPath represents a path using history popstate
 type PopPath string
 

@@ -1,5 +1,8 @@
 package: main
 import:
+  - package: github.com/gopherjs/gopherjs
+    repo: https://github.com/gopherjs/gopherjs
+    vcs:  git
   - package: github.com/oxtoacart/bpool
     repo: https://github.com/oxtoacart/bpool
     vcs:  git

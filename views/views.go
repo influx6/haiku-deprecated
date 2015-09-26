@@ -9,8 +9,8 @@ import (
 
 // Viewable defines an interface for any element that can return a rendering of its content out as strings
 type Viewable interface {
-	Render() string
-	RenderHTML() template.HTML
+	Render(...string) string
+	RenderHTML(...string) template.HTML
 }
 
 // StatefulViewable defines an interface for any element that can return a rendering of its content and matches the States interface
@@ -47,7 +47,7 @@ func (v *ViewStrategy) SwitchActive() {
 // SwitchInActive switches the state of the strategy to inactive mode
 func (v *ViewStrategy) SwitchInActive() {
 	if atomic.LoadInt64(&v.state) > 0 {
-		atomic.StoreInt64(&v.state, 1)
+		atomic.StoreInt64(&v.state, 0)
 	}
 }
 
@@ -72,22 +72,10 @@ type View struct {
 // BuildViewTemplateFunctions returns a template.FuncMap that contains the template functions (View and Views) for use with a template. Ensure to pass this to the root template so you can acccess it down
 func BuildViewTemplateFunctions(v *View) template.FuncMap {
 	return template.FuncMap{
-		"view": func(data ...interface{}) Viewable {
-			if len(data) < 1 {
-				return nil
-			}
-
-			var tag string
-			var ok bool
-			tag, ok = data[0].(string)
-
-			if !ok {
-				return nil
-			}
-
+		"view": func(tag string) Viewable {
 			return v.View(tag)
 		},
-		"views": func(data ...interface{}) []Viewable {
+		"views": func() []Viewable {
 			return v.Views()
 		},
 	}
@@ -103,27 +91,38 @@ func NewView(tag string, tl *template.Template, strategy *ViewStrategy) *View {
 		views:    NewViewLists(),
 	}
 
-	v.Tmpl.Funcs(BuildViewTemplateFunctions(&v))
+	// bx := BuildViewTemplateFunctions(&v)
+	// log.Printf("%s", bx)
+	// v.Tmpl = tl.Funcs(bx).
 
-	v.UseActivator(func(_ *StateStat) {
+	v.State.UseActivator(func(s *StateStat) {
 		v.strategy.SwitchActive()
 	})
 
-	v.UseDeactivator(func(_ *StateStat) {
-		v.strategy.SwitchActive()
+	v.State.UseDeactivator(func(s *StateStat) {
+		v.strategy.SwitchInActive()
 	})
 
 	return &v
 }
 
 // RenderHTML renders the output from .Render() as safe html unescaped
-func (v *View) RenderHTML() template.HTML {
-	return template.HTML(v.Render())
+func (v *View) RenderHTML(m ...string) template.HTML {
+	return template.HTML(v.Render(m...))
 }
 
 // Render calls the internal strategy and renders out the output of that result
-func (v *View) Render() string {
-	v.Engine().All(".", "")
+func (v *View) Render(m ...string) string {
+	var addr string
+
+	if len(m) > 0 {
+		addr = m[0]
+	}
+
+	if addr != "" {
+		v.Engine().All(addr, v.tag)
+	}
+
 	return v.strategy.Render(v)
 }
 
@@ -144,6 +143,11 @@ func (v *View) Execute() ([]byte, error) {
 	var buf bytes.Buffer
 	err := v.Tmpl.Execute(&buf, v)
 	return buf.Bytes(), err
+}
+
+// PartialView returns a PartialView for this view
+func (v *View) PartialView() *PartialView {
+	return NewPartialView(v)
 }
 
 // View returns the view with the specified tag or nil if not found
@@ -176,6 +180,7 @@ func (v *View) AddStatefulViewable(tag, addr string, vm StatefulViewable) error 
 		return err
 	}
 
+	v.Engine().UseState(addr, vm)
 	return nil
 }
 
@@ -188,6 +193,46 @@ func (v *View) AddView(tag, addr string, vm Viewable) error {
 	return v.AddViewable(tag, vm)
 }
 
+// PartialView provides a wrapper around View that enforces only partial rendering of the internal state by call .Partial() instead of a .All() view on all .Render() calls
+type PartialView struct {
+	*View
+}
+
+// NewPartialView returns a new PartialView instance
+func NewPartialView(v *View) *PartialView {
+	return &PartialView{View: v}
+}
+
+// Render calls the internal strategy and renders out the output of that result
+func (pv *PartialView) Render(m ...string) string {
+	var addr string
+
+	if len(m) > 0 {
+		addr = m[0]
+	}
+
+	if addr != "" {
+		pv.Engine().Partial(addr, pv.tag)
+	}
+
+	return pv.strategy.Render(pv.View)
+}
+
+// PartialView returns a PartialView for this view
+func (pv *PartialView) PartialView() *PartialView {
+	return pv
+}
+
+// RenderHTML renders the output from .Render() as safe html unescaped
+func (pv *PartialView) RenderHTML(m ...string) template.HTML {
+	return template.HTML(pv.Render(m...))
+}
+
+// String simply calls the internal .Render() function
+// func (pv *PartialView) String() string {
+// 	return v.Render()
+// }
+
 // // UseDeactivator gets overide
 // func (v *View) UseDeactivator(StateResponse) {}
 //
@@ -199,7 +244,7 @@ const ViewHTMLTemplate = `
 	<view id={{}} name={{}}>
 		{{range .Views }}
 		  <view>
-				.Render()
+				{{ .RenderHTML }}
 		  </view>
 		{{ end }}
 	</view>
@@ -208,7 +253,7 @@ const ViewHTMLTemplate = `
 // ViewLightTemplate simple renders out the internal views of a root View
 const ViewLightTemplate = `
 	{{range .Views }}
-			.Render()
+			{{ .RenderHTML }}
 	{{ end }}
 `
 
@@ -242,11 +287,64 @@ func SilentNameStratetgy(base string) *ViewStrategy {
 	})
 }
 
-// SourceView provides a view that takes the template format of which it will render the view as
-func SourceView(tag, tmpl string) (*View, error) {
-	tl, err := template.New(tag).Parse(tmpl)
-	if err != nil {
-		return nil, err
-	}
-	return NewView(tag, tl, SilentStratetgy()), nil
+// HiddenStratetgy is a simple strategy that when the view is activated calls the View.Execute
+func HiddenStratetgy() *ViewStrategy {
+	return NewViewStrategy(func(v *View) string {
+		bo, err := v.Execute()
+
+		if err != nil {
+			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+		}
+
+		return string(bo)
+	}, func(v *View) string {
+		bo, err := v.Execute()
+
+		if err != nil {
+			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+		}
+
+		return fmt.Sprintf(`<div style="display:none;">\n%s\n</div>`, string(bo))
+	})
 }
+
+// HiddenNameStratetgy is a simple strategy that when the view is activated calls the View.ExecuteTemplate and when hidden wrap it within a div tag laced with a display none style
+func HiddenNameStratetgy(base string) *ViewStrategy {
+	return NewViewStrategy(func(v *View) string {
+		bo, err := v.ExecuteTemplate(base)
+
+		if err != nil {
+			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+		}
+
+		return string(bo)
+	}, func(v *View) string {
+		bo, err := v.ExecuteTemplate(base)
+
+		if err != nil {
+			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+		}
+
+		return fmt.Sprintf(`<div style="display:none;">\n%s\n</div>`, string(bo))
+	})
+}
+
+// SourceView provides a view that takes the template format of which it will render the view as
+func SourceView(tag, tmpl string) (v *View, err error) {
+	var tl *template.Template
+
+	tl, err = template.New(tag).Parse(tmpl)
+
+	if err != nil {
+		return
+	}
+
+	v = NewView(tag, tl, SilentStratetgy())
+
+	return
+}
+
+// ViewEngine provides a central view system for the management of view types its to be used in a composed form i.e embed them into structs that will provide central view management for a group of views
+// type ViewEngine struct {
+//
+// }

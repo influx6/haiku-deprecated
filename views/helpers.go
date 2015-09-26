@@ -17,8 +17,8 @@ func NewNullRender(tag string) *NullRender {
 }
 
 // RenderHTML renders the output from .Render() as safe html unescaped
-func (n *NullRender) RenderHTML() template.HTML {
-	return template.HTML(n.Render())
+func (n *NullRender) RenderHTML(m ...string) template.HTML {
+	return template.HTML(n.Render(m...))
 }
 
 // String returns the rendered data
@@ -27,7 +27,7 @@ func (n *NullRender) String() string {
 }
 
 // Render returns the error message
-func (n *NullRender) Render() string {
+func (n *NullRender) Render(_ ...string) string {
 	return fmt.Sprintf(`Render.Error: "%s" view not found!`, n.tag)
 }
 
@@ -62,12 +62,12 @@ func (t *TemplateRenderable) Execute(v interface{}) error {
 }
 
 // Render renders out the internal cache
-func (t *TemplateRenderable) Render() string {
+func (t *TemplateRenderable) Render(_ ...string) string {
 	return string(t.cache.Bytes())
 }
 
 // RenderHTML renders the output from .Render() as safe html unescaped
-func (t *TemplateRenderable) RenderHTML() template.HTML {
+func (t *TemplateRenderable) RenderHTML(_ ...string) template.HTML {
 	return template.HTML(t.Render())
 }
 

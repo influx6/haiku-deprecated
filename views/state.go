@@ -125,6 +125,7 @@ func (s *State) Activate(so *StateStat) {
 	if s.active > 1 {
 		return
 	}
+
 	atomic.StoreInt64(&s.active, 1)
 
 	subs := s.engine.diffOnlySubs()
@@ -136,9 +137,11 @@ func (s *State) Activate(so *StateStat) {
 	}
 
 	s.ro.Lock()
+
 	if s.activator != nil {
 		s.activator(so)
 	}
+
 	s.ro.Unlock()
 }
 
@@ -183,9 +186,13 @@ type stateLocation struct {
 	Addr string
 }
 
+// String returns a string representation of the StateLocation
+func (s *stateLocation) String() string {
+	return fmt.Sprintf("StateLocation for %s at %s", s.Tag(), s.Addr)
+}
+
 // NewStateEngine returns a new engine with a default empty state
 func NewStateEngine() *StateEngine {
-	// sa := NewState("", ".")
 	return BuildStateEngine(nil)
 }
 
@@ -224,6 +231,7 @@ func (se *StateEngine) UseState(addr string, s States) States {
 		States: s,
 		Addr:   addr,
 	})
+
 	return s
 }
 
@@ -316,13 +324,12 @@ func (se *StateEngine) trajectory(points []string, so *StateStat, partial bool) 
 	//cache the first point so we dont loose it
 	point := points[0]
 
-	if !se.states.Has(point) {
-		return ErrStateNotFound
-	}
+	var state *stateLocation
 
-	state := se.states.Get(point).(*stateLocation)
+	state, _ = se.states.Get(point).(*stateLocation)
 
 	if state == nil {
+
 		for _, ko := range nosubs {
 			if sko, ok := ko.(*stateLocation); ok {
 				if sko.acceptable(sko.Addr, point, so) {

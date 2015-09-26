@@ -10,12 +10,12 @@ import (
 	"github.com/influx6/flux"
 )
 
-// Renderer provides a interface that defines rendering methods custom renderers
-type Renderer interface {
-	Render() string
-	RenderHTML() template.HTML
-	IsDirty() bool
-}
+// // Renderer provides a interface that defines rendering methods custom renderers
+// type Renderer interface {
+// 	Render(...string) string
+// 	RenderHTML(...string) template.HTML
+// 	IsDirty() bool
+// }
 
 // AssetRender provides a reactive template for rendering asset templates
 type AssetRender struct {
@@ -184,12 +184,12 @@ func (t *TemplateRender) Get() interface{} {
 }
 
 // RenderHTML renders the output from .Render() as safe html unescaped
-func (t *TemplateRender) RenderHTML() template.HTML {
+func (t *TemplateRender) RenderHTML(m ...string) template.HTML {
 	return template.HTML(t.Render())
 }
 
 // Render renders the template or returns a cache if not yet fully rendered
-func (t *TemplateRender) Render() string {
+func (t *TemplateRender) Render(m ...string) string {
 	return fmt.Sprintf("%v", t.Get())
 }
 

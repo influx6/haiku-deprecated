@@ -2326,7 +2326,7 @@ $packages["sync/atomic"] = (function() {
 	return $pkg;
 })();
 $packages["sync"] = (function() {
-	var $pkg = {}, $init, runtime, atomic, Pool, Mutex, Locker, poolLocal, syncSema, RWMutex, rlocker, ptrType, sliceType, chanType, ptrType$1, sliceType$1, ptrType$4, ptrType$6, sliceType$3, ptrType$7, ptrType$8, funcType, ptrType$12, arrayType$1, semWaiters, allPools, runtime_Syncsemcheck, runtime_registerPoolCleanup, runtime_Semacquire, runtime_Semrelease, runtime_canSpin, poolCleanup, init, indexLocal, raceEnable, init$1, runtime_doSpin;
+	var $pkg = {}, $init, runtime, atomic, Pool, WaitGroup, Mutex, Locker, poolLocal, syncSema, RWMutex, rlocker, ptrType, sliceType, chanType, ptrType$1, sliceType$1, structType, chanType$1, ptrType$4, ptrType$6, sliceType$3, ptrType$7, ptrType$8, funcType, arrayType, ptrType$10, ptrType$11, ptrType$12, arrayType$1, semWaiters, allPools, runtime_Syncsemcheck, runtime_registerPoolCleanup, runtime_Semacquire, runtime_Semrelease, runtime_canSpin, poolCleanup, init, indexLocal, raceEnable, init$1, runtime_doSpin;
 	runtime = $packages["runtime"];
 	atomic = $packages["sync/atomic"];
 	Pool = $pkg.Pool = $newType(0, $kindStruct, "sync.Pool", "Pool", "sync", function(local_, localSize_, store_, New_) {
@@ -2342,6 +2342,20 @@ $packages["sync"] = (function() {
 		this.localSize = localSize_;
 		this.store = store_;
 		this.New = New_;
+	});
+	WaitGroup = $pkg.WaitGroup = $newType(0, $kindStruct, "sync.WaitGroup", "WaitGroup", "sync", function(counter_, ch_, state1_, sema_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.counter = 0;
+			this.ch = chanType$1.nil;
+			this.state1 = arrayType.zero();
+			this.sema = 0;
+			return;
+		}
+		this.counter = counter_;
+		this.ch = ch_;
+		this.state1 = state1_;
+		this.sema = sema_;
 	});
 	Mutex = $pkg.Mutex = $newType(0, $kindStruct, "sync.Mutex", "Mutex", "sync", function(state_, sema_) {
 		this.$val = this;
@@ -2417,12 +2431,17 @@ $packages["sync"] = (function() {
 	chanType = $chanType($Bool, false, false);
 	ptrType$1 = $ptrType($Uint32);
 	sliceType$1 = $sliceType(chanType);
+	structType = $structType([]);
+	chanType$1 = $chanType(structType, false, false);
 	ptrType$4 = $ptrType($Int32);
 	ptrType$6 = $ptrType(poolLocal);
 	sliceType$3 = $sliceType($emptyInterface);
 	ptrType$7 = $ptrType(rlocker);
 	ptrType$8 = $ptrType(RWMutex);
 	funcType = $funcType([], [$emptyInterface], false);
+	arrayType = $arrayType($Uint8, 12);
+	ptrType$10 = $ptrType($Uint64);
+	ptrType$11 = $ptrType(WaitGroup);
 	ptrType$12 = $ptrType(Mutex);
 	arrayType$1 = $arrayType($Uint8, 128);
 	runtime_Syncsemcheck = function(size) {
@@ -2496,6 +2515,35 @@ $packages["sync"] = (function() {
 		var $ptr, i;
 		return false;
 	};
+	WaitGroup.ptr.prototype.Add = function(delta) {
+		var $ptr, delta, wg;
+		wg = this;
+		wg.counter = wg.counter + (delta) >> 0;
+		if (wg.counter < 0) {
+			$panic(new $String("sync: negative WaitGroup counter"));
+		}
+		if (wg.counter > 0 && wg.ch === chanType$1.nil) {
+			wg.ch = new chanType$1(0);
+		}
+		if ((wg.counter === 0) && !(wg.ch === chanType$1.nil)) {
+			$close(wg.ch);
+			wg.ch = chanType$1.nil;
+		}
+	};
+	WaitGroup.prototype.Add = function(delta) { return this.$val.Add(delta); };
+	WaitGroup.ptr.prototype.Wait = function() {
+		var $ptr, _r, wg, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; wg = $f.wg; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		wg = this;
+		/* */ if (wg.counter > 0) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (wg.counter > 0) { */ case 1:
+			_r = $recv(wg.ch); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_r[0];
+		/* } */ case 2:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: WaitGroup.ptr.prototype.Wait }; } $f.$ptr = $ptr; $f._r = _r; $f.wg = wg; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	WaitGroup.prototype.Wait = function() { return this.$val.Wait(); };
 	Mutex.ptr.prototype.Lock = function() {
 		var $ptr, awoke, iter, m, new$1, old, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; awoke = $f.awoke; iter = $f.iter; m = $f.m; new$1 = $f.new$1; old = $f.old; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -2704,11 +2752,19 @@ $packages["sync"] = (function() {
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: rlocker.ptr.prototype.Unlock }; } $f.$ptr = $ptr; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rlocker.prototype.Unlock = function() { return this.$val.Unlock(); };
+	WaitGroup.ptr.prototype.Done = function() {
+		var $ptr, wg;
+		wg = this;
+		wg.Add(-1);
+	};
+	WaitGroup.prototype.Done = function() { return this.$val.Done(); };
 	ptrType.methods = [{prop: "Get", name: "Get", pkg: "", typ: $funcType([], [$emptyInterface], false)}, {prop: "Put", name: "Put", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "getSlow", name: "getSlow", pkg: "sync", typ: $funcType([], [$emptyInterface], false)}, {prop: "pin", name: "pin", pkg: "sync", typ: $funcType([], [ptrType$6], false)}, {prop: "pinSlow", name: "pinSlow", pkg: "sync", typ: $funcType([], [ptrType$6], false)}];
+	ptrType$11.methods = [{prop: "Add", name: "Add", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Wait", name: "Wait", pkg: "", typ: $funcType([], [], false)}, {prop: "state", name: "state", pkg: "sync", typ: $funcType([], [ptrType$10], false)}, {prop: "Done", name: "Done", pkg: "", typ: $funcType([], [], false)}];
 	ptrType$12.methods = [{prop: "Lock", name: "Lock", pkg: "", typ: $funcType([], [], false)}, {prop: "Unlock", name: "Unlock", pkg: "", typ: $funcType([], [], false)}];
 	ptrType$8.methods = [{prop: "RLock", name: "RLock", pkg: "", typ: $funcType([], [], false)}, {prop: "RUnlock", name: "RUnlock", pkg: "", typ: $funcType([], [], false)}, {prop: "Lock", name: "Lock", pkg: "", typ: $funcType([], [], false)}, {prop: "Unlock", name: "Unlock", pkg: "", typ: $funcType([], [], false)}, {prop: "RLocker", name: "RLocker", pkg: "", typ: $funcType([], [Locker], false)}];
 	ptrType$7.methods = [{prop: "Lock", name: "Lock", pkg: "", typ: $funcType([], [], false)}, {prop: "Unlock", name: "Unlock", pkg: "", typ: $funcType([], [], false)}];
 	Pool.init([{prop: "local", name: "local", pkg: "sync", typ: $UnsafePointer, tag: ""}, {prop: "localSize", name: "localSize", pkg: "sync", typ: $Uintptr, tag: ""}, {prop: "store", name: "store", pkg: "sync", typ: sliceType$3, tag: ""}, {prop: "New", name: "New", pkg: "", typ: funcType, tag: ""}]);
+	WaitGroup.init([{prop: "counter", name: "counter", pkg: "sync", typ: $Int, tag: ""}, {prop: "ch", name: "ch", pkg: "sync", typ: chanType$1, tag: ""}, {prop: "state1", name: "state1", pkg: "sync", typ: arrayType, tag: ""}, {prop: "sema", name: "sema", pkg: "sync", typ: $Uint32, tag: ""}]);
 	Mutex.init([{prop: "state", name: "state", pkg: "sync", typ: $Int32, tag: ""}, {prop: "sema", name: "sema", pkg: "sync", typ: $Uint32, tag: ""}]);
 	Locker.init([{prop: "Lock", name: "Lock", pkg: "", typ: $funcType([], [], false)}, {prop: "Unlock", name: "Unlock", pkg: "", typ: $funcType([], [], false)}]);
 	poolLocal.init([{prop: "private$0", name: "private", pkg: "sync", typ: $emptyInterface, tag: ""}, {prop: "shared", name: "shared", pkg: "sync", typ: sliceType$3, tag: ""}, {prop: "Mutex", name: "", pkg: "", typ: Mutex, tag: ""}, {prop: "pad", name: "pad", pkg: "sync", typ: arrayType$1, tag: ""}]);
@@ -18560,18 +18616,6 @@ $packages["fmt"] = (function() {
 	$pkg.$init = $init;
 	return $pkg;
 })();
-$packages["github.com/go-humble/detect"] = (function() {
-	var $pkg = {}, $init, js;
-	js = $packages["github.com/gopherjs/gopherjs/js"];
-	$init = function() {
-		$pkg.$init = function() {};
-		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.$init = $init;
-	return $pkg;
-})();
 $packages["sort"] = (function() {
 	var $pkg = {}, $init, StringSlice, sliceType$2, Search, SearchStrings, min, insertionSort, siftDown, heapSort, medianOfThree, swapRange, doPivot, quickSort, Sort;
 	StringSlice = $pkg.StringSlice = $newType(12, $kindSlice, "sort.StringSlice", "StringSlice", "sort", null);
@@ -26716,7 +26760,7 @@ $packages["regexp"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/flux"] = (function() {
-	var $pkg = {}, $init, tar, bytes, gzip, binary, json, errors, fmt, io, ioutil, log, math, os, filepath, reflect, regexp, runtime, strconv, strings, sync, atomic, time, SignalMuxHandler, Reactor, ptrType, chanType$8, elapso, _r, _r$1;
+	var $pkg = {}, $init, tar, bytes, gzip, binary, json, errors, fmt, io, ioutil, log, math, os, filepath, reflect, regexp, runtime, strconv, strings, sync, atomic, time, SignalMuxHandler, Reactor, FlatReactor, SenderDetachCloser, mapReact, ptrType, chanType$1, structType, chanType$2, arrayType, ptrType$9, chanType$8, ptrType$28, funcType$5, mapType$3, elapso, _r, _r$1, FlatReactive, IdentityMuxer, FlatIdentity, ReactIdentity, NewMapReact;
 	tar = $packages["archive/tar"];
 	bytes = $packages["bytes"];
 	gzip = $packages["compress/gzip"];
@@ -26740,10 +26784,368 @@ $packages["github.com/influx6/flux"] = (function() {
 	time = $packages["time"];
 	SignalMuxHandler = $pkg.SignalMuxHandler = $newType(4, $kindFunc, "flux.SignalMuxHandler", "SignalMuxHandler", "github.com/influx6/flux", null);
 	Reactor = $pkg.Reactor = $newType(8, $kindInterface, "flux.Reactor", "Reactor", "github.com/influx6/flux", null);
+	FlatReactor = $pkg.FlatReactor = $newType(0, $kindStruct, "flux.FlatReactor", "FlatReactor", "github.com/influx6/flux", function(op_, branches_, enders_, roots_, csignal_, wo_, wg_, closed_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.op = $throwNilPointerError;
+			this.branches = ptrType$9.nil;
+			this.enders = ptrType$9.nil;
+			this.roots = ptrType$9.nil;
+			this.csignal = chanType$1.nil;
+			this.wo = new sync.Mutex.ptr(0, 0);
+			this.wg = new sync.WaitGroup.ptr(0, chanType$2.nil, arrayType.zero(), 0);
+			this.closed = false;
+			return;
+		}
+		this.op = op_;
+		this.branches = branches_;
+		this.enders = enders_;
+		this.roots = roots_;
+		this.csignal = csignal_;
+		this.wo = wo_;
+		this.wg = wg_;
+		this.closed = closed_;
+	});
+	SenderDetachCloser = $pkg.SenderDetachCloser = $newType(8, $kindInterface, "flux.SenderDetachCloser", "SenderDetachCloser", "github.com/influx6/flux", null);
+	mapReact = $pkg.mapReact = $newType(0, $kindStruct, "flux.mapReact", "mapReact", "github.com/influx6/flux", function(ro_, ma_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.ro = new sync.RWMutex.ptr(new sync.Mutex.ptr(0, 0), 0, 0, 0, 0);
+			this.ma = false;
+			return;
+		}
+		this.ro = ro_;
+		this.ma = ma_;
+	});
 	ptrType = $ptrType(Reactor);
+	chanType$1 = $chanType($Bool, false, false);
+	structType = $structType([]);
+	chanType$2 = $chanType(structType, false, false);
+	arrayType = $arrayType($Uint8, 12);
+	ptrType$9 = $ptrType(mapReact);
 	chanType$8 = $chanType($Bool, false, true);
+	ptrType$28 = $ptrType(FlatReactor);
+	funcType$5 = $funcType([SenderDetachCloser], [], false);
+	mapType$3 = $mapType(SenderDetachCloser, $Bool);
+	FlatReactive = function(op) {
+		var $ptr, fr, op;
+		fr = new FlatReactor.ptr(op, NewMapReact(), NewMapReact(), NewMapReact(), new chanType$1(0), new sync.Mutex.ptr(0, 0), new sync.WaitGroup.ptr(0, chanType$2.nil, arrayType.zero(), 0), false);
+		return fr;
+	};
+	$pkg.FlatReactive = FlatReactive;
+	IdentityMuxer = function() {
+		var $ptr;
+		return (function $b(r, err, data) {
+			var $ptr, data, err, r, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; data = $f.data; err = $f.err; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			/* */ if (!($interfaceIsEqual(err, $ifaceNil))) { $s = 1; continue; }
+			/* */ $s = 2; continue;
+			/* if (!($interfaceIsEqual(err, $ifaceNil))) { */ case 1:
+				$r = r.ReplyError(err); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				return;
+			/* } */ case 2:
+			$r = r.Reply(data); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.data = data; $f.err = err; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
+		});
+	};
+	$pkg.IdentityMuxer = IdentityMuxer;
+	FlatIdentity = function() {
+		var $ptr;
+		return FlatReactive(IdentityMuxer());
+	};
+	$pkg.FlatIdentity = FlatIdentity;
+	ReactIdentity = function() {
+		var $ptr;
+		return FlatIdentity();
+	};
+	$pkg.ReactIdentity = ReactIdentity;
+	FlatReactor.ptr.prototype.UseRoot = function(rx) {
+		var $ptr, f, rx, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; f = $f.f; rx = $f.rx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		f = this;
+		$r = f.roots.Add(rx); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatReactor.ptr.prototype.UseRoot }; } $f.$ptr = $ptr; $f.f = f; $f.rx = rx; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatReactor.prototype.UseRoot = function(rx) { return this.$val.UseRoot(rx); };
+	FlatReactor.ptr.prototype.CloseNotify = function() {
+		var $ptr, f;
+		f = this;
+		return f.csignal;
+	};
+	FlatReactor.prototype.CloseNotify = function() { return this.$val.CloseNotify(); };
+	FlatReactor.ptr.prototype.Close = function() {
+		var $ptr, f, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; f = $f.f; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		f = [f];
+		f[0] = this;
+		if (f[0].closed) {
+			return $ifaceNil;
+		}
+		$r = f[0].wg.Wait(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		f[0].closed = true;
+		$r = f[0].branches.Close(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = f[0].roots.Do((function(f) { return function $b(rm) {
+			var $ptr, rm, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; rm = $f.rm; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			$r = rm.Detach(f[0]); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.rm = rm; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(f)); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = f[0].roots.Close(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = f[0].enders.Close(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$close(f[0].csignal);
+		return $ifaceNil;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatReactor.ptr.prototype.Close }; } $f.$ptr = $ptr; $f.f = f; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatReactor.prototype.Close = function() { return this.$val.Close(); };
+	FlatReactor.ptr.prototype.Detach = function(rm) {
+		var $ptr, f, rm, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; f = $f.f; rm = $f.rm; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		f = this;
+		$r = f.enders.Disable(rm); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = f.branches.Disable(rm); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatReactor.ptr.prototype.Detach }; } $f.$ptr = $ptr; $f.f = f; $f.rm = rm; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatReactor.prototype.Detach = function(rm) { return this.$val.Detach(rm); };
+	FlatReactor.ptr.prototype.Send = function(b) {
+		var $ptr, b, f, $s, $deferred, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; b = $f.b; f = $f.f; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
+		f = this;
+		f.wg.Add(1);
+		$deferred.push([$methodVal(f.wg, "Done"), []]);
+		$r = f.op(f, $ifaceNil, b); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: FlatReactor.ptr.prototype.Send }; } $f.$ptr = $ptr; $f.b = b; $f.f = f; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+	};
+	FlatReactor.prototype.Send = function(b) { return this.$val.Send(b); };
+	FlatReactor.ptr.prototype.SendError = function(err) {
+		var $ptr, err, f, $s, $deferred, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; err = $f.err; f = $f.f; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
+		f = this;
+		f.wg.Add(1);
+		$deferred.push([$methodVal(f.wg, "Done"), []]);
+		$r = f.op(f, err, $ifaceNil); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: FlatReactor.ptr.prototype.SendError }; } $f.$ptr = $ptr; $f.err = err; $f.f = f; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+	};
+	FlatReactor.prototype.SendError = function(err) { return this.$val.SendError(err); };
+	FlatReactor.ptr.prototype.Reply = function(v) {
+		var $ptr, f, v, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; f = $f.f; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		f = this;
+		$r = f.branches.Deliver($ifaceNil, v); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatReactor.ptr.prototype.Reply }; } $f.$ptr = $ptr; $f.f = f; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatReactor.prototype.Reply = function(v) { return this.$val.Reply(v); };
+	FlatReactor.ptr.prototype.ReplyError = function(err) {
+		var $ptr, err, f, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; err = $f.err; f = $f.f; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		f = this;
+		$r = f.branches.Deliver(err, $ifaceNil); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatReactor.ptr.prototype.ReplyError }; } $f.$ptr = $ptr; $f.err = err; $f.f = f; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatReactor.prototype.ReplyError = function(err) { return this.$val.ReplyError(err); };
+	FlatReactor.ptr.prototype.Bind = function(rx, cl) {
+		var $ptr, cl, f, rx, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; cl = $f.cl; f = $f.f; rx = $f.rx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		f = this;
+		$r = f.branches.Add(rx); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = rx.UseRoot(f); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ if (cl) { $s = 3; continue; }
+		/* */ $s = 4; continue;
+		/* if (cl) { */ case 3:
+			$r = f.enders.Add(rx); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* } */ case 4:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatReactor.ptr.prototype.Bind }; } $f.$ptr = $ptr; $f.cl = cl; $f.f = f; $f.rx = rx; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatReactor.prototype.Bind = function(rx, cl) { return this.$val.Bind(rx, cl); };
+	FlatReactor.ptr.prototype.React = function(op, cl) {
+		var $ptr, cl, f, nx, op, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; cl = $f.cl; f = $f.f; nx = $f.nx; op = $f.op; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		f = this;
+		nx = FlatReactive(op);
+		$r = nx.UseRoot(f); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = f.branches.Add(nx); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ if (cl) { $s = 3; continue; }
+		/* */ $s = 4; continue;
+		/* if (cl) { */ case 3:
+			$r = f.enders.Add(nx); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* } */ case 4:
+		return nx;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatReactor.ptr.prototype.React }; } $f.$ptr = $ptr; $f.cl = cl; $f.f = f; $f.nx = nx; $f.op = op; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatReactor.prototype.React = function(op, cl) { return this.$val.React(op, cl); };
+	NewMapReact = function() {
+		var $ptr, ma;
+		ma = new mapReact.ptr(new sync.RWMutex.ptr(new sync.Mutex.ptr(0, 0), 0, 0, 0, 0), new $Map());
+		return ma;
+	};
+	$pkg.NewMapReact = NewMapReact;
+	mapReact.ptr.prototype.Clean = function() {
+		var $ptr, m, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; m = $f.m; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		m = this;
+		$r = m.ro.Lock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		m.ma = new $Map();
+		$r = m.ro.Unlock(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: mapReact.ptr.prototype.Clean }; } $f.$ptr = $ptr; $f.m = m; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	mapReact.prototype.Clean = function() { return this.$val.Clean(); };
+	mapReact.ptr.prototype.Deliver = function(err, data) {
+		var $ptr, _entry, _i, _keys, _ref, data, err, m, ms, ok, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _i = $f._i; _keys = $f._keys; _ref = $f._ref; data = $f.data; err = $f.err; m = $f.m; ms = $f.ms; ok = $f.ok; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		m = this;
+		$r = m.ro.RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_ref = m.ma;
+		_i = 0;
+		_keys = $keys(_ref);
+		/* while (true) { */ case 2:
+			/* if (!(_i < _keys.length)) { break; } */ if(!(_i < _keys.length)) { $s = 3; continue; }
+			_entry = _ref[_keys[_i]];
+			if (_entry === undefined) {
+				_i++;
+				/* continue; */ $s = 2; continue;
+			}
+			ms = _entry.k;
+			ok = _entry.v;
+			/* */ if (!ok) { $s = 4; continue; }
+			/* */ $s = 5; continue;
+			/* if (!ok) { */ case 4:
+				_i++;
+				/* continue; */ $s = 2; continue;
+			/* } */ case 5:
+			/* */ if (!($interfaceIsEqual(err, $ifaceNil))) { $s = 6; continue; }
+			/* */ $s = 7; continue;
+			/* if (!($interfaceIsEqual(err, $ifaceNil))) { */ case 6:
+				$r = ms.SendError(err); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				_i++;
+				/* continue; */ $s = 2; continue;
+			/* } */ case 7:
+			$r = ms.Send(data); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_i++;
+		/* } */ $s = 2; continue; case 3:
+		$r = m.ro.RUnlock(); /* */ $s = 10; case 10: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: mapReact.ptr.prototype.Deliver }; } $f.$ptr = $ptr; $f._entry = _entry; $f._i = _i; $f._keys = _keys; $f._ref = _ref; $f.data = data; $f.err = err; $f.m = m; $f.ms = ms; $f.ok = ok; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	mapReact.prototype.Deliver = function(err, data) { return this.$val.Deliver(err, data); };
+	mapReact.ptr.prototype.Add = function(r) {
+		var $ptr, _entry, _key, m, r, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _key = $f._key; m = $f.m; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		m = this;
+		$r = m.ro.Lock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		if (!(_entry = m.ma[SenderDetachCloser.keyFor(r)], _entry !== undefined ? _entry.v : false)) {
+			_key = r; (m.ma || $throwRuntimeError("assignment to entry in nil map"))[SenderDetachCloser.keyFor(_key)] = { k: _key, v: true };
+		}
+		$r = m.ro.Unlock(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: mapReact.ptr.prototype.Add }; } $f.$ptr = $ptr; $f._entry = _entry; $f._key = _key; $f.m = m; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	mapReact.prototype.Add = function(r) { return this.$val.Add(r); };
+	mapReact.ptr.prototype.Disable = function(r) {
+		var $ptr, _entry, _key, _tuple, m, ok, r, $s, $deferred, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _key = $f._key; _tuple = $f._tuple; m = $f.m; ok = $f.ok; r = $f.r; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
+		m = this;
+		$r = m.ro.RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$deferred.push([$methodVal(m.ro, "RUnlock"), []]);
+		_tuple = (_entry = m.ma[SenderDetachCloser.keyFor(r)], _entry !== undefined ? [_entry.v, true] : [false, false]); ok = _tuple[1];
+		if (ok) {
+			_key = r; (m.ma || $throwRuntimeError("assignment to entry in nil map"))[SenderDetachCloser.keyFor(_key)] = { k: _key, v: false };
+		}
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: mapReact.ptr.prototype.Disable }; } $f.$ptr = $ptr; $f._entry = _entry; $f._key = _key; $f._tuple = _tuple; $f.m = m; $f.ok = ok; $f.r = r; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+	};
+	mapReact.prototype.Disable = function(r) { return this.$val.Disable(r); };
+	mapReact.ptr.prototype.Length = function() {
+		var $ptr, l, m, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; l = $f.l; m = $f.m; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		m = this;
+		l = 0;
+		$r = m.ro.RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		l = $keys(m.ma).length;
+		$r = m.ro.RUnlock(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		return l;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: mapReact.ptr.prototype.Length }; } $f.$ptr = $ptr; $f.l = l; $f.m = m; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	mapReact.prototype.Length = function() { return this.$val.Length(); };
+	mapReact.ptr.prototype.Do = function(fx) {
+		var $ptr, _entry, _i, _keys, _ref, fx, m, ms, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _i = $f._i; _keys = $f._keys; _ref = $f._ref; fx = $f.fx; m = $f.m; ms = $f.ms; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		m = this;
+		$r = m.ro.RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_ref = m.ma;
+		_i = 0;
+		_keys = $keys(_ref);
+		/* while (true) { */ case 2:
+			/* if (!(_i < _keys.length)) { break; } */ if(!(_i < _keys.length)) { $s = 3; continue; }
+			_entry = _ref[_keys[_i]];
+			if (_entry === undefined) {
+				_i++;
+				/* continue; */ $s = 2; continue;
+			}
+			ms = _entry.k;
+			$r = fx(ms); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_i++;
+		/* } */ $s = 2; continue; case 3:
+		$r = m.ro.RUnlock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: mapReact.ptr.prototype.Do }; } $f.$ptr = $ptr; $f._entry = _entry; $f._i = _i; $f._keys = _keys; $f._ref = _ref; $f.fx = fx; $f.m = m; $f.ms = ms; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	mapReact.prototype.Do = function(fx) { return this.$val.Do(fx); };
+	mapReact.ptr.prototype.DisableAll = function() {
+		var $ptr, _entry, _i, _key, _keys, _ref, m, ms, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _i = $f._i; _key = $f._key; _keys = $f._keys; _ref = $f._ref; m = $f.m; ms = $f.ms; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		m = this;
+		$r = m.ro.Lock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_ref = m.ma;
+		_i = 0;
+		_keys = $keys(_ref);
+		while (true) {
+			if (!(_i < _keys.length)) { break; }
+			_entry = _ref[_keys[_i]];
+			if (_entry === undefined) {
+				_i++;
+				continue;
+			}
+			ms = _entry.k;
+			_key = ms; (m.ma || $throwRuntimeError("assignment to entry in nil map"))[SenderDetachCloser.keyFor(_key)] = { k: _key, v: false };
+			_i++;
+		}
+		$r = m.ro.Unlock(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: mapReact.ptr.prototype.DisableAll }; } $f.$ptr = $ptr; $f._entry = _entry; $f._i = _i; $f._key = _key; $f._keys = _keys; $f._ref = _ref; $f.m = m; $f.ms = ms; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	mapReact.prototype.DisableAll = function() { return this.$val.DisableAll(); };
+	mapReact.ptr.prototype.Close = function() {
+		var $ptr, _entry, _i, _keys, _r$2, _ref, m, ms, ok, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _i = $f._i; _keys = $f._keys; _r$2 = $f._r$2; _ref = $f._ref; m = $f.m; ms = $f.ms; ok = $f.ok; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		m = this;
+		$r = m.ro.RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_ref = m.ma;
+		_i = 0;
+		_keys = $keys(_ref);
+		/* while (true) { */ case 2:
+			/* if (!(_i < _keys.length)) { break; } */ if(!(_i < _keys.length)) { $s = 3; continue; }
+			_entry = _ref[_keys[_i]];
+			if (_entry === undefined) {
+				_i++;
+				/* continue; */ $s = 2; continue;
+			}
+			ms = _entry.k;
+			ok = _entry.v;
+			/* */ if (!ok) { $s = 4; continue; }
+			/* */ $s = 5; continue;
+			/* if (!ok) { */ case 4:
+				_i++;
+				/* continue; */ $s = 2; continue;
+			/* } */ case 5:
+			_r$2 = ms.Close(); /* */ $s = 6; case 6: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+			_r$2;
+			_i++;
+		/* } */ $s = 2; continue; case 3:
+		$r = m.ro.RUnlock(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: mapReact.ptr.prototype.Close }; } $f.$ptr = $ptr; $f._entry = _entry; $f._i = _i; $f._keys = _keys; $f._r$2 = _r$2; $f._ref = _ref; $f.m = m; $f.ms = ms; $f.ok = ok; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	mapReact.prototype.Close = function() { return this.$val.Close(); };
+	ptrType$28.methods = [{prop: "UseRoot", name: "UseRoot", pkg: "", typ: $funcType([Reactor], [], false)}, {prop: "CloseNotify", name: "CloseNotify", pkg: "", typ: $funcType([], [chanType$8], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [$error], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([Reactor], [], false)}, {prop: "Send", name: "Send", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "SendError", name: "SendError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Reply", name: "Reply", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "ReplyError", name: "ReplyError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([Reactor, $Bool], [], false)}, {prop: "React", name: "React", pkg: "", typ: $funcType([SignalMuxHandler, $Bool], [Reactor], false)}];
+	ptrType$9.methods = [{prop: "Clean", name: "Clean", pkg: "", typ: $funcType([], [], false)}, {prop: "Deliver", name: "Deliver", pkg: "", typ: $funcType([$error, $emptyInterface], [], false)}, {prop: "Add", name: "Add", pkg: "", typ: $funcType([SenderDetachCloser], [], false)}, {prop: "Disable", name: "Disable", pkg: "", typ: $funcType([SenderDetachCloser], [], false)}, {prop: "Length", name: "Length", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Do", name: "Do", pkg: "", typ: $funcType([funcType$5], [], false)}, {prop: "DisableAll", name: "DisableAll", pkg: "", typ: $funcType([], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [], false)}];
 	SignalMuxHandler.init([Reactor, $error, $emptyInterface], [], false);
 	Reactor.init([{prop: "Bind", name: "Bind", pkg: "", typ: $funcType([Reactor, $Bool], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [$error], false)}, {prop: "CloseNotify", name: "CloseNotify", pkg: "", typ: $funcType([], [chanType$8], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([Reactor], [], false)}, {prop: "React", name: "React", pkg: "", typ: $funcType([SignalMuxHandler, $Bool], [Reactor], false)}, {prop: "Reply", name: "Reply", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "ReplyError", name: "ReplyError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Send", name: "Send", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "SendError", name: "SendError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "UseRoot", name: "UseRoot", pkg: "", typ: $funcType([Reactor], [], false)}]);
+	FlatReactor.init([{prop: "op", name: "op", pkg: "github.com/influx6/flux", typ: SignalMuxHandler, tag: ""}, {prop: "branches", name: "branches", pkg: "github.com/influx6/flux", typ: ptrType$9, tag: ""}, {prop: "enders", name: "enders", pkg: "github.com/influx6/flux", typ: ptrType$9, tag: ""}, {prop: "roots", name: "roots", pkg: "github.com/influx6/flux", typ: ptrType$9, tag: ""}, {prop: "csignal", name: "csignal", pkg: "github.com/influx6/flux", typ: chanType$1, tag: ""}, {prop: "wo", name: "wo", pkg: "github.com/influx6/flux", typ: sync.Mutex, tag: ""}, {prop: "wg", name: "wg", pkg: "github.com/influx6/flux", typ: sync.WaitGroup, tag: ""}, {prop: "closed", name: "closed", pkg: "github.com/influx6/flux", typ: $Bool, tag: ""}]);
+	SenderDetachCloser.init([{prop: "Close", name: "Close", pkg: "", typ: $funcType([], [$error], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([Reactor], [], false)}, {prop: "Send", name: "Send", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "SendError", name: "SendError", pkg: "", typ: $funcType([$error], [], false)}]);
+	mapReact.init([{prop: "ro", name: "ro", pkg: "github.com/influx6/flux", typ: sync.RWMutex, tag: ""}, {prop: "ma", name: "ma", pkg: "github.com/influx6/flux", typ: mapType$3, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -26784,6 +27186,28 @@ $packages["github.com/influx6/flux"] = (function() {
 		$pkg.ErrInvalidMaxWorkers = errors.New("Invalid maximum worker value");
 		$pkg.ErrInvalidAddRequest = errors.New("Pool is at maximum worker efficiency");
 		$pkg.ErrWorkRequestDenied = errors.New("Pool unable to accept task");
+		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.$init = $init;
+	return $pkg;
+})();
+$packages["github.com/go-humble/detect"] = (function() {
+	var $pkg = {}, $init, js, IsBrowser, IsJavascript;
+	js = $packages["github.com/gopherjs/gopherjs/js"];
+	IsBrowser = function() {
+		var $ptr;
+		return IsJavascript() && !($global.document === undefined);
+	};
+	$pkg.IsBrowser = IsBrowser;
+	IsJavascript = function() {
+		var $ptr;
+		return !($global === null);
+	};
+	$pkg.IsJavascript = IsJavascript;
+	$init = function() {
+		$pkg.$init = function() {};
+		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
@@ -31403,7 +31827,7 @@ $packages["honnef.co/go/js/dom"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/dom"] = (function() {
-	var $pkg = {}, $init, errors, fmt, detect, js, flux, dom, strings, sync, JSEventMux, ElemEvent, EventManager, Elem, NextHandler, FlatHandler, FlatChains, FlatChain, ptrType, ptrType$1, sliceType$1, ptrType$3, sliceType$2, mapType, ptrType$4, ptrType$5, browserSupportsPushState, NewElemEvent, NewEventManager, NewElement, FlatChainIdentity, NewFlatChain, GetEventID, BuildEventID;
+	var $pkg = {}, $init, errors, fmt, detect, js, flux, dom, strings, sync, JSEventMux, ElemEvent, EventManager, Elem, NextHandler, FlatHandler, FlatChains, FlatChain, PathObserver, PathSpec, ptrType, ptrType$1, sliceType$1, funcType, ptrType$2, ptrType$3, sliceType$2, mapType, ptrType$4, ptrType$5, ptrType$7, browserSupportsPushState, NewElemEvent, NewEventManager, NewElement, FlatChainIdentity, NewFlatChain, Path, HashChangePath, PopStatePath, panicBrowserDetect, GetEventID, BuildEventID;
 	errors = $packages["errors"];
 	fmt = $packages["fmt"];
 	detect = $packages["github.com/go-humble/detect"];
@@ -31470,14 +31894,35 @@ $packages["github.com/influx6/haiku/dom"] = (function() {
 		this.prev = prev_;
 		this.next = next_;
 	});
+	PathObserver = $pkg.PathObserver = $newType(0, $kindStruct, "dom.PathObserver", "PathObserver", "github.com/influx6/haiku/dom", function(Reactor_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.Reactor = $ifaceNil;
+			return;
+		}
+		this.Reactor = Reactor_;
+	});
+	PathSpec = $pkg.PathSpec = $newType(0, $kindStruct, "dom.PathSpec", "PathSpec", "github.com/influx6/haiku/dom", function(Hash_, Path_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.Hash = "";
+			this.Path = "";
+			return;
+		}
+		this.Hash = Hash_;
+		this.Path = Path_;
+	});
 	ptrType = $ptrType(ElemEvent);
 	ptrType$1 = $ptrType(EventManager);
 	sliceType$1 = $sliceType($emptyInterface);
+	funcType = $funcType([], [], false);
+	ptrType$2 = $ptrType(PathObserver);
 	ptrType$3 = $ptrType(js.Object);
 	sliceType$2 = $sliceType(ptrType);
 	mapType = $mapType($String, ptrType);
 	ptrType$4 = $ptrType(Elem);
 	ptrType$5 = $ptrType(FlatChain);
+	ptrType$7 = $ptrType(PathSpec);
 	NewElemEvent = function(evtype, evtarget) {
 		var $ptr, evtarget, evtype;
 		return new ElemEvent.ptr(evtype, evtarget, false, false, false, $throwNilPointerError, FlatChainIdentity());
@@ -31917,6 +32362,67 @@ $packages["github.com/influx6/haiku/dom"] = (function() {
 		r.prev = fl;
 	};
 	FlatChain.prototype.usePrev = function(fl) { return this.$val.usePrev(fl); };
+	Path = function() {
+		var $ptr;
+		return new PathObserver.ptr(flux.ReactIdentity());
+	};
+	$pkg.Path = Path;
+	PathSpec.ptr.prototype.String = function() {
+		var $ptr, _r, p, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; p = $f.p; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		p = this;
+		_r = fmt.Sprintf("%s%s", new sliceType$1([new $String(p.Path), new $String(p.Hash)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		return _r;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: PathSpec.ptr.prototype.String }; } $f.$ptr = $ptr; $f._r = _r; $f.p = p; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	PathSpec.prototype.String = function() { return this.$val.String(); };
+	HashChangePath = function() {
+		var $ptr, path;
+		panicBrowserDetect();
+		path = Path();
+		$global.onhashchange = $externalize((function() {
+			var $ptr;
+			$go((function $b() {
+				var $ptr, hash, loc, pathn, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; hash = $f.hash; loc = $f.loc; pathn = $f.pathn; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				loc = $global.location;
+				pathn = $internalize(loc.pathname, $String);
+				hash = $internalize(loc.hash, $String);
+				$r = path.Reactor.Send(new PathSpec.ptr(hash, pathn)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.hash = hash; $f.loc = loc; $f.pathn = pathn; $f.$s = $s; $f.$r = $r; return $f;
+			}), []);
+		}), funcType);
+		return path;
+	};
+	$pkg.HashChangePath = HashChangePath;
+	PopStatePath = function() {
+		var $ptr, path;
+		panicBrowserDetect();
+		if (!browserSupportsPushState) {
+			return [ptrType$2.nil, $pkg.ErrNotSupported];
+		}
+		path = Path();
+		$global.onpopstate = $externalize((function() {
+			var $ptr;
+			$go((function $b() {
+				var $ptr, hash, loc, pathn, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; hash = $f.hash; loc = $f.loc; pathn = $f.pathn; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				loc = $global.location;
+				pathn = $internalize(loc.pathname, $String);
+				hash = $internalize(loc.hash, $String);
+				$r = path.Reactor.Send(new PathSpec.ptr(hash, pathn)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.hash = hash; $f.loc = loc; $f.pathn = pathn; $f.$s = $s; $f.$r = $r; return $f;
+			}), []);
+		}), funcType);
+		return [path, $ifaceNil];
+	};
+	$pkg.PopStatePath = PopStatePath;
+	panicBrowserDetect = function() {
+		var $ptr;
+		if (!detect.IsBrowser()) {
+			$panic(new $String("expected to be used in a dom/browser env"));
+		}
+	};
 	GetEventID = function(m) {
 		var $ptr, _r, m, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; m = $f.m; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -31937,6 +32443,7 @@ $packages["github.com/influx6/haiku/dom"] = (function() {
 	ptrType$1.methods = [{prop: "HasWatch", name: "HasWatch", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "GetEvent", name: "GetEvent", pkg: "", typ: $funcType([$String], [ptrType, $error], false)}, {prop: "AddEvent", name: "AddEvent", pkg: "", typ: $funcType([$String, $String], [ptrType], false)}, {prop: "WatchEvent", name: "WatchEvent", pkg: "", typ: $funcType([ptrType], [$Bool], false)}, {prop: "WatchEvents", name: "WatchEvents", pkg: "", typ: $funcType([sliceType$2], [], true)}, {prop: "UseDOM", name: "UseDOM", pkg: "", typ: $funcType([dom.Element], [], false)}, {prop: "ReRegisterEvents", name: "ReRegisterEvents", pkg: "", typ: $funcType([], [], false)}, {prop: "unRegisterEvents", name: "unRegisterEvents", pkg: "github.com/influx6/haiku/dom", typ: $funcType([], [], false)}, {prop: "setupEvent", name: "setupEvent", pkg: "github.com/influx6/haiku/dom", typ: $funcType([ptrType], [$Bool], false)}];
 	ptrType$4.methods = [{prop: "UseDOM", name: "UseDOM", pkg: "", typ: $funcType([dom.Element], [], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Html", name: "Html", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "Text", name: "Text", pkg: "", typ: $funcType([$String, $String], [], false)}];
 	ptrType$5.methods = [{prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([dom.Event], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/dom", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/dom", typ: $funcType([FlatChains], [], false)}];
+	ptrType$7.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}];
 	JSEventMux.init([ptrType$3], [], false);
 	ElemEvent.init([{prop: "Type", name: "Type", pkg: "", typ: $String, tag: ""}, {prop: "Target", name: "Target", pkg: "", typ: $String, tag: ""}, {prop: "StopPropagate", name: "StopPropagate", pkg: "", typ: $Bool, tag: ""}, {prop: "StopImmediatePropagate", name: "StopImmediatePropagate", pkg: "", typ: $Bool, tag: ""}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $Bool, tag: ""}, {prop: "jslink", name: "jslink", pkg: "github.com/influx6/haiku/dom", typ: JSEventMux, tag: ""}, {prop: "FlatChains", name: "", pkg: "", typ: FlatChains, tag: ""}]);
 	EventManager.init([{prop: "dom", name: "dom", pkg: "github.com/influx6/haiku/dom", typ: dom.Element, tag: ""}, {prop: "events", name: "events", pkg: "github.com/influx6/haiku/dom", typ: mapType, tag: ""}, {prop: "ro", name: "ro", pkg: "github.com/influx6/haiku/dom", typ: sync.RWMutex, tag: ""}]);
@@ -31945,6 +32452,8 @@ $packages["github.com/influx6/haiku/dom"] = (function() {
 	FlatHandler.init([dom.Event, NextHandler], [], false);
 	FlatChains.init([{prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([dom.Event], [], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/dom", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/dom", typ: $funcType([FlatChains], [], false)}]);
 	FlatChain.init([{prop: "op", name: "op", pkg: "github.com/influx6/haiku/dom", typ: FlatHandler, tag: ""}, {prop: "prev", name: "prev", pkg: "github.com/influx6/haiku/dom", typ: FlatChains, tag: ""}, {prop: "next", name: "next", pkg: "github.com/influx6/haiku/dom", typ: FlatChains, tag: ""}]);
+	PathObserver.init([{prop: "Reactor", name: "", pkg: "", typ: flux.Reactor, tag: ""}]);
+	PathSpec.init([{prop: "Hash", name: "Hash", pkg: "", typ: $String, tag: ""}, {prop: "Path", name: "Path", pkg: "", typ: $String, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -31965,71 +32474,130 @@ $packages["github.com/influx6/haiku/dom"] = (function() {
 	return $pkg;
 })();
 $packages["main"] = (function() {
-	var $pkg = {}, $init, fmt, dom, dom$1, time, sliceType, main;
+	var $pkg = {}, $init, fmt, flux, dom, dom$1, time, sliceType, buildDelagationTest, buildHistoryPathTest, buildHistoryPushTest, main;
 	fmt = $packages["fmt"];
+	flux = $packages["github.com/influx6/flux"];
 	dom = $packages["github.com/influx6/haiku/dom"];
 	dom$1 = $packages["honnef.co/go/js/dom"];
 	time = $packages["time"];
 	sliceType = $sliceType($emptyInterface);
-	main = function() {
-		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, _tuple, clickEvent, container, doc, elem, ok, speak, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _tuple = $f._tuple; clickEvent = $f.clickEvent; container = $f.container; doc = $f.doc; elem = $f.elem; ok = $f.ok; speak = $f.speak; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+	buildDelagationTest = function(win, doc) {
+		var $ptr, _r, _r$1, _r$2, _r$3, clickEvent, container, doc, elem, ok, speak, win, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; clickEvent = $f.clickEvent; container = $f.container; doc = $f.doc; elem = $f.elem; ok = $f.ok; speak = $f.speak; win = $f.win; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		container = [container];
 		elem = [elem];
 		speak = [speak];
-		_r = dom$1.GetWindow().Document(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_tuple = $assertType(_r, dom$1.HTMLDocument, true); doc = _tuple[0]; ok = _tuple[1];
-		if (!ok) {
-			$panic(new $String("not in a browser-dom"));
-		}
-		_r$1 = doc.QuerySelector(".container"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		container[0] = _r$1;
-		_r$2 = container[0].QuerySelector(".speak p"); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		speak[0] = _r$2;
+		win = [win];
+		_r = doc.QuerySelector(".container"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		container[0] = _r;
+		_r$1 = container[0].QuerySelector(".speak p"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		speak[0] = _r$1;
 		elem[0] = dom.NewElement(container[0]);
 		clickEvent = dom.NewElemEvent("click", "a.linkroller");
 		clickEvent.PreventDefault = true;
-		_r$3 = elem[0].EventManager.WatchEvent(clickEvent); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		ok = _r$3;
-		/* */ if (!ok) { $s = 5; continue; }
-		/* */ $s = 6; continue;
-		/* if (!ok) { */ case 5:
+		_r$2 = elem[0].EventManager.WatchEvent(clickEvent); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		ok = _r$2;
+		/* */ if (!ok) { $s = 4; continue; }
+		/* */ $s = 5; continue;
+		/* if (!ok) { */ case 4:
 			$panic(new $String("failed to setup event"));
-		/* } */ case 6:
-		_r$4 = clickEvent.FlatChains.Next((function(container, elem, speak) { return function $b(ev, next) {
-			var $ptr, _arg, _arg$1, _r$4, _r$5, ev, next, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r$4 = $f._r$4; _r$5 = $f._r$5; ev = $f.ev; next = $f.next; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			_r$4 = ev.Target(); /* */ $s = 1; case 1: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-			_arg = _r$4;
+		/* } */ case 5:
+		_r$3 = clickEvent.FlatChains.Next((function(container, elem, speak, win) { return function $b(ev, next) {
+			var $ptr, _arg, _arg$1, _r$3, _r$4, _r$5, ev, next, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; ev = $f.ev; next = $f.next; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			_r$3 = ev.Target(); /* */ $s = 1; case 1: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+			_arg = _r$3;
 			_arg$1 = container[0];
-			_r$5 = fmt.Sprintf("Event from %s target occured with live/delegation from %s", new sliceType([_arg, _arg$1])); /* */ $s = 2; case 2: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-			$r = speak[0].SetInnerHTML(_r$5); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			$go((function(container, elem, speak) { return function $b() {
-				var $ptr, _r$6, $s, $r;
-				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$6 = $f._r$6; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-				_r$6 = $recv(time.After(new time.Duration(0, 500000000))); /* */ $s = 1; case 1: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+			_r$4 = fmt.Sprintf("Event from %s target occured with live/delegation from %s", new sliceType([_arg, _arg$1])); /* */ $s = 2; case 2: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+			$r = speak[0].SetInnerHTML(_r$4); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_r$5 = win[0].Location(); /* */ $s = 4; case 4: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+			_r$5.URLUtils.Object.hash = $externalize("#jqueried", $String);
+			$go((function(container, elem, speak, win) { return function $b() {
+				var $ptr, _r$6, _r$7, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$6 = $f._r$6; _r$7 = $f._r$7; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				_r$6 = $recv(time.After(new time.Duration(0, 800000000))); /* */ $s = 1; case 1: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 				_r$6[0];
 				$r = elem[0].Html("", ".speak p"); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$6 = _r$6; $f.$s = $s; $f.$r = $r; return $f;
-			}; })(container, elem, speak), []);
-			$r = next(ev); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r$4 = _r$4; $f._r$5 = _r$5; $f.ev = ev; $f.next = next; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(container, elem, speak)); /* */ $s = 7; case 7: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		_r$4;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._tuple = _tuple; $f.clickEvent = clickEvent; $f.container = container; $f.doc = doc; $f.elem = elem; $f.ok = ok; $f.speak = speak; $f.$s = $s; $f.$r = $r; return $f;
+				_r$7 = win[0].Location(); /* */ $s = 3; case 3: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+				_r$7.URLUtils.Object.hash = $externalize("", $String);
+				/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$6 = _r$6; $f._r$7 = _r$7; $f.$s = $s; $f.$r = $r; return $f;
+			}; })(container, elem, speak, win), []);
+			$r = next(ev); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f.ev = ev; $f.next = next; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(container, elem, speak, win)); /* */ $s = 6; case 6: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		_r$3;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: buildDelagationTest }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.clickEvent = clickEvent; $f.container = container; $f.doc = doc; $f.elem = elem; $f.ok = ok; $f.speak = speak; $f.win = win; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	buildHistoryPathTest = function(win, doc) {
+		var $ptr, _r, _r$1, doc, pop, pushhistory, win, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; doc = $f.doc; pop = $f.pop; pushhistory = $f.pushhistory; win = $f.win; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		pop = [pop];
+		_r = doc.QuerySelector(".history .hash"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		pop[0] = _r;
+		pushhistory = dom.HashChangePath();
+		_r$1 = pushhistory.Reactor.React((function(pop) { return function $b(r, err, data) {
+			var $ptr, _r$1, data, err, r, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; data = $f.data; err = $f.err; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			_r$1 = fmt.Sprintf("%s", new sliceType([data])); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			$r = pop[0].SetInnerHTML(_r$1); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.data = data; $f.err = err; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(pop), true); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r$1;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: buildHistoryPathTest }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.doc = doc; $f.pop = pop; $f.pushhistory = pushhistory; $f.win = win; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	buildHistoryPushTest = function(win, doc) {
+		var $ptr, _r, _r$1, _tuple, doc, err, pop, pushhistory, win, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _tuple = $f._tuple; doc = $f.doc; err = $f.err; pop = $f.pop; pushhistory = $f.pushhistory; win = $f.win; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		pop = [pop];
+		_r = doc.QuerySelector(".history .pushpop"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		pop[0] = _r;
+		_tuple = dom.PopStatePath(); pushhistory = _tuple[0]; err = _tuple[1];
+		/* */ if (!($interfaceIsEqual(err, $ifaceNil))) { $s = 2; continue; }
+		/* */ $s = 3; continue;
+		/* if (!($interfaceIsEqual(err, $ifaceNil))) { */ case 2:
+			$r = pop[0].SetInnerHTML("PopState not supported!"); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			return;
+		/* } */ case 3:
+		_r$1 = pushhistory.Reactor.React((function(pop) { return function $b(r, err$1, data) {
+			var $ptr, _r$1, data, err$1, r, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; data = $f.data; err$1 = $f.err$1; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			_r$1 = fmt.Sprintf("%s", new sliceType([data])); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			$r = pop[0].SetInnerHTML(_r$1); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.data = data; $f.err$1 = err$1; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(pop), true); /* */ $s = 5; case 5: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r$1;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: buildHistoryPushTest }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.doc = doc; $f.err = err; $f.pop = pop; $f.pushhistory = pushhistory; $f.win = win; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	main = function() {
+		var $ptr, _r, _tuple, _tuple$1, doc, ok, win, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; doc = $f.doc; ok = $f.ok; win = $f.win; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_tuple = $assertType(dom$1.GetWindow(), dom$1.Window, true); win = _tuple[0]; ok = _tuple[1];
+		if (!ok) {
+			$panic(new $String("not in a browser-window"));
+		}
+		_r = win.Document(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_tuple$1 = $assertType(_r, dom$1.HTMLDocument, true); doc = _tuple$1[0]; ok = _tuple$1[1];
+		if (!ok) {
+			$panic(new $String("not in a browser-dom"));
+		}
+		$r = buildDelagationTest(win, doc); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = buildHistoryPathTest(win, doc); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = buildHistoryPushTest(win, doc); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.doc = doc; $f.ok = ok; $f.win = win; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = fmt.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = dom.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = dom$1.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = time.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ if ($pkg === $mainPkg) { $s = 5; continue; }
-		/* */ $s = 6; continue;
-		/* if ($pkg === $mainPkg) { */ case 5:
-			$r = main(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* } */ case 6:
+		$r = flux.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = dom.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = dom$1.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = time.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ if ($pkg === $mainPkg) { $s = 6; continue; }
+		/* */ $s = 7; continue;
+		/* if ($pkg === $mainPkg) { */ case 6:
+			$r = main(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* } */ case 7:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;

@@ -35,7 +35,9 @@ type Observer struct {
 // 	return Reactive(StrictAtom(m, chain))
 // }
 
-//ObserveTransform returns a new Reactive instance from an interface
+//ObserveTransform returns a new Reactive instance from an interface and is more strict
+// in that it enforces a atomic data type of either string, bool, int... basically all
+// basic data types in go
 func ObserveTransform(m interface{}, chain bool) (*Observer, error) {
 	var im Immutable
 	var err error
@@ -48,8 +50,8 @@ func ObserveTransform(m interface{}, chain bool) (*Observer, error) {
 }
 
 //ObserveAtom returns a new Reactive instance from an interface
-func ObserveAtom(m interface{}, chain bool) (*Observer, error) {
-	return Reactive(StrictAtom(m, chain)), nil
+func ObserveAtom(m interface{}, chain bool) *Observer {
+	return Reactive(StrictAtom(m, chain))
 }
 
 //Reactive returns a new Reactive instance

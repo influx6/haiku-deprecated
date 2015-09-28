@@ -32,8 +32,16 @@ func Path() *PathObserver {
 	}
 }
 
-// HashPath represents a path using url hash
-type HashPath string
+// PathSpec represent the current path and hash values
+type PathSpec struct {
+	Hash string
+	Path string
+}
+
+// String returns the hash and path
+func (p *PathSpec) String() string {
+	return fmt.Sprintf("%s%s", p.Path, p.Hash)
+}
 
 // HashChangePath returns a path observer path changes
 func HashChangePath() *PathObserver {
@@ -45,15 +53,12 @@ func HashChangePath() *PathObserver {
 			loc := js.Global.Get("location")
 			pathn := loc.Get("pathname").String()
 			hash := loc.Get("hash").String()
-			path.Send(HashPath(fmt.Sprintf("%s%s", pathn, hash)))
+			path.Send(&PathSpec{Hash: hash, Path: pathn})
 		}()
 	})
 
 	return path
 }
-
-// PopPath represents a path using history popstate
-type PopPath string
 
 // PopStatePath returns a path observer path changes
 func PopStatePath() (*PathObserver, error) {
@@ -70,7 +75,7 @@ func PopStatePath() (*PathObserver, error) {
 			loc := js.Global.Get("location")
 			pathn := loc.Get("pathname").String()
 			hash := loc.Get("hash").String()
-			path.Send(PopPath(fmt.Sprintf("%s%s", pathn, hash)))
+			path.Send(&PathSpec{Hash: hash, Path: pathn})
 		}()
 	})
 
@@ -94,9 +99,3 @@ func panicBrowserDetect() {
 		panic("expected to be used in a dom/browser env")
 	}
 }
-
-// func init(){
-//   if detect.IsBrowser() {
-//
-//   }
-// }

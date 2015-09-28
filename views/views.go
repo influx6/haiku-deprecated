@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"html/template"
 	"sync/atomic"
+
+	"github.com/influx6/assets"
+	"github.com/influx6/flux"
 )
 
 // Viewable defines an interface for any element that can return a rendering of its content out as strings
@@ -145,6 +148,30 @@ func (v *View) Execute() ([]byte, error) {
 	return buf.Bytes(), err
 }
 
+// Views define an interface for member rules for Views
+type Views interface {
+	Viewable
+	States
+	// NameTag() string
+	// Stategy() *ViewStrategy
+	View(string) Viewable
+	PartialView() *PartialView
+	AddViewable(string, Viewable) error
+	AddView(string, string, Viewable) error
+	AddStatefulViewable(string, string, StatefulViewable) error
+	add(string, Viewable) error
+}
+
+// // Stategy returns the views assigned tag
+// func (v *View) Stategy() *ViewStrategy {
+// 	return v.strategy
+// }
+
+// // NameTag returns the views assigned tag
+// func (v *View) NameTag() string {
+// 	return v.tag
+// }
+
 // PartialView returns a PartialView for this view
 func (v *View) PartialView() *PartialView {
 	return NewPartialView(v)
@@ -168,7 +195,7 @@ func (v *View) Views() []Viewable {
 
 // AddViewable adds a rendering view which has no state management and will render regardless of state
 func (v *View) AddViewable(tag string, vm Viewable) error {
-	if err := v.views.Add(tag, vm); err != nil {
+	if err := v.add(tag, vm); err != nil {
 		return err
 	}
 	return nil
@@ -176,7 +203,7 @@ func (v *View) AddViewable(tag string, vm Viewable) error {
 
 // AddStatefulViewable adds a rendering State into the view lists and allows this to react accordingly the state of the View depending on the views current state address
 func (v *View) AddStatefulViewable(tag, addr string, vm StatefulViewable) error {
-	if err := v.views.Add(tag, vm); err != nil {
+	if err := v.add(tag, vm); err != nil {
 		return err
 	}
 
@@ -191,6 +218,10 @@ func (v *View) AddView(tag, addr string, vm Viewable) error {
 	}
 
 	return v.AddViewable(tag, vm)
+}
+
+func (v *View) add(tag string, vm Viewable) error {
+	return v.views.Add(tag, vm)
 }
 
 // PartialView provides a wrapper around View that enforces only partial rendering of the internal state by call .Partial() instead of a .All() view on all .Render() calls
@@ -212,7 +243,7 @@ func (pv *PartialView) Render(m ...string) string {
 	}
 
 	if addr != "" {
-		pv.Engine().Partial(addr, pv.tag)
+		pv.Engine().Partial(addr, pv.Tag())
 	}
 
 	return pv.strategy.Render(pv.View)
@@ -228,26 +259,87 @@ func (pv *PartialView) RenderHTML(m ...string) template.HTML {
 	return template.HTML(pv.Render(m...))
 }
 
-// String simply calls the internal .Render() function
-// func (pv *PartialView) String() string {
-// 	return v.Render()
-// }
+// SilentStrategy is a simple strategy that when the view is activated calls the View.Execute
+func SilentStrategy() *ViewStrategy {
+	return NewViewStrategy(func(v *View) string {
+		bo, err := v.Execute()
 
-// // UseDeactivator gets overide
-// func (v *View) UseDeactivator(StateResponse) {}
-//
-// // UseActivator gets overide
-// func (v *View) UseActivator(StateResponse) {}
+		if err != nil {
+			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+		}
+
+		return string(bo)
+	}, func(v *View) string {
+		return ""
+	})
+}
+
+// SilentNameStrategy is a simple strategy that when the view is activated calls the View.ExecuteTemplate
+func SilentNameStrategy(base string) *ViewStrategy {
+	return NewViewStrategy(func(v *View) string {
+		bo, err := v.ExecuteTemplate(base)
+
+		if err != nil {
+			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+		}
+
+		return string(bo)
+	}, func(v *View) string {
+		return ""
+	})
+}
+
+// HiddenStrategy is a simple strategy that when the view is activated calls the View.Execute
+func HiddenStrategy() *ViewStrategy {
+	return NewViewStrategy(func(v *View) string {
+		bo, err := v.Execute()
+
+		if err != nil {
+			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+		}
+
+		return string(bo)
+	}, func(v *View) string {
+		bo, err := v.Execute()
+
+		if err != nil {
+			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+		}
+
+		return fmt.Sprintf(`<div style="display:none;">\n%s\n</div>`, string(bo))
+	})
+}
+
+// HiddenNameStrategy is a simple strategy that when the view is activated calls the View.ExecuteTemplate and when hidden wrap it within a div tag laced with a display none style
+func HiddenNameStrategy(base string) *ViewStrategy {
+	return NewViewStrategy(func(v *View) string {
+		bo, err := v.ExecuteTemplate(base)
+
+		if err != nil {
+			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+		}
+
+		return string(bo)
+	}, func(v *View) string {
+		bo, err := v.ExecuteTemplate(base)
+
+		if err != nil {
+			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+		}
+
+		return fmt.Sprintf(`<div style="display:none;">\n%s\n</div>`, string(bo))
+	})
+}
 
 // ViewHTMLTemplate simple renders out the internal views of a root View into html like tags
 const ViewHTMLTemplate = `
-	<view id={{}} name={{}}>
+	<masterview>
 		{{range .Views }}
 		  <view>
 				{{ .RenderHTML }}
 		  </view>
 		{{ end }}
-	</view>
+	</masterview>
 `
 
 // ViewLightTemplate simple renders out the internal views of a root View
@@ -257,76 +349,14 @@ const ViewLightTemplate = `
 	{{ end }}
 `
 
-// SilentStratetgy is a simple strategy that when the view is activated calls the View.Execute
-func SilentStratetgy() *ViewStrategy {
-	return NewViewStrategy(func(v *View) string {
-		bo, err := v.Execute()
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return string(bo)
-	}, func(v *View) string {
-		return ""
-	})
+// SimpleView provides a view based on the ViewLightTemplate template
+func SimpleView(tag string) (v *View, err error) {
+	return SourceView(tag, ViewLightTemplate)
 }
 
-// SilentNameStratetgy is a simple strategy that when the view is activated calls the View.ExecuteTemplate
-func SilentNameStratetgy(base string) *ViewStrategy {
-	return NewViewStrategy(func(v *View) string {
-		bo, err := v.ExecuteTemplate(base)
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return string(bo)
-	}, func(v *View) string {
-		return ""
-	})
-}
-
-// HiddenStratetgy is a simple strategy that when the view is activated calls the View.Execute
-func HiddenStratetgy() *ViewStrategy {
-	return NewViewStrategy(func(v *View) string {
-		bo, err := v.Execute()
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return string(bo)
-	}, func(v *View) string {
-		bo, err := v.Execute()
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return fmt.Sprintf(`<div style="display:none;">\n%s\n</div>`, string(bo))
-	})
-}
-
-// HiddenNameStratetgy is a simple strategy that when the view is activated calls the View.ExecuteTemplate and when hidden wrap it within a div tag laced with a display none style
-func HiddenNameStratetgy(base string) *ViewStrategy {
-	return NewViewStrategy(func(v *View) string {
-		bo, err := v.ExecuteTemplate(base)
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return string(bo)
-	}, func(v *View) string {
-		bo, err := v.ExecuteTemplate(base)
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return fmt.Sprintf(`<div style="display:none;">\n%s\n</div>`, string(bo))
-	})
+// SimpleTreeView provides a view based on the ViewHTMLTemplate template
+func SimpleTreeView(tag string) (v *View, err error) {
+	return SourceView(tag, ViewHTMLTemplate)
 }
 
 // SourceView provides a view that takes the template format of which it will render the view as
@@ -339,12 +369,102 @@ func SourceView(tag, tmpl string) (v *View, err error) {
 		return
 	}
 
-	v = NewView(tag, tl, SilentStratetgy())
+	v = NewView(tag, tl, SilentStrategy())
 
 	return
 }
 
-// ViewEngine provides a central view system for the management of view types its to be used in a composed form i.e embed them into structs that will provide central view management for a group of views
-// type ViewEngine struct {
-//
-// }
+// AssetView provides a view that takes the template format of which it will render the view as
+func AssetView(tag, blockName string, as *assets.AssetTemplate) (v *View, err error) {
+	v = NewView(tag, as.Tmpl, SilentNameStrategy(blockName))
+	return
+}
+
+// ObserveViewable defines an interface for any element that can return a rendering of its content out as strings
+type ObserveViewable interface {
+	flux.Reactor
+	Viewable
+}
+
+// ObserveStatefulViewable defines an interface for any element that can return a rendering of its content and matches the States interface
+type ObserveStatefulViewable interface {
+	flux.Reactor
+	StatefulViewable
+}
+
+// ReactiveViews provides the interface type for ReactiveView
+type ReactiveViews interface {
+	flux.Reactor
+	Views
+}
+
+// ReactiveView defines a struct that handles the addition of views that react to change, meaning it can deal with the standard Viewable and StatefulViewable types and the combination of Observers by letting the providing listen for change in the main view or subviews to take appropriate action i.e it does nothing than the normal views but only to signal a change reaction from subviews upward to anyone who wishes to listen and react to that
+type ReactiveView struct {
+	flux.Reactor
+	Views
+}
+
+// NewReactiveView provides a decorator function to return a new ReactiveView with the same arguments passed to NewView(...)
+func NewReactiveView(tag string, tl *template.Template, strategy *ViewStrategy) ReactiveViews {
+	return ReactView(NewView(tag, tl, strategy))
+}
+
+// ReactView returns a new ReactiveView instance using a Views type as a composition, thereby turning
+// a simple view into a reactable view
+func ReactView(v Views) ReactiveViews {
+	if rve, ok := v.(ReactiveViews); ok {
+		return rve
+	}
+
+	return &ReactiveView{
+		Reactor: flux.ReactIdentity(),
+		Views:   v,
+	}
+}
+
+// ReactiveSourceView provides a view that takes the template format of which it will render the view as
+func ReactiveSourceView(tag, tmpl string) (ReactiveViews, error) {
+	sv, err := SourceView(tag, tmpl)
+	if err != nil {
+		return nil, err
+	}
+
+	return ReactView(sv), nil
+}
+
+// AddViewable adds a rendering view which has no state management and will render regardless of state
+func (v *ReactiveView) AddViewable(tag string, vm Viewable) error {
+	if err := v.add(tag, vm); err != nil {
+		return err
+	}
+
+	if osm, ok := vm.(ObserveViewable); ok {
+		osm.Bind(v, false)
+	}
+
+	return nil
+}
+
+// AddStatefulViewable adds a rendering State into the view lists and allows this to react accordingly the state of the View depending on the views current state address
+func (v *ReactiveView) AddStatefulViewable(tag, addr string, vm StatefulViewable) error {
+	if err := v.add(tag, vm); err != nil {
+		return err
+	}
+
+	if osm, ok := vm.(ObserveStatefulViewable); ok {
+		osm.Bind(v, false)
+	}
+
+	v.Engine().UseState(addr, vm)
+
+	return nil
+}
+
+// AddView adds a subview into the current view and depending if the view is a StatefulViewable then it adds it with the giving addresspoint else ignores it and adds it as a regular Viewable
+func (v *ReactiveView) AddView(tag, addr string, vm Viewable) error {
+	if svm, ok := vm.(StatefulViewable); ok {
+		return v.AddStatefulViewable(tag, addr, svm)
+	}
+
+	return v.AddViewable(tag, vm)
+}

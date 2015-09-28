@@ -2,10 +2,14 @@ package dom
 
 import (
 	"errors"
+	"html/template"
+	"log"
 	"strings"
 	"sync"
 
 	"github.com/gopherjs/gopherjs/js"
+	"github.com/influx6/flux"
+	"github.com/influx6/haiku/views"
 	hodom "honnef.co/go/js/dom"
 )
 
@@ -67,6 +71,8 @@ func (e *ElemEvent) Matches(h hodom.Event) {
 
 	//get the current event target
 	target := h.Target()
+
+	log.Printf("Checking: %s for %s", target, e.ID())
 
 	//is our target part of those that match the selector
 	for _, item := range posis {
@@ -156,10 +162,9 @@ func (em *EventManager) AddEvent(evtype, evselector string) *ElemEvent {
 		return ed
 	}
 
-	emo := NewElemEvent(evselector, evtype)
-	em.ro.Lock()
-	em.events[eo] = emo
-	em.ro.Unlock()
+	emo := NewElemEvent(evtype, evselector)
+
+	em.WatchEvent(emo)
 	return emo
 }
 
@@ -167,7 +172,7 @@ func (em *EventManager) AddEvent(evtype, evselector string) *ElemEvent {
 //event element is already matching that is the combination of selector#eventtype
 // then it returns false but if added then true
 func (em *EventManager) WatchEvent(eo *ElemEvent) bool {
-	id := GetEventID(eo)
+	id := eo.ID()
 
 	if !em.setupEvent(eo) {
 		return false
@@ -197,6 +202,11 @@ func (em *EventManager) UseDOM(dom hodom.Element) {
 //ReRegisterEvents re-registeres all the event config with dom element
 //WARNING: only call this if you switch the event managers dom element
 func (em *EventManager) ReRegisterEvents() {
+
+	if em.dom == nil {
+		return
+	}
+
 	for _, eo := range em.events {
 		if eo.jslink != nil {
 			em.dom.RemoveEventListener(eo.EventType(), true, eo.jslink)
@@ -208,9 +218,11 @@ func (em *EventManager) ReRegisterEvents() {
 
 // unRegisterEvents removes all event bindings from current dom element
 func (em *EventManager) unRegisterEvents() {
+
 	if em.dom == nil {
 		return
 	}
+
 	for _, eo := range em.events {
 		if eo.jslink != nil {
 			em.dom.RemoveEventListener(eo.EventType(), true, eo.jslink)
@@ -227,7 +239,10 @@ func (em *EventManager) setupEvent(eo *ElemEvent) bool {
 		return false
 	}
 
-	eo.jslink = em.dom.AddEventListener(eo.EventType(), true, eo.Matches)
+	if em.dom != nil {
+		eo.jslink = em.dom.AddEventListener(eo.EventType(), true, eo.Matches)
+	}
+
 	return true
 }
 
@@ -287,4 +302,59 @@ func (em *Elem) Text(el, target string) {
 	for _, eo := range to {
 		eo.SetTextContent(el)
 	}
+}
+
+// ViewElement combines the dom.Element and haiku.View package to create a renderable view
+type ViewElement struct {
+	views.ReactiveViews
+	*Elem
+	target   string
+	lastAddr []string
+}
+
+// ViewDOMTemplate creates a new ViewElement from the given set of arguments ready for rendering
+func ViewDOMTemplate(viewtag, targetSelector string, dol hodom.Element, tl *template.Template, so *views.ViewStrategy) *ViewElement {
+	view := views.NewReactiveView(viewtag, tl, so)
+	elem := NewElement(dol)
+	return NewViewElement(elem, view, targetSelector)
+}
+
+// ViewDOM creates a new ViewElement from the given set of arguments ready for rendering
+func ViewDOM(dol hodom.Element, v views.Views, targetSelector string) *ViewElement {
+	return NewViewElement(NewElement(dol), v, targetSelector)
+}
+
+// NewViewElement returns a new instance of ViewElement which takes a dom *Element,
+// a View manager and a optional target string which is used when rendring incase we
+// wish to render to a target within the dom.Element and not the element itself has.
+// This should be never be mixed into another View because its the last and should be
+// the last point of rendering, it can be added to a StateEngine for updates on behaviour and state
+// but never for sub-view rendering
+func NewViewElement(elem *Elem, v views.Views, target string) *ViewElement {
+
+	ve := &ViewElement{
+		ReactiveViews: views.ReactView(v),
+		Elem:          elem,
+		target:        target,
+	}
+
+	ve.React(func(r flux.Reactor, err error, d interface{}) {
+		if err != nil {
+			r.ReplyError(err)
+			return
+		}
+
+		ve.Sync(ve.lastAddr...)
+		r.Reply(d)
+	}, true)
+
+	return ve
+}
+
+// Sync calls the views render function and renders out into the attach dom element
+// each time it said to sync, its address is cache for when there is an update by
+// the internal sub-views
+func (v *ViewElement) Sync(addr ...string) {
+	v.lastAddr = addr
+	v.Elem.Html(v.ReactiveViews.Render(addr...), v.target)
 }

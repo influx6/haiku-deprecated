@@ -1,10 +1,14 @@
 package dom
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // GetEventID returns the id for a ElemEvent object
 func GetEventID(m *ElemEvent) string {
-	return BuildEventID(m.EventSelector(), m.EventType())
+	sel := strings.TrimSpace(m.EventSelector())
+	return BuildEventID(sel, m.EventType())
 }
 
 // BuildEventID returns the string represent of the values using the select#event format

@@ -16,8 +16,8 @@ type sampleRob struct {
 	Date time.Time
 }
 
-// TestBasicRendable creates a basic reactive struct whoes data contain some reactive elements which are then used to build a datatree which listens to each of these elements for change
-func TestBasicRendable(t *testing.T) {
+// TestBasicTree creates a basic reactive struct whoes data contain some reactive elements which are then used to build a datatree which listens to each of these elements for change
+func TestBasicTree(t *testing.T) {
 	name, _ := ObserveTransform("Alex", false)
 	age, _ := ObserveTransform(1, false)
 
@@ -27,6 +27,7 @@ func TestBasicRendable(t *testing.T) {
 		Date: time.Now(),
 	}
 
+	//lets create the reactive tree aka structree
 	box, err := StructTree(bob)
 
 	if err != nil {

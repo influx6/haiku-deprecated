@@ -11,9 +11,12 @@ a, a:visited,a:hover,a:focus {
   color: #000;
 }
 
-body,html {
-  margin: 0;
-  padding: 0;
+html {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
   width: 100%;
   height: 100%;
   margin: 0 auto;
@@ -25,6 +28,13 @@ body,html {
   padding: 1.6em;
   background: #ccc;
   margin: 0 auto;
+}
+
+.container:before,.container:after {
+  content: "";
+  display: block;
+  clear: both;
+  zoom: 1;
 }
 
 .intro {
@@ -90,6 +100,40 @@ body,html {
   text-align: center;
   color: #000;
   font-size: 1.3em;
+  width: 70%;
+  height: 100%;
+}
+
+.historyloc{
+  width: 100%;
+  height: 70px;
+  margin-bottom: 10px;
+  padding: 1.3em;
+  background: #222;
+}
+
+.historyloc::before,.historyloc::after {
+  content: "";
+  display: block;
+  clear: both;
+  zoom: 1;
+}
+
+.historyloc label {
+  float: left;
+  text-align: left;
+  color: #fff;
+  font-size: 1.6em;
+  font-weight: bold;
+}
+
+.historyloc p {
+  float: left;
+  text-align: center;
+  color: #fff;
+  font-size: 1em;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
   width: 70%;
   height: 100%;
 }

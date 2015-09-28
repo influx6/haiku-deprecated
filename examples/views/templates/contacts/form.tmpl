@@ -1,0 +1,20 @@
+{{ define "form" }}
+    <form action="" class="Form">
+      <p class="name">
+        <label>Name</label>
+        <input placeholder="Name" name="name" type="text" value="{{.Name}}">
+      </p>
+      <p class="age">
+        <label>Tel</label>
+        <input placeholder="Age" name="age" type="text" value="{{.Age}}">
+      </p>
+      <p class="address">
+        <label>Address</label>
+        <input placeholder="Address" name="address" type="text" value="{{.Address}}">
+      </p>
+      <p class="tel">
+        <label>Tel</label>
+        <input placeholder="Telephone" name="telephone" type="text" value="{{.Tel}}">
+      </p>
+    </form>
+{{ end }}

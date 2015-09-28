@@ -105,9 +105,7 @@ func main() {
 		next(ev)
 	})
 
-	form := hdom.NewViewElement(contacts, formView, ".form")
-	view := hdom.NewViewElement(contacts, contactView, ".view")
+	hdom.NewViewElement(contacts, formView, ".form")
+	hdom.NewViewElement(contacts, contactView, ".view")
 
-	form.Sync(".")
-	view.Sync(".")
 }

@@ -348,6 +348,8 @@ func NewViewElement(elem *Elem, v views.Views, target string) *ViewElement {
 		r.Reply(d)
 	}, true)
 
+	ve.Sync()
+
 	return ve
 }
 

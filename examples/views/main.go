@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"strconv"
 
 	hdom "github.com/influx6/haiku/dom"
@@ -89,8 +88,6 @@ func main() {
 		if input, ok = target.(*dom.HTMLInputElement); !ok {
 			return
 		}
-
-		log.Printf("target '%s' occured %s", name, input.Value)
 
 		switch name {
 		case "name":

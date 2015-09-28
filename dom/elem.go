@@ -17,9 +17,9 @@ type JSEventMux func(*js.Object)
 // instance which allows chaining of events listeners like middleware
 type ElemEvent struct {
 	// Type is the event type to use
-	evtype string
+	Type string
 	//Target is a selector value for matching a event
-	evtarget               string
+	Target                 string
 	StopPropagate          bool
 	StopImmediatePropagate bool
 	PreventDefault         bool
@@ -30,25 +30,30 @@ type ElemEvent struct {
 // NewElemEvent returns a new event element config
 func NewElemEvent(evtype, evtarget string) *ElemEvent {
 	return &ElemEvent{
-		evtype:     evtype,
-		evtarget:   evtarget,
+		Type:       evtype,
+		Target:     evtarget,
 		FlatChains: FlatChainIdentity(),
 	}
 }
 
-// Selector returns the target of the event
-func (e *ElemEvent) Selector() string {
-	return e.evtarget
+// EventSelector returns the target of the event
+func (e *ElemEvent) EventSelector() string {
+	return e.Target
 }
 
-// Type returns the type of the event
-func (e *ElemEvent) Type() string {
-	return e.evtype
+// ID returns the event id that EventManager use for this event
+func (e *ElemEvent) ID() string {
+	return GetEventID(e)
+}
+
+// EventType returns the type of the event
+func (e *ElemEvent) EventType() string {
+	return e.Type
 }
 
 // Matches check if the current event from a specific parent matches this target
 func (e *ElemEvent) Matches(h hodom.Event) {
-	if strings.ToLower(h.Type()) != strings.ToLower(e.evtype) {
+	if strings.ToLower(h.Type()) != strings.ToLower(e.EventType()) {
 		return
 	}
 
@@ -58,14 +63,14 @@ func (e *ElemEvent) Matches(h hodom.Event) {
 	var match bool
 
 	//get all possible matches of this query
-	posis := parent.QuerySelectorAll(e.evtarget)
+	posis := parent.QuerySelectorAll(e.EventSelector())
 
 	//get the current event target
 	target := h.Target()
 
 	//is our target part of those that match the selector
 	for _, item := range posis {
-		if item != target {
+		if item.Underlying() != target.Underlying() {
 			continue
 		}
 		match = true
@@ -194,7 +199,7 @@ func (em *EventManager) UseDOM(dom hodom.Element) {
 func (em *EventManager) ReRegisterEvents() {
 	for _, eo := range em.events {
 		if eo.jslink != nil {
-			em.dom.RemoveEventListener(eo.Type(), true, eo.jslink)
+			em.dom.RemoveEventListener(eo.EventType(), true, eo.jslink)
 		}
 		em.setupEvent(eo)
 	}
@@ -208,7 +213,7 @@ func (em *EventManager) unRegisterEvents() {
 	}
 	for _, eo := range em.events {
 		if eo.jslink != nil {
-			em.dom.RemoveEventListener(eo.Type(), true, eo.jslink)
+			em.dom.RemoveEventListener(eo.EventType(), true, eo.jslink)
 			eo.jslink = nil
 		}
 	}
@@ -222,7 +227,7 @@ func (em *EventManager) setupEvent(eo *ElemEvent) bool {
 		return false
 	}
 
-	eo.jslink = em.dom.AddEventListener(eo.Type(), true, eo.Matches)
+	eo.jslink = em.dom.AddEventListener(eo.EventType(), true, eo.Matches)
 	return true
 }
 
@@ -258,7 +263,28 @@ func (em *Elem) Remove() {
 	}
 }
 
-// Render sets value of the inner html
-func (em *Elem) Render(el string) {
-	em.SetInnerHTML(el)
+// Html sets value of the inner html
+func (em *Elem) Html(el, target string) {
+	if target == "" {
+		em.SetInnerHTML(el)
+		return
+	}
+
+	to := em.QuerySelectorAll(target)
+	for _, eo := range to {
+		eo.SetInnerHTML(el)
+	}
+}
+
+// Text sets value of the text content or returns the text content value if it receives no arguments
+func (em *Elem) Text(el, target string) {
+	if target == "" {
+		em.SetTextContent(el)
+		return
+	}
+
+	to := em.QuerySelectorAll(target)
+	for _, eo := range to {
+		eo.SetTextContent(el)
+	}
 }

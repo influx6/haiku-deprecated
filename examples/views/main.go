@@ -22,18 +22,9 @@ type contact struct {
 
 func main() {
 
-	win, ok := dom.GetWindow().(dom.Window)
+	win := dom.GetWindow().(dom.Window)
 
-	if !ok {
-
-		panic("not in a browser-window")
-	}
-
-	doc, ok := win.Document().(dom.HTMLDocument)
-
-	if !ok {
-		panic("not in a browser-dom")
-	}
+	doc := win.Document().(dom.HTMLDocument)
 
 	container := doc.QuerySelector(".container")
 

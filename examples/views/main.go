@@ -18,7 +18,7 @@ type contact struct {
 	Age      reactive.Observers
 }
 
-//go:generate gopherjs build main.go -o ./app.js
+//go:generate gopherjs -m  build main.go -o ./app.js
 
 func main() {
 
@@ -55,7 +55,7 @@ func main() {
 
 	contactView, err := views.ReactiveSourceView("contacts.view", `
 			{{ (.View "view").RenderHTML }}
-	`)
+	`, nil)
 
 	contactView.AddView("view", ".", contactTempler)
 
@@ -68,7 +68,7 @@ func main() {
 	// _ = container
 	formView, err := views.SourceView("contacts.view", `
 			{{ (.View "form").RenderHTML }}
-	`)
+	`, nil)
 
 	if err != nil {
 		panic(fmt.Sprintf("Contact view error: %s", err))
@@ -78,7 +78,7 @@ func main() {
 
 	contacts := hdom.NewElement(container.QuerySelector(".contactView"))
 
-	contacts.AddEvent("keyup", ".contact-form p .input").Next(func(ev dom.Event, next hdom.NextHandler) {
+	contacts.AddEvent("keyup", ".contact-form p .input").Next(func(ev dom.Event, next views.NextHandler) {
 		target := ev.Target()
 		name := target.GetAttribute("name")
 
@@ -107,5 +107,21 @@ func main() {
 
 	hdom.NewViewElement(contacts, formView, ".form")
 	hdom.NewViewElement(contacts, contactView, ".view")
+
+	lists := views.NewBlueprint("ListItems", template.Must(template.New("root").Parse(`
+		{{ define "root" }}
+			{{ (.Binding) }} - {{ template "extra" . }}
+		{{ end }}
+	`)))
+
+	li, err := lists.ConstructWith(dude.Name, views.HiddenNameStrategy("root"), template.Must(template.New("extra").Parse(`
+		{{ define "extra" }}
+			{{ .Get "tag" }}
+		{{ end }}
+	`)))
+
+	li.Set("tag", "Sunday")
+
+	hdom.ViewComponent(contacts, li, ".nameview")
 
 }

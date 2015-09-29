@@ -1,4 +1,4 @@
-package dom
+package views
 
 import (
 	"sync"

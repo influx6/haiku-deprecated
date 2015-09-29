@@ -75,7 +75,7 @@ body {
 
 .speak {
   width: 100%;
-  height: 100px;
+  /*height: 100px;*/
   background: #eee;
 }
 
@@ -101,12 +101,12 @@ body {
   color: #000;
   font-size: 1.3em;
   width: 70%;
-  height: 100%;
+  /*height: 100%;*/
 }
 
 .historyloc{
   width: 100%;
-  height: 70px;
+  /*min-height: 70px;*/
   margin-bottom: 10px;
   padding: 1.3em;
   background: #222;
@@ -135,5 +135,5 @@ body {
   text-overflow: ellipsis;
   word-wrap: break-word;
   width: 70%;
-  height: 100%;
+  /*height: 100%;*/
 }

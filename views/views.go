@@ -56,20 +56,26 @@ func (v *ViewStrategy) SwitchInActive() {
 
 // Render provides the rendering method call for View, it is what is called by a view to implement its show and hide strategy using its internal active and inactive function calls depending on the strategys state
 func (v *ViewStrategy) Render(vr *View) string {
+	var res string
 	if atomic.LoadInt64(&v.state) < 1 {
-		return v.inactive(vr)
+		res = v.inactive(vr)
+	} else {
+		res = v.active(vr)
 	}
-	return v.active(vr)
+
+	return res
 }
 
 // View provides a base struct for which views can be created with and meets the Views interface
 type View struct {
+	flux.SyncCollectors
 	*State
 	Tmpl *template.Template
 	//contains the sub-views of the current view
 	views *ViewLists
 	//strategy defines the view strategy to be used
 	strategy *ViewStrategy
+	binding  interface{}
 }
 
 // BuildViewTemplateFunctions returns a template.FuncMap that contains the template functions (View and Views) for use with a template. Ensure to pass this to the root template so you can acccess it down
@@ -85,13 +91,15 @@ func BuildViewTemplateFunctions(v *View) template.FuncMap {
 }
 
 // NewView returns a new view struct
-func NewView(tag string, tl *template.Template, strategy *ViewStrategy) *View {
+func NewView(tag string, tl *template.Template, strategy *ViewStrategy, binding interface{}) *View {
 
 	v := View{
-		Tmpl:     tl,
-		strategy: strategy,
-		State:    NewState(tag),
-		views:    NewViewLists(),
+		SyncCollectors: flux.NewSyncCollector(),
+		Tmpl:           tl,
+		strategy:       strategy,
+		State:          NewState(tag),
+		views:          NewViewLists(),
+		binding:        binding,
 	}
 
 	// bx := BuildViewTemplateFunctions(&v)
@@ -107,6 +115,16 @@ func NewView(tag string, tl *template.Template, strategy *ViewStrategy) *View {
 	})
 
 	return &v
+}
+
+// // Binding returns the optional binding attached to the view
+// func (v *View) Meta() *flux.SyncCollector {
+// 	return v.meta
+// }
+
+// Binding returns the optional binding attached to the view
+func (v *View) Binding() interface{} {
+	return v.binding
 }
 
 // RenderHTML renders the output from .Render() as safe html unescaped
@@ -150,10 +168,11 @@ func (v *View) Execute() ([]byte, error) {
 
 // Views define an interface for member rules for Views
 type Views interface {
+	flux.SyncCollectors
 	Viewable
 	States
-	// NameTag() string
-	// Stategy() *ViewStrategy
+
+	Binding() interface{}
 	View(string) Viewable
 	PartialView() *PartialView
 	AddViewable(string, Viewable) error
@@ -161,16 +180,6 @@ type Views interface {
 	AddStatefulViewable(string, string, StatefulViewable) error
 	add(string, Viewable) error
 }
-
-// // Stategy returns the views assigned tag
-// func (v *View) Stategy() *ViewStrategy {
-// 	return v.strategy
-// }
-
-// // NameTag returns the views assigned tag
-// func (v *View) NameTag() string {
-// 	return v.tag
-// }
 
 // PartialView returns a PartialView for this view
 func (v *View) PartialView() *PartialView {
@@ -350,17 +359,17 @@ const ViewLightTemplate = `
 `
 
 // SimpleView provides a view based on the ViewLightTemplate template
-func SimpleView(tag string) (v *View, err error) {
-	return SourceView(tag, ViewLightTemplate)
+func SimpleView(tag string, binding interface{}) (v *View, err error) {
+	return SourceView(tag, ViewLightTemplate, binding)
 }
 
 // SimpleTreeView provides a view based on the ViewHTMLTemplate template
-func SimpleTreeView(tag string) (v *View, err error) {
-	return SourceView(tag, ViewHTMLTemplate)
+func SimpleTreeView(tag string, binding interface{}) (v *View, err error) {
+	return SourceView(tag, ViewHTMLTemplate, binding)
 }
 
 // SourceView provides a view that takes the template format of which it will render the view as
-func SourceView(tag, tmpl string) (v *View, err error) {
+func SourceView(tag, tmpl string, binding interface{}) (v *View, err error) {
 	var tl *template.Template
 
 	tl, err = template.New(tag).Parse(tmpl)
@@ -369,14 +378,14 @@ func SourceView(tag, tmpl string) (v *View, err error) {
 		return
 	}
 
-	v = NewView(tag, tl, SilentStrategy())
+	v = NewView(tag, tl, SilentStrategy(), binding)
 
 	return
 }
 
 // AssetView provides a view that takes the template format of which it will render the view as
-func AssetView(tag, blockName string, as *assets.AssetTemplate) (v *View, err error) {
-	v = NewView(tag, as.Tmpl, SilentNameStrategy(blockName))
+func AssetView(tag, blockName string, binding interface{}, as *assets.AssetTemplate) (v *View, err error) {
+	v = NewView(tag, as.Tmpl, SilentNameStrategy(blockName), binding)
 	return
 }
 
@@ -405,8 +414,14 @@ type ReactiveView struct {
 }
 
 // NewReactiveView provides a decorator function to return a new ReactiveView with the same arguments passed to NewView(...)
-func NewReactiveView(tag string, tl *template.Template, strategy *ViewStrategy) ReactiveViews {
-	return ReactView(NewView(tag, tl, strategy))
+func NewReactiveView(tag string, tl *template.Template, strategy *ViewStrategy, binding interface{}) ReactiveViews {
+	rv := ReactView(NewView(tag, tl, strategy, binding))
+
+	if dok, ok := binding.(flux.Reactor); ok {
+		dok.Bind(rv, false)
+	}
+
+	return rv
 }
 
 // ReactView returns a new ReactiveView instance using a Views type as a composition, thereby turning
@@ -423,13 +438,19 @@ func ReactView(v Views) ReactiveViews {
 }
 
 // ReactiveSourceView provides a view that takes the template format of which it will render the view as
-func ReactiveSourceView(tag, tmpl string) (ReactiveViews, error) {
-	sv, err := SourceView(tag, tmpl)
+func ReactiveSourceView(tag, tmpl string, binding interface{}) (ReactiveViews, error) {
+	sv, err := SourceView(tag, tmpl, binding)
 	if err != nil {
 		return nil, err
 	}
 
-	return ReactView(sv), nil
+	rv := ReactView(sv)
+
+	if dok, ok := binding.(flux.Reactor); ok {
+		dok.Bind(rv, false)
+	}
+
+	return rv, nil
 }
 
 // AddViewable adds a rendering view which has no state management and will render regardless of state

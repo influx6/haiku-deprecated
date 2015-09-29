@@ -56,15 +56,32 @@ body {
 }
 
 .contactView {
-  width: 50%;
+  width: 90%;
   margin: 0 auto;
   background: #eee;
   padding: 1.3em;
 }
 
+
+@media screen and (max-width: 480px) {
+  .contactView{
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 960px) {
+  .contactView{
+    max-width: 900px;
+  }
+}
+
 .contactView h3{
   margin: 0 auto;
   text-align: center;
+}
+
+.contactView h3 span{
+  color: rgba(84, 175, 220,1);
 }
 
 .contactView::before,.contactView::after {
@@ -79,6 +96,28 @@ body {
   color: #000;
   float: left;
   width: 50%;
+}
+
+.contactView .form form{
+  width: 90%;
+}
+
+@media screen and (min-width: 980px) {
+
+  .contactView .form form {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .contactView .form , .contactView .view{
+    clear: both;
+    width: 100%;
+  }
+
+  .contactView .form form {
+    width: 100%;
+  }
 }
 
 .contactView .view div  {

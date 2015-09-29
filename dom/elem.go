@@ -1,9 +1,6 @@
 package dom
 
 import (
-	"errors"
-	"html/template"
-	"log"
 	"strings"
 	"sync"
 
@@ -20,39 +17,8 @@ type JSEventMux func(*js.Object)
 // ElemEvent represent a single event configuration for dom.Elem objects
 // instance which allows chaining of events listeners like middleware
 type ElemEvent struct {
-	// Type is the event type to use
-	Type string
-	//Target is a selector value for matching a event
-	Target                 string
-	StopPropagate          bool
-	StopImmediatePropagate bool
-	PreventDefault         bool
-	jslink                 JSEventMux
-	FlatChains
-}
-
-// NewElemEvent returns a new event element config
-func NewElemEvent(evtype, evtarget string) *ElemEvent {
-	return &ElemEvent{
-		Type:       evtype,
-		Target:     evtarget,
-		FlatChains: FlatChainIdentity(),
-	}
-}
-
-// EventSelector returns the target of the event
-func (e *ElemEvent) EventSelector() string {
-	return e.Target
-}
-
-// ID returns the event id that EventManager use for this event
-func (e *ElemEvent) ID() string {
-	return GetEventID(e)
-}
-
-// EventType returns the type of the event
-func (e *ElemEvent) EventType() string {
-	return e.Type
+	views.EventSubs
+	jslink JSEventMux
 }
 
 // Matches check if the current event from a specific parent matches this target
@@ -72,7 +38,7 @@ func (e *ElemEvent) Matches(h hodom.Event) {
 	//get the current event target
 	target := h.Target()
 
-	log.Printf("Checking: %s for %s", target, e.ID())
+	// log.Printf("Checking: %s for %s", target, e.ID())
 
 	//is our target part of those that match the selector
 	for _, item := range posis {
@@ -86,17 +52,17 @@ func (e *ElemEvent) Matches(h hodom.Event) {
 	//if we match then run the listeners registered
 	if match {
 		//if we dont want immediatepropagation kill it else check propagation also
-		if e.StopImmediatePropagate {
+		if e.StopImmediatePropagation() {
 			h.StopImmediatePropagation()
 		} else {
 			//if we dont want propagation kill it
-			if e.StopPropagate {
+			if e.StopPropagation() {
 				h.StopPropagation()
 			}
 		}
 
 		//we want to PreventDefault then stop default action
-		if e.PreventDefault {
+		if e.PreventDefault() {
 			h.PreventDefault()
 		}
 
@@ -104,96 +70,78 @@ func (e *ElemEvent) Matches(h hodom.Event) {
 	}
 }
 
-// EventManager provides a deffered event managing sytem for registery events with
-type EventManager struct {
-	//events contain the events to be registered on an element
-	// it contains the element and the selector type used to match it
-	// that is, the value of ElemEvent.Target
-	dom    hodom.Element
-	events map[string]*ElemEvent
-	ro     sync.RWMutex
+// Events provides a deffered event managing sytem for registery events with
+type Events struct {
+	*views.EventManager
+	dom   hodom.Element
+	ro    sync.RWMutex
+	fresh bool
 }
 
-// NewEventManager returns a new event manager instance
-func NewEventManager(elem hodom.Element) *EventManager {
-	em := EventManager{
-		events: make(map[string]*ElemEvent),
-		dom:    elem,
+// NewEvents returns a new event manager instance
+func NewEvents(elem hodom.Element) *Events {
+	em := Events{
+		EventManager: views.NewEventManager(),
+		dom:          elem,
 	}
 
 	return &em
 }
 
-// HasWatch returns true/false if an event target is already marked using the
-// format selector#eventType
-func (em *EventManager) HasWatch(m string) bool {
-	var ok bool
-	em.ro.RLock()
-	_, ok = em.events[m]
-	em.ro.RUnlock()
-	return ok
-}
-
-// ErrEventNotFound is returned when an event is not found
-var ErrEventNotFound = errors.New("Event not found")
-
-// GetEvent returns the event if found by that id
-func (em *EventManager) GetEvent(event string) (*ElemEvent, error) {
-	var ed *ElemEvent
-	var ok bool
-
-	em.ro.RLock()
-	ed, ok = em.events[event]
-	em.ro.RUnlock()
-
-	if !ok {
-		return nil, ErrEventNotFound
+// BuildEvents builds a event manager untop of a exisiting views.EventManager and dom element
+func BuildEvents(elem hodom.Element, events *views.EventManager) *Events {
+	eo := Events{
+		EventManager: events,
+		dom:          elem,
 	}
-
-	return ed, nil
+	return &eo
 }
 
 // AddEvent allows the adding of event using string values
-func (em *EventManager) AddEvent(evtype, evselector string) *ElemEvent {
-	eo := BuildEventID(evtype, evselector)
+func (em *Events) AddEvent(evtype, evselector string) views.EventSubs {
+	eo := views.BuildEventID(evtype, evselector)
 
 	if em.HasWatch(eo) {
 		ed, _ := em.GetEvent(eo)
 		return ed
 	}
 
-	emo := NewElemEvent(evtype, evselector)
-
-	em.WatchEvent(emo)
+	emo := views.NewEventSub(evtype, evselector)
+	em.WatchEvent(&ElemEvent{EventSubs: emo})
 	return emo
 }
 
 //WatchEvent adds Event elements into the event manager if a
 //event element is already matching that is the combination of selector#eventtype
 // then it returns false but if added then true
-func (em *EventManager) WatchEvent(eo *ElemEvent) bool {
-	id := eo.ID()
-
-	if !em.setupEvent(eo) {
+func (em *Events) WatchEvent(eo views.EventSubs) bool {
+	if em.HasWatch(eo.ID()) {
 		return false
 	}
 
-	// eo.jslink = em.dom.AddEventListener(eo.Type(), true, eo.Matches)
-	em.ro.Lock()
-	em.events[id] = eo
-	em.ro.Unlock()
+	var eom *ElemEvent
+
+	if eod, ok := eo.(*ElemEvent); ok {
+		eom = eod
+	} else {
+		eom = &ElemEvent{EventSubs: eo}
+	}
+
+	em.EventManager.AddEvent(eom)
+	em.setupEvent(eom)
+
 	return true
 }
 
 // WatchEvents adds a set of ElemEvent into the EventManager
-func (em *EventManager) WatchEvents(ems ...*ElemEvent) {
+func (em *Events) WatchEvents(ems ...views.EventSubs) {
 	for _, eo := range ems {
 		em.WatchEvent(eo)
 	}
 }
 
 // UseDOM allows switching the EventManager dom element
-func (em *EventManager) UseDOM(dom hodom.Element) {
+func (em *Events) UseDOM(dom hodom.Element) {
 	em.unRegisterEvents()
 	em.dom = dom
 	em.ReRegisterEvents()
@@ -201,73 +149,80 @@ func (em *EventManager) UseDOM(dom hodom.Element) {
 
 //ReRegisterEvents re-registeres all the event config with dom element
 //WARNING: only call this if you switch the event managers dom element
-func (em *EventManager) ReRegisterEvents() {
-
+func (em *Events) ReRegisterEvents() {
 	if em.dom == nil {
 		return
 	}
 
-	for _, eo := range em.events {
-		if eo.jslink != nil {
-			em.dom.RemoveEventListener(eo.EventType(), true, eo.jslink)
-		}
-		em.setupEvent(eo)
+	if !em.fresh {
+		em.unRegisterEvents()
 	}
+
+	em.fresh = false
+	em.EventManager.EachEvent(func(evo views.EventSubs) {
+		if eo, ok := evo.(*ElemEvent); ok {
+			em.setupEvent(eo)
+		}
+	})
 
 }
 
 // unRegisterEvents removes all event bindings from current dom element
-func (em *EventManager) unRegisterEvents() {
-
+func (em *Events) unRegisterEvents() {
 	if em.dom == nil {
 		return
 	}
 
-	for _, eo := range em.events {
-		if eo.jslink != nil {
-			em.dom.RemoveEventListener(eo.EventType(), true, eo.jslink)
-			eo.jslink = nil
+	em.EventManager.EachEvent(func(evo views.EventSubs) {
+		if eo, ok := evo.(*ElemEvent); ok {
+			if eo.jslink != nil {
+				em.dom.RemoveEventListener(eo.EventType(), true, eo.jslink)
+				eo.jslink = nil
+			}
 		}
-	}
+	})
+
+	em.fresh = true
 }
 
 //setupEvent only setsup the event link
-func (em *EventManager) setupEvent(eo *ElemEvent) bool {
-	id := GetEventID(eo)
-
-	if em.HasWatch(id) {
-		return false
-	}
-
+func (em *Events) setupEvent(eo *ElemEvent) {
 	if em.dom != nil {
 		eo.jslink = em.dom.AddEventListener(eo.EventType(), true, eo.Matches)
 	}
-
-	return true
 }
 
 // Elem represent a standard html element
 type Elem struct {
 	hodom.Element
-	*EventManager
+	*Events
 }
 
 // NewElement returns a new Element instance for interacting with the dom
 func NewElement(e hodom.Element) *Elem {
 	return &Elem{
-		Element:      e,
-		EventManager: NewEventManager(e),
+		Element: e,
+		Events:  NewEvents(e),
 	}
 }
 
-//UseDOM resets the elements dom target
-//WARNING: use this we care,elements are not generally in need of switching
-//they should be concrete and always in the dom until you truly decide to
-//delete them but this is provided for the case when there is a need to switch
-//dom elements so use carefuly
+// UseElement returns a new Element instance for interacting with the dom
+func UseElement(e hodom.Element, ex *views.EventManager) *Elem {
+	m := &Elem{
+		Element: e,
+		Events:  BuildEvents(e, ex),
+	}
+
+	m.fresh = true
+	m.ReRegisterEvents()
+	return m
+}
+
+//UseDOM overwrites the Events.UseDOM to ensure no issues
+// TODO: find out if this can cause race-conditons
 func (em *Elem) UseDOM(dom hodom.Element) {
 	em.Element = dom
-	em.EventManager.UseDOM(dom)
+	em.Events.UseDOM(dom)
 }
 
 // Remove removes this element from this parent
@@ -312,11 +267,10 @@ type ViewElement struct {
 	lastAddr []string
 }
 
-// ViewDOMTemplate creates a new ViewElement from the given set of arguments ready for rendering
-func ViewDOMTemplate(viewtag, targetSelector string, dol hodom.Element, tl *template.Template, so *views.ViewStrategy) *ViewElement {
-	view := views.NewReactiveView(viewtag, tl, so)
-	elem := NewElement(dol)
-	return NewViewElement(elem, view, targetSelector)
+// ViewComponent creates a new ViewElement with a view component for rendering
+func ViewComponent(dol hodom.Element, v views.Components, targetSelector string) *ViewElement {
+	elem := UseElement(dol, v.Events())
+	return NewViewElement(elem, v, targetSelector)
 }
 
 // ViewDOM creates a new ViewElement from the given set of arguments ready for rendering
@@ -348,7 +302,7 @@ func NewViewElement(elem *Elem, v views.Views, target string) *ViewElement {
 		r.Reply(d)
 	}, true)
 
-	ve.Sync()
+	ve.Sync(".")
 
 	return ve
 }

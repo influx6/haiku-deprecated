@@ -49,7 +49,7 @@ func TestViewWithViewable(t *testing.T) {
         </div>
       </body>
     </html>
-  `)
+  `, nil)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create sourceview: %s", err)
@@ -113,7 +113,7 @@ func TestViewWithStatefulViewable(t *testing.T) {
     <video-view>
       {{ (.View "video").RenderHTML }}
     </video-view>
-  `)
+  `, nil)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create vidom source view: %s", err)
@@ -131,7 +131,7 @@ func TestViewWithStatefulViewable(t *testing.T) {
   	{{range .Views }}
   			{{ .RenderHTML }}
   	{{ end }}
-  `)
+  `, nil)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create audio source view: %s", err)
@@ -150,7 +150,7 @@ func TestViewWithStatefulViewable(t *testing.T) {
       </section>
     </body>
   </html>
-  `)
+  `, nil)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create index source view: %s", err)

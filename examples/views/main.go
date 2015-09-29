@@ -105,7 +105,7 @@ func main() {
 		{{ end }}
 	`)))
 
-	li, err := lists.ConstructWith(dude.Name, views.HiddenNameStrategy("root"), template.Must(template.New("extra").Parse(`
+	li, err := lists.AndView(dude.Name, views.HiddenNameStrategy("root"), template.Must(template.New("extra").Parse(`
 		{{ define "extra" }}
 			{{ .Get "tag" }}
 		{{ end }}

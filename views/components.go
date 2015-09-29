@@ -9,8 +9,10 @@ import (
 
 // Blueprints interface defines the interface for componet makers
 type Blueprints interface {
-	Construct(interface{}, *ViewStrategy) Components
-	ConstructWith(bind interface{}, vs *ViewStrategy, subt *template.Template) (Components, error)
+	View(interface{}, *ViewStrategy) Components
+	AndView(bind interface{}, vs *ViewStrategy, subt *template.Template) (Components, error)
+	BuildView(interface{}, *ViewStrategy, bool) Components
+	BuildAndView(interface{}, *ViewStrategy, *template.Template, bool) (Components, error)
 	Type() string
 }
 
@@ -36,17 +38,31 @@ func (b *Blueprint) Type() string {
 	return b.bluetag
 }
 
-// Construct builds up a blueprint with the arguments, the name tag giving to the
+// View builds up a blueprint with the arguments, the name tag giving to the
 // underline view is modded with the blueprint type name + a 5-length random string
-// to make it unique in the state machines
-func (b *Blueprint) Construct(bind interface{}, vs *ViewStrategy) Components {
-	view := NewReactiveView(fmt.Sprintf("%s:%s", b.Type(), flux.RandString(5)), b.format, vs, bind)
+// to make it unique in the state machines. All reactive binding are automatically bounded to the view.
+func (b *Blueprint) View(bind interface{}, vs *ViewStrategy) Components {
+	return b.BuildView(bind, vs, true)
+}
+
+// AndView creates a new component with a combined template if supplied i.e the parsetree of the
+// Blueprint.template adds the parse tree of the supplied template if pressent and if possible else uses the default blueprints template. All reactive binding are automatically bounded to the view.
+func (b *Blueprint) AndView(bind interface{}, vs *ViewStrategy, subt *template.Template) (Components, error) {
+	return b.BuildAndView(bind, vs, subt, true)
+}
+
+// BuildView builds up a blueprint with the arguments, the name tag giving to the
+// underline view is modded with the blueprint type name + a 5-length random string
+// to make it unique in the state machines. It allows more control on whether to bind the given binding
+// with the view if the binding is reactive
+func (b *Blueprint) BuildView(bind interface{}, vs *ViewStrategy, bindBinding bool) Components {
+	view := BuildReactiveView(fmt.Sprintf("%s:%s", b.Type(), flux.RandString(5)), b.format, vs, bind, bindBinding)
 	return NewComponent(view)
 }
 
-// ConstructWith creates a new component with a combined template if supplied i.e the parsetree of the
-// Blueprint.template adds the parse tree of the supplied template if pressent and if possible else uses the default blueprints template
-func (b *Blueprint) ConstructWith(bind interface{}, vs *ViewStrategy, subt *template.Template) (Components, error) {
+// BuildAndView creates a new component with a combined template if supplied i.e the parsetree of the
+// Blueprint.template adds the parse tree of the supplied template if pressent and if possible else uses the default blueprints template. It allows more control to decide if to bind the binding if its reactive
+func (b *Blueprint) BuildAndView(bind interface{}, vs *ViewStrategy, subt *template.Template, bindBinding bool) (Components, error) {
 	var sub *template.Template
 
 	if subt != nil {
@@ -61,7 +77,7 @@ func (b *Blueprint) ConstructWith(bind interface{}, vs *ViewStrategy, subt *temp
 		sub = b.format
 	}
 
-	view := NewReactiveView(fmt.Sprintf("%s:%s", b.Type(), flux.RandString(5)), sub, vs, bind)
+	view := BuildReactiveView(fmt.Sprintf("%s:%s", b.Type(), flux.RandString(5)), sub, vs, bind, bindBinding)
 	return NewComponent(view), nil
 }
 

@@ -415,13 +415,23 @@ type ReactiveView struct {
 
 // NewReactiveView provides a decorator function to return a new ReactiveView with the same arguments passed to NewView(...)
 func NewReactiveView(tag string, tl *template.Template, strategy *ViewStrategy, binding interface{}) ReactiveViews {
+	return BuildReactiveView(tag, tl, strategy, binding, true)
+}
+
+// BuildReactiveView provides a decorator function to return a new ReactiveView with the same arguments passed to NewView(...), useRB -> means UseReactiveBinding
+func BuildReactiveView(tag string, tl *template.Template, strategy *ViewStrategy, binding interface{}, useRB bool) ReactiveViews {
 	rv := ReactView(NewView(tag, tl, strategy, binding))
-
-	if dok, ok := binding.(flux.Reactor); ok {
-		dok.Bind(rv, false)
+	if useRB {
+		BindReactor(rv, binding)
 	}
-
 	return rv
+}
+
+// BindReactor binds the reactorView with a binding value if that value is a flux.Rector type
+func BindReactor(v ReactiveViews, b interface{}) {
+	if dok, ok := b.(flux.Reactor); ok {
+		dok.Bind(v, false)
+	}
 }
 
 // ReactView returns a new ReactiveView instance using a Views type as a composition, thereby turning

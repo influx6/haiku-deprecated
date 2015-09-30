@@ -1,12 +1,9 @@
 package views
 
 import (
-	"bytes"
-	"fmt"
 	"html/template"
 	"sync/atomic"
 
-	"github.com/influx6/assets"
 	"github.com/influx6/flux"
 )
 
@@ -22,8 +19,15 @@ type StatefulViewable interface {
 	Viewable
 }
 
+// Strategy defines the interface method rules for using view strategies
+type Strategy interface {
+	SwitchActive()
+	SwitchInActive()
+	Render() string
+}
+
 // ViewStrategyMux defines a function type that handles and mutates the reply of a view strategy
-type ViewStrategyMux func(*View) string
+type ViewStrategyMux func(Views) string
 
 // ViewStrategy defines a view behaviour in dealing with a dual state of views i.e views are either active or inactive and ViewStrategy take that and build a custom response provided to the .Render() call
 type ViewStrategy struct {
@@ -66,6 +70,21 @@ func (v *ViewStrategy) Render(vr *View) string {
 	return res
 }
 
+// Views define an interface for member rules for Views
+type Views interface {
+	flux.SyncCollectors
+	Viewable
+	States
+
+	Binding() interface{}
+	View(string) Viewable
+	PartialView() *PartialView
+	AddViewable(string, Viewable) error
+	AddView(string, string, Viewable) error
+	AddStatefulViewable(string, string, StatefulViewable) error
+	add(string, Viewable) error
+}
+
 // View provides a base struct for which views can be created with and meets the Views interface
 type View struct {
 	flux.SyncCollectors
@@ -78,33 +97,17 @@ type View struct {
 	binding  interface{}
 }
 
-// BuildViewTemplateFunctions returns a template.FuncMap that contains the template functions (View and Views) for use with a template. Ensure to pass this to the root template so you can acccess it down
-func BuildViewTemplateFunctions(v *View) template.FuncMap {
-	return template.FuncMap{
-		"view": func(tag string) Viewable {
-			return v.View(tag)
-		},
-		"views": func() []Viewable {
-			return v.Views()
-		},
-	}
-}
-
 // NewView returns a new view struct
-func NewView(tag string, tl *template.Template, strategy *ViewStrategy, binding interface{}) *View {
+func NewView(tag string, strategy *ViewStrategy, binding interface{}) *View {
 
 	v := View{
 		SyncCollectors: flux.NewSyncCollector(),
-		Tmpl:           tl,
-		strategy:       strategy,
-		State:          NewState(tag),
-		views:          NewViewLists(),
-		binding:        binding,
+		// Tmpl:           tl,
+		strategy: strategy,
+		State:    NewState(tag),
+		views:    NewViewLists(),
+		binding:  binding,
 	}
-
-	// bx := BuildViewTemplateFunctions(&v)
-	// log.Printf("%s", bx)
-	// v.Tmpl = tl.Funcs(bx).
 
 	v.State.UseActivator(func(s *StateStat) {
 		v.strategy.SwitchActive()
@@ -116,11 +119,6 @@ func NewView(tag string, tl *template.Template, strategy *ViewStrategy, binding 
 
 	return &v
 }
-
-// // Binding returns the optional binding attached to the view
-// func (v *View) Meta() *flux.SyncCollector {
-// 	return v.meta
-// }
 
 // Binding returns the optional binding attached to the view
 func (v *View) Binding() interface{} {
@@ -145,40 +143,6 @@ func (v *View) Render(m ...string) string {
 	}
 
 	return v.strategy.Render(v)
-}
-
-// String simply calls the internal .Render() function
-func (v *View) String() string {
-	return v.Render()
-}
-
-// ExecuteTemplate calls the internal template.Template.ExecuteTemplate and returns the data from the rendering operation. The template is runned with the name but the view as the object/binding
-func (v *View) ExecuteTemplate(name string) ([]byte, error) {
-	var buf bytes.Buffer
-	err := v.Tmpl.ExecuteTemplate(&buf, name, v)
-	return buf.Bytes(), err
-}
-
-// Execute calls the internal template.Template.Execute and returns the data from the rendering operation. The template is runned with the name but the view as the object/binding
-func (v *View) Execute() ([]byte, error) {
-	var buf bytes.Buffer
-	err := v.Tmpl.Execute(&buf, v)
-	return buf.Bytes(), err
-}
-
-// Views define an interface for member rules for Views
-type Views interface {
-	flux.SyncCollectors
-	Viewable
-	States
-
-	Binding() interface{}
-	View(string) Viewable
-	PartialView() *PartialView
-	AddViewable(string, Viewable) error
-	AddView(string, string, Viewable) error
-	AddStatefulViewable(string, string, StatefulViewable) error
-	add(string, Viewable) error
 }
 
 // PartialView returns a PartialView for this view
@@ -229,6 +193,11 @@ func (v *View) AddView(tag, addr string, vm Viewable) error {
 	return v.AddViewable(tag, vm)
 }
 
+// String simply calls the internal .Render() function
+func (v *View) String() string {
+	return v.Render()
+}
+
 func (v *View) add(tag string, vm Viewable) error {
 	return v.views.Add(tag, vm)
 }
@@ -268,127 +237,6 @@ func (pv *PartialView) RenderHTML(m ...string) template.HTML {
 	return template.HTML(pv.Render(m...))
 }
 
-// SilentStrategy is a simple strategy that when the view is activated calls the View.Execute
-func SilentStrategy() *ViewStrategy {
-	return NewViewStrategy(func(v *View) string {
-		bo, err := v.Execute()
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return string(bo)
-	}, func(v *View) string {
-		return ""
-	})
-}
-
-// SilentNameStrategy is a simple strategy that when the view is activated calls the View.ExecuteTemplate
-func SilentNameStrategy(base string) *ViewStrategy {
-	return NewViewStrategy(func(v *View) string {
-		bo, err := v.ExecuteTemplate(base)
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return string(bo)
-	}, func(v *View) string {
-		return ""
-	})
-}
-
-// HiddenStrategy is a simple strategy that when the view is activated calls the View.Execute
-func HiddenStrategy() *ViewStrategy {
-	return NewViewStrategy(func(v *View) string {
-		bo, err := v.Execute()
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return string(bo)
-	}, func(v *View) string {
-		bo, err := v.Execute()
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return fmt.Sprintf(`<div style="display:none;">\n%s\n</div>`, string(bo))
-	})
-}
-
-// HiddenNameStrategy is a simple strategy that when the view is activated calls the View.ExecuteTemplate and when hidden wrap it within a div tag laced with a display none style
-func HiddenNameStrategy(base string) *ViewStrategy {
-	return NewViewStrategy(func(v *View) string {
-		bo, err := v.ExecuteTemplate(base)
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return string(bo)
-	}, func(v *View) string {
-		bo, err := v.ExecuteTemplate(base)
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return fmt.Sprintf(`<div style="display:none;">\n%s\n</div>`, string(bo))
-	})
-}
-
-// ViewHTMLTemplate simple renders out the internal views of a root View into html like tags
-const ViewHTMLTemplate = `
-	<masterview>
-		{{range .Views }}
-		  <view>
-				{{ .RenderHTML }}
-		  </view>
-		{{ end }}
-	</masterview>
-`
-
-// ViewLightTemplate simple renders out the internal views of a root View
-const ViewLightTemplate = `
-	{{range .Views }}
-			{{ .RenderHTML }}
-	{{ end }}
-`
-
-// SimpleView provides a view based on the ViewLightTemplate template
-func SimpleView(tag string, binding interface{}) (v *View, err error) {
-	return SourceView(tag, ViewLightTemplate, binding)
-}
-
-// SimpleTreeView provides a view based on the ViewHTMLTemplate template
-func SimpleTreeView(tag string, binding interface{}) (v *View, err error) {
-	return SourceView(tag, ViewHTMLTemplate, binding)
-}
-
-// SourceView provides a view that takes the template format of which it will render the view as
-func SourceView(tag, tmpl string, binding interface{}) (v *View, err error) {
-	var tl *template.Template
-
-	tl, err = template.New(tag).Parse(tmpl)
-
-	if err != nil {
-		return
-	}
-
-	v = NewView(tag, tl, SilentStrategy(), binding)
-
-	return
-}
-
-// AssetView provides a view that takes the template format of which it will render the view as
-func AssetView(tag, blockName string, binding interface{}, as *assets.AssetTemplate) (v *View, err error) {
-	v = NewView(tag, as.Tmpl, SilentNameStrategy(blockName), binding)
-	return
-}
-
 // ObserveViewable defines an interface for any element that can return a rendering of its content out as strings
 type ObserveViewable interface {
 	flux.Reactor
@@ -413,20 +261,6 @@ type ReactiveView struct {
 	Views
 }
 
-// NewReactiveView provides a decorator function to return a new ReactiveView with the same arguments passed to NewView(...)
-func NewReactiveView(tag string, tl *template.Template, strategy *ViewStrategy, binding interface{}) ReactiveViews {
-	return BuildReactiveView(tag, tl, strategy, binding, true)
-}
-
-// BuildReactiveView provides a decorator function to return a new ReactiveView with the same arguments passed to NewView(...), useRB -> means UseReactiveBinding
-func BuildReactiveView(tag string, tl *template.Template, strategy *ViewStrategy, binding interface{}, useRB bool) ReactiveViews {
-	rv := ReactView(NewView(tag, tl, strategy, binding))
-	if useRB {
-		BindReactor(rv, binding)
-	}
-	return rv
-}
-
 // BindReactor binds the reactorView with a binding value if that value is a flux.Rector type
 func BindReactor(v ReactiveViews, b interface{}) {
 	if dok, ok := b.(flux.Reactor); ok {
@@ -445,22 +279,6 @@ func ReactView(v Views) ReactiveViews {
 		Reactor: flux.ReactIdentity(),
 		Views:   v,
 	}
-}
-
-// ReactiveSourceView provides a view that takes the template format of which it will render the view as
-func ReactiveSourceView(tag, tmpl string, binding interface{}) (ReactiveViews, error) {
-	sv, err := SourceView(tag, tmpl, binding)
-	if err != nil {
-		return nil, err
-	}
-
-	rv := ReactView(sv)
-
-	if dok, ok := binding.(flux.Reactor); ok {
-		dok.Bind(rv, false)
-	}
-
-	return rv, nil
 }
 
 // AddViewable adds a rendering view which has no state management and will render regardless of state

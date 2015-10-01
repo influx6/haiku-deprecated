@@ -136,6 +136,10 @@ func MText(m reactive.Observers) *Text {
 
 // Set sets the value of the text
 func (t *Text) Set(tx string) {
+	if t.text == tx {
+		return
+	}
+
 	t.text = tx
 	t.Send(t)
 }
@@ -159,7 +163,6 @@ func (t *Text) Apply(e *Element) {
 type Attribute struct {
 	Name  string
 	Value string
-	Appliable
 }
 
 // Apply applies a set change to the giving element attributes list
@@ -171,7 +174,6 @@ func (a *Attribute) Apply(e *Element) {
 type Style struct {
 	Name  string
 	Value string
-	Appliable
 }
 
 // Apply applies a set change to the giving element style list

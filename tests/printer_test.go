@@ -1,12 +1,13 @@
 package tests
 
 import (
-	"log"
+	"fmt"
 	"strings"
 	"testing"
 
 	"github.com/influx6/flux"
 	"github.com/influx6/haiku/trees"
+	"github.com/influx6/haiku/trees/attrs"
 	"github.com/influx6/haiku/trees/elems"
 	"github.com/influx6/haiku/trees/styles"
 )
@@ -14,10 +15,9 @@ import (
 var expectedAttr = " data-fax='butler' "
 
 func TestAttrPrinter(t *testing.T) {
-	attr := []*trees.Attribute{&Attribute{"data-fax", "butler"}}
-	res := trees.SimpleAttrWriter.Write(attr)
-	log.Printf("attr -> %s", res)
-	flux.Expect(t, expectedAttr, res)
+	attr := []*trees.Attribute{&trees.Attribute{"data-fax", "butler"}}
+	res := trees.SimpleAttrWriter.Print(attr)
+	flux.StrictExpect(t, expectedAttr, res)
 }
 
 func BenchmarkAttrPrinter(t *testing.B) {
@@ -31,17 +31,16 @@ func BenchmarkAttrPrinter(t *testing.B) {
 	}
 
 	for i := 0; i < t.N; i++ {
-		trees.SimpleAttrWriter.Write(attrs)
+		trees.SimpleAttrWriter.Print(attrs)
 	}
 }
 
 var expectedStyle = " width:200px; "
 
 func TestStylePrinter(t *testing.T) {
-	su := []*trees.Style{styles.Width(200)}
-	res := trees.SimpleStyleWriter.Write(su)
-	log.Printf("style -> %s", res)
-	flux.Expect(t, expectedStyle, res)
+	su := []*trees.Style{styles.Width(styles.Px(200))}
+	res := trees.SimpleStyleWriter.Print(su)
+	flux.StrictExpect(t, expectedStyle, res)
 }
 
 func BenchmarkStylePrinter(t *testing.B) {
@@ -55,28 +54,31 @@ func BenchmarkStylePrinter(t *testing.B) {
 	}
 
 	for i := 0; i < t.N; i++ {
-		trees.SimpleStyleWriter.Write(su)
+		trees.SimpleStyleWriter.Print(su)
 	}
 }
 
 func TestElementPrinter(t *testing.T) {
-	elem := trees.NewElement("bench", true)
+	elem := trees.NewElement("bench", false)
+	attrs.ClassName("grid col1").Apply(elem)
 	elems.Div(trees.NewText("thunder")).Apply(elem)
 
-	res := trees.SimpleElementWriter.Write(elem)
-	log.Printf("elem -> %s", res)
+	res := trees.SimpleElementWriter.Print(elem)
 
-	flux.Truthy(t, "WriteElement", strings.Contains(res, "<bench"))
+	flux.Truthy(t, "Contains '<bench'", strings.Contains(res, "<bench"))
+	flux.Truthy(t, "contains '</bench>'", strings.Contains(res, "</bench>"))
+	flux.Truthy(t, "contains 'hash='", strings.Contains(res, "hash="))
+	flux.Truthy(t, "contains 'uid='", strings.Contains(res, "uid="))
 }
 
 func BenchmarkElementPrinter(t *testing.B) {
 	div := elems.Div()
 
 	for i := 0; i < 10000; i++ {
-		trees.NewText(fmt.Sprinf("%d", i)).Apply(div)
+		trees.NewText(fmt.Sprintf("%d", i)).Apply(div)
 	}
 
 	for i := 0; i < t.N; i++ {
-		trees.SimpleElementWriter.Write(div)
+		trees.SimpleElementWriter.Print(div)
 	}
 }

@@ -18,7 +18,7 @@ type AttrWriter struct{}
 // SimpleAttrWriter provides a basic attribute writer
 var SimpleAttrWriter = &AttrWriter{}
 
-const attrformt = " %s='%s' "
+const attrformt = ` %s="%s"`
 
 // Print returns a stringed repesentation of the attribute object
 func (m *AttrWriter) Print(a []*Attribute) string {
@@ -42,7 +42,7 @@ type StyleWriter struct{}
 // SimpleStyleWriter provides a basic style writer
 var SimpleStyleWriter = &StyleWriter{}
 
-const styleformt = " %s:%s; "
+const styleformt = " %s:%s;"
 
 // Print returns a stringed repesentation of the style object
 func (m *StyleWriter) Print(s []*Style) string {
@@ -61,8 +61,8 @@ type TextWriter struct{}
 // SimpleTextWriter provides a basic text writer
 var SimpleTextWriter = &TextWriter{}
 
-// Write returns the string representation of the text object
-func (m *TextWriter) Write(t *Text) string {
+// Print returns the string representation of the text object
+func (m *TextWriter) Print(t *Text) string {
 	return t.Get()
 }
 
@@ -85,8 +85,8 @@ func NewElementWriter(aw AttrPrinter, sw StylePrinter, tw *TextWriter) *ElementW
 	}
 }
 
-// Write returns the string representation of the element
-func (m *ElementWriter) Write(e *Element) string {
+// Print returns the string representation of the element
+func (m *ElementWriter) Print(e *Element) string {
 
 	//collect uid and hash of the element so we can write them along
 	hash := &Attribute{"hash", e.Hash()}
@@ -113,19 +113,19 @@ func (m *ElementWriter) Write(e *Element) string {
 
 	for _, ch := range e.Children {
 		if tch, ok := ch.(*Text); ok {
-			children = append(children, m.text.Write(tch))
+			children = append(children, m.text.Print(tch))
 		}
 		if ech, ok := ch.(*Element); ok {
 			if ech == e {
 				continue
 			}
-			children = append(children, m.Write(ech))
+			children = append(children, m.Print(ech))
 		}
 	}
 
 	//lets create the elements markup now
 	return strings.Join([]string{
-		fmt.Sprintf("<%s ", e.Tagname),
+		fmt.Sprintf("<%s", e.Tagname),
 		hashes,
 		attrs,
 		style,
@@ -156,11 +156,11 @@ func NewMarkupWriter(em *ElementWriter) *MarkupWriter {
 // Print returns a stringed repesentation of the markup object
 func (m *MarkupWriter) Print(ma Markup) (string, error) {
 	if tmr, ok := ma.(*Text); ok {
-		return m.ElementWriter.text.Write(tmr), nil
+		return m.ElementWriter.text.Print(tmr), nil
 	}
 
 	if emr, ok := ma.(*Element); ok {
-		return m.ElementWriter.Write(emr), nil
+		return m.ElementWriter.Print(emr), nil
 	}
 
 	return "", ErrNotMarkup

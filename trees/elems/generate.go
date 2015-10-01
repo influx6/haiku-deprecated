@@ -181,7 +181,7 @@ func writeElem(w io.Writer, name, desc, link string) {
 // %s provides the following for html elements ->
 // %s
 // https://developer.mozilla.org%s
-func %s(markup ...trees.Markup) *trees.Element {
+func %s(markup ...trees.Appliable) *trees.Element {
 	e := trees.NewElement("%s",%t)
 	for _, m := range markup {
 		m.Apply(e)

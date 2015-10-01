@@ -153,8 +153,8 @@ func NewMarkupWriter(em *ElementWriter) *MarkupWriter {
 	return &MarkupWriter{em}
 }
 
-// Print returns a stringed repesentation of the markup object
-func (m *MarkupWriter) Print(ma Markup) (string, error) {
+// Write returns a stringed repesentation of the markup object
+func (m *MarkupWriter) Write(ma Markup) (string, error) {
 	if tmr, ok := ma.(*Text); ok {
 		return m.ElementWriter.text.Print(tmr), nil
 	}

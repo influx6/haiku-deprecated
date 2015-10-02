@@ -7,6 +7,7 @@ import (
 	"github.com/go-humble/detect"
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/influx6/flux"
+	"github.com/influx6/haiku/views"
 )
 
 /*
@@ -32,6 +33,16 @@ func Path() *PathObserver {
 	}
 }
 
+// Follow creates a Pathspec from the hash and path and sends it
+func (p *PathObserver) Follow(hash, path string) {
+	p.FollowSpec(&PathSpec{Hash: hash, Path: path})
+}
+
+// FollowSpec just passes down the Pathspec
+func (p *PathObserver) FollowSpec(ps *PathSpec) {
+	p.Send(ps)
+}
+
 // PathSpec represent the current path and hash values
 type PathSpec struct {
 	Hash string
@@ -53,7 +64,7 @@ func HashChangePath() *PathObserver {
 			loc := js.Global.Get("location")
 			pathn := loc.Get("pathname").String()
 			hash := loc.Get("hash").String()
-			path.Send(&PathSpec{Hash: hash, Path: pathn})
+			path.Follow(hash, pathn)
 		}()
 	})
 
@@ -75,7 +86,7 @@ func PopStatePath() (*PathObserver, error) {
 			loc := js.Global.Get("location")
 			pathn := loc.Get("pathname").String()
 			hash := loc.Get("hash").String()
-			path.Send(&PathSpec{Hash: hash, Path: pathn})
+			path.Follow(hash, pathn)
 		}()
 	})
 
@@ -98,4 +109,41 @@ func panicBrowserDetect() {
 	if !detect.IsBrowser() {
 		panic("expected to be used in a dom/browser env")
 	}
+}
+
+// Page provides the concrete provider for managing a whole website or View
+// you dont need two,just one is enough to manage the total web view of your app / site
+// It ties directly into the page hash or popstate location to provide consistent updates
+type Page struct {
+	*views.StateEngine
+	path *PathObserver
+}
+
+// NewPage returns the new state engine powered page
+func NewPage(p *PathObserver) *Page {
+	return &Page{
+		StateEngine: views.NewStateEngine(),
+		path:        p,
+	}
+}
+
+// MyPage builds a new page with the appropriate path manager based on browser support, if the push and popstate were supported it will use that else use a hashpath manager
+func MyPage() *Page {
+	var p *PathObserver
+
+	if po, err := PopStatePath(); err == nil {
+		p = po
+	} else {
+		p = HashChangePath()
+	}
+
+	return NewPage(p)
+}
+
+// Address returns the current path and hash of the location api
+func (p *Page) Address() (string, string) {
+	loc := js.Global.Get("location")
+	pathn := loc.Get("pathname").String()
+	hash := loc.Get("hash").String()
+	return pathn, hash
 }

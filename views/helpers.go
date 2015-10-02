@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+
+	"github.com/influx6/haiku/trees"
 )
 
 //NullRender provides a null rendering that returns a string of error stating which render tag failed
@@ -18,17 +20,12 @@ func NewNullRender(tag string) *NullRender {
 
 // RenderHTML renders the output from .Render() as safe html unescaped
 func (n *NullRender) RenderHTML(m ...string) template.HTML {
-	return template.HTML(n.Render(m...))
-}
-
-// String returns the rendered data
-func (n *NullRender) String() string {
-	return n.Render()
+	return template.HTML(n.Render(m...).(*trees.Text).Get())
 }
 
 // Render returns the error message
-func (n *NullRender) Render(_ ...string) string {
-	return fmt.Sprintf(`Render.Error: "%s" view not found!`, n.tag)
+func (n *NullRender) Render(_ ...string) trees.Markup {
+	return trees.NewText(fmt.Sprintf(`Render.Error: "%s" view not found!`, n.tag))
 }
 
 // Renderables are objects capable of rendering out themselves as strings using any variety of methods but most importantly do cache that last render for returning when desired to do so

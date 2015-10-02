@@ -102,10 +102,12 @@ func (m *ElementWriter) Print(e *Element) string {
 	style := m.styleWriter.Print(e.Styles)
 
 	var closer string
+	var beginbrack string
 
 	if e.AutoClosed() {
 		closer = "/>"
 	} else {
+		beginbrack = ">"
 		closer = fmt.Sprintf("</%s>", e.Tagname)
 	}
 
@@ -129,32 +131,32 @@ func (m *ElementWriter) Print(e *Element) string {
 		hashes,
 		attrs,
 		style,
-		">",
+		beginbrack,
 		strings.Join(children, "\n"),
 		closer,
 	}, "")
 }
 
-// MarkupPrinter defines a printer interface for writing out a markup object into a string form
-type MarkupPrinter interface {
-	Print(Markup) (string, error)
+// MarkupWriter defines a printer interface for writing out a markup object into a string form
+type MarkupWriter interface {
+	Write(Markup) (string, error)
 }
 
 // MarkupWriter provides the concrete struct that meets the MarkupPrinter interface
-type MarkupWriter struct {
+type markupWriter struct {
 	*ElementWriter
 }
 
-// SimpleMarkUpWriter provides a basic markup writer for handling the different markup elements
-var SimpleMarkUpWriter = NewMarkupWriter(SimpleElementWriter)
+// SimpleMarkupWriter provides a basic markup writer for handling the different markup elements
+var SimpleMarkupWriter = NewMarkupWriter(SimpleElementWriter)
 
 // NewMarkupWriter returns a new markup instance
-func NewMarkupWriter(em *ElementWriter) *MarkupWriter {
-	return &MarkupWriter{em}
+func NewMarkupWriter(em *ElementWriter) MarkupWriter {
+	return &markupWriter{em}
 }
 
 // Write returns a stringed repesentation of the markup object
-func (m *MarkupWriter) Write(ma Markup) (string, error) {
+func (m *markupWriter) Write(ma Markup) (string, error) {
 	if tmr, ok := ma.(*Text); ok {
 		return m.ElementWriter.text.Print(tmr), nil
 	}

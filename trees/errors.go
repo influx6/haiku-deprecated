@@ -13,8 +13,11 @@ var ErrNotElem = errors.New("Markup is not a *Element type")
 // ErrNotMarkup is returned when the value/pointer type does not match the Markup interface type
 var ErrNotMarkup = errors.New("Value does not match Markup interface types")
 
-// Errors relating to the attribute types
+// ErrNotAttr relating to the attribute types
 var ErrNotAttr = errors.New("Value type is not n Attribute type")
+
+// ErrNotFound relating to the attribute types
+var ErrNotFound = errors.New("Item not found")
 
 // Errors relating to the style types
 var ErrNotStyle = errors.New("Value type is not a Style type")

@@ -5,11 +5,12 @@ import (
 	"sync/atomic"
 
 	"github.com/influx6/flux"
+	"github.com/influx6/haiku/trees"
 )
 
 // Viewable defines an interface for any element that can return a rendering of its content out as strings
 type Viewable interface {
-	Render(...string) string
+	Render(...string) trees.Markup
 	RenderHTML(...string) template.HTML
 }
 
@@ -23,22 +24,25 @@ type StatefulViewable interface {
 type Strategy interface {
 	SwitchActive()
 	SwitchInActive()
-	Render() string
+	Render(Views) trees.Markup
+	RenderSource(Views) string
 }
 
 // ViewStrategyMux defines a function type that handles and mutates the reply of a view strategy
-type ViewStrategyMux func(Views) string
+type ViewStrategyMux func(Views) trees.Markup
 
 // ViewStrategy defines a view behaviour in dealing with a dual state of views i.e views are either active or inactive and ViewStrategy take that and build a custom response provided to the .Render() call
 type ViewStrategy struct {
 	state    int64
+	writer   trees.MarkupWriter
 	active   ViewStrategyMux
 	inactive ViewStrategyMux
 }
 
 // NewViewStrategy returns a new ViewStrategy instance
-func NewViewStrategy(active, inactive ViewStrategyMux) *ViewStrategy {
+func NewViewStrategy(w trees.MarkupWriter, active, inactive ViewStrategyMux) *ViewStrategy {
 	return &ViewStrategy{
+		writer:   w,
 		active:   active,
 		inactive: inactive,
 	}
@@ -58,9 +62,18 @@ func (v *ViewStrategy) SwitchInActive() {
 	}
 }
 
+// RenderSource renders out the Markup returned by ViewStrategy.Render
+func (v *ViewStrategy) RenderSource(vr Views) string {
+	source, err := v.writer.Write(v.Render(vr))
+	if err != nil {
+		return err.Error()
+	}
+	return source
+}
+
 // Render provides the rendering method call for View, it is what is called by a view to implement its show and hide strategy using its internal active and inactive function calls depending on the strategys state
-func (v *ViewStrategy) Render(vr *View) string {
-	var res string
+func (v *ViewStrategy) Render(vr Views) trees.Markup {
+	var res trees.Markup
 	if atomic.LoadInt64(&v.state) < 1 {
 		res = v.inactive(vr)
 	} else {
@@ -76,6 +89,7 @@ type Views interface {
 	Viewable
 	States
 
+	DOM() trees.SearchableMarkup
 	Binding() interface{}
 	View(string) Viewable
 	PartialView() *PartialView
@@ -83,41 +97,54 @@ type Views interface {
 	AddView(string, string, Viewable) error
 	AddStatefulViewable(string, string, StatefulViewable) error
 	add(string, Viewable) error
+	Strategy() Strategy
 }
 
 // View provides a base struct for which views can be created with and meets the Views interface
 type View struct {
 	flux.SyncCollectors
 	*State
-	Tmpl *template.Template
 	//contains the sub-views of the current view
 	views *ViewLists
 	//strategy defines the view strategy to be used
-	strategy *ViewStrategy
+	strategy Strategy
 	binding  interface{}
+	dom      trees.SearchableMarkup
 }
 
 // NewView returns a new view struct
-func NewView(tag string, strategy *ViewStrategy, binding interface{}) *View {
+func NewView(tag string, strategy Strategy, binding interface{}) *View {
 
-	v := View{
+	v := &View{
 		SyncCollectors: flux.NewSyncCollector(),
-		// Tmpl:           tl,
-		strategy: strategy,
-		State:    NewState(tag),
-		views:    NewViewLists(),
-		binding:  binding,
+		dom:            trees.NewText(""),
+		strategy:       strategy,
+		State:          NewState(tag),
+		views:          NewViewLists(),
+		binding:        binding,
 	}
 
 	v.State.UseActivator(func(s *StateStat) {
+		v.DOM().Send(true)
 		v.strategy.SwitchActive()
 	})
 
 	v.State.UseDeactivator(func(s *StateStat) {
+		v.DOM().Send(true)
 		v.strategy.SwitchInActive()
 	})
 
-	return &v
+	return v
+}
+
+// Strategy returns the strategy used by this view
+func (v *View) Strategy() Strategy {
+	return v.strategy
+}
+
+// DOM returns the default text markup over-ride this in subviews
+func (v *View) DOM() trees.SearchableMarkup {
+	return v.dom
 }
 
 // Binding returns the optional binding attached to the view
@@ -127,11 +154,21 @@ func (v *View) Binding() interface{} {
 
 // RenderHTML renders the output from .Render() as safe html unescaped
 func (v *View) RenderHTML(m ...string) template.HTML {
-	return template.HTML(v.Render(m...))
+	var addr string
+
+	if len(m) > 0 {
+		addr = m[0]
+	}
+
+	if addr != "" {
+		v.Engine().All(addr, v.tag)
+	}
+
+	return template.HTML(v.strategy.RenderSource(v))
 }
 
 // Render calls the internal strategy and renders out the output of that result
-func (v *View) Render(m ...string) string {
+func (v *View) Render(m ...string) trees.Markup {
 	var addr string
 
 	if len(m) > 0 {
@@ -195,7 +232,7 @@ func (v *View) AddView(tag, addr string, vm Viewable) error {
 
 // String simply calls the internal .Render() function
 func (v *View) String() string {
-	return v.Render()
+	return string(v.RenderHTML())
 }
 
 func (v *View) add(tag string, vm Viewable) error {
@@ -204,16 +241,16 @@ func (v *View) add(tag string, vm Viewable) error {
 
 // PartialView provides a wrapper around View that enforces only partial rendering of the internal state by call .Partial() instead of a .All() view on all .Render() calls
 type PartialView struct {
-	*View
+	Views
 }
 
 // NewPartialView returns a new PartialView instance
-func NewPartialView(v *View) *PartialView {
-	return &PartialView{View: v}
+func NewPartialView(v Views) *PartialView {
+	return &PartialView{Views: v}
 }
 
 // Render calls the internal strategy and renders out the output of that result
-func (pv *PartialView) Render(m ...string) string {
+func (pv *PartialView) Render(m ...string) trees.Markup {
 	var addr string
 
 	if len(m) > 0 {
@@ -224,7 +261,7 @@ func (pv *PartialView) Render(m ...string) string {
 		pv.Engine().Partial(addr, pv.Tag())
 	}
 
-	return pv.strategy.Render(pv.View)
+	return pv.Strategy().Render(pv.Views)
 }
 
 // PartialView returns a PartialView for this view
@@ -234,7 +271,17 @@ func (pv *PartialView) PartialView() *PartialView {
 
 // RenderHTML renders the output from .Render() as safe html unescaped
 func (pv *PartialView) RenderHTML(m ...string) template.HTML {
-	return template.HTML(pv.Render(m...))
+	var addr string
+
+	if len(m) > 0 {
+		addr = m[0]
+	}
+
+	if addr != "" {
+		pv.Engine().Partial(addr, pv.Tag())
+	}
+
+	return template.HTML(pv.Strategy().RenderSource(pv.Views))
 }
 
 // ObserveViewable defines an interface for any element that can return a rendering of its content out as strings
@@ -268,17 +315,22 @@ func BindReactor(v ReactiveViews, b interface{}) {
 	}
 }
 
-// ReactView returns a new ReactiveView instance using a Views type as a composition, thereby turning
-// a simple view into a reactable view
-func ReactView(v Views) ReactiveViews {
+// ReactView returns a new ReactiveView instance using a Views type as a composition, thereby turning a simple view into a reactable view. if the `dobind` bool is true and if the binding from the view is reactive then the binding is made to the new ReactiveView
+func ReactView(v Views, dobind bool) ReactiveViews {
 	if rve, ok := v.(ReactiveViews); ok {
 		return rve
 	}
 
-	return &ReactiveView{
+	vr := &ReactiveView{
 		Reactor: flux.ReactIdentity(),
 		Views:   v,
 	}
+
+	if dobind {
+		BindReactor(vr, v.Binding())
+	}
+
+	return vr
 }
 
 // AddViewable adds a rendering view which has no state management and will render regardless of state
@@ -316,4 +368,9 @@ func (v *ReactiveView) AddView(tag, addr string, vm Viewable) error {
 	}
 
 	return v.AddViewable(tag, vm)
+}
+
+// Blueprint defines a interface type for blueprints
+type Blueprint interface {
+	Type() string
 }

@@ -6,21 +6,64 @@ import (
 	"html/template"
 
 	"github.com/influx6/assets"
-	"github.com/influx6/flux"
+	"github.com/influx6/haiku/trees"
 )
 
 // TemplateView provides a view system based on html.templates
 type TemplateView struct {
 	Views
 	Tmpl *template.Template
+	hdom trees.SearchableMarkup
+	txt  *trees.Text
 }
 
 // NewTemplateView returns a new view specifically created to use go html.template as a rendering system
-func NewTemplateView(tag string, t *template.Template, strategy *ViewStrategy, binding interface{}) *TemplateView {
-	return &TemplateView{
+func NewTemplateView(tag string, t *template.Template, strategy Strategy, binding interface{}) *TemplateView {
+	hdom := trees.NewElement("tmlview", false)
+	tv := &TemplateView{
 		Views: NewView(tag, strategy, binding),
 		Tmpl:  t,
+		hdom:  hdom,
+		txt:   trees.NewText(""),
 	}
+
+	tv.txt.Apply(hdom)
+	return tv
+}
+
+// DOM overrides the default DOM() method to return the user defined dom tree
+func (v *TemplateView) DOM() trees.SearchableMarkup {
+	return v.hdom
+}
+
+// RenderHTML renders the output from .Render() as safe html unescaped
+func (v *TemplateView) RenderHTML(m ...string) template.HTML {
+	var addr string
+
+	if len(m) > 0 {
+		addr = m[0]
+	}
+
+	if addr != "" {
+		v.Engine().All(addr, v.Tag())
+	}
+
+	return template.HTML(v.Strategy().RenderSource(v))
+}
+
+// Render calls the internal strategy and renders out the output of that result
+func (v *TemplateView) Render(m ...string) trees.Markup {
+	var addr string
+
+	if len(m) > 0 {
+		addr = m[0]
+	}
+
+	if addr != "" {
+		v.Engine().All(addr, v.Tag())
+	}
+
+	return v.Strategy().Render(v)
 }
 
 // ExecuteTemplate calls the internal template.Template.ExecuteTemplate and returns the data from the rendering operation. The template is runned with the name but the view as the object/binding
@@ -37,111 +80,134 @@ func (v *TemplateView) Execute() ([]byte, error) {
 	return buf.Bytes(), err
 }
 
-// SilentTemplateStrategy is a simple strategy that when the view is activated calls the View.Execute
-func SilentTemplateStrategy() *ViewStrategy {
-	return NewViewStrategy(func(v Views) string {
+// SilentTemplateStrategy is a simple strategy that when the view is activated calls the View.Execute and returns an empty "" string when deactivated
+func SilentTemplateStrategy(w trees.MarkupWriter) Strategy {
+	return NewViewStrategy(w, func(v Views) trees.Markup {
 		tv, ok := v.(*TemplateView)
 
 		if !ok {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView")
+			return trees.NewText(fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView"))
 		}
 
 		bo, err := tv.Execute()
 
 		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+			tv.txt.Set(fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error()))
+			return tv.hdom
 		}
 
-		return string(bo)
-	}, func(v Views) string {
-		return ""
-	})
-}
-
-// SilentTemplateNameStrategy is a simple strategy that when the view is activated calls the View.ExecuteTemplate
-func SilentTemplateNameStrategy(base string) *ViewStrategy {
-	return NewViewStrategy(func(v Views) string {
+		tv.txt.Set(string(bo))
+		return tv.hdom
+	}, func(v Views) trees.Markup {
 		tv, ok := v.(*TemplateView)
 
 		if !ok {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView")
+			return trees.NewText(fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView"))
+		}
+
+		tv.txt.Set("")
+		return tv.hdom
+	})
+}
+
+// SilentTemplateNameStrategy is a simple strategy that when the view is activated calls the View.ExecuteTemplate and returns an empty "" string when deactivated
+func SilentTemplateNameStrategy(base string, w trees.MarkupWriter) Strategy {
+	return NewViewStrategy(w, func(v Views) trees.Markup {
+		tv, ok := v.(*TemplateView)
+
+		if !ok {
+			return trees.NewText(fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView"))
 		}
 
 		bo, err := tv.ExecuteTemplate(base)
 
 		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+			tv.txt.Set(fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error()))
+			return tv.hdom
 		}
 
-		return string(bo)
-	}, func(v Views) string {
-		return ""
-	})
-}
-
-// HiddenTemplateStrategy is a simple strategy that when the view is activated calls the View.Execute
-func HiddenTemplateStrategy() *ViewStrategy {
-	return NewViewStrategy(func(v Views) string {
+		tv.txt.Set(string(bo))
+		return tv.hdom
+	}, func(v Views) trees.Markup {
 		tv, ok := v.(*TemplateView)
 
 		if !ok {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView")
+			return trees.NewText(fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView"))
+		}
+
+		tv.txt.Set("")
+		return tv.hdom
+	})
+}
+
+// HiddenTemplateStrategy is a simple strategy that when the view is activated calls the View.Execute and if in deactive state returns the original content wrapped in a div with display:none
+func HiddenTemplateStrategy(w trees.MarkupWriter) Strategy {
+	return NewViewStrategy(w, func(v Views) trees.Markup {
+		tv, ok := v.(*TemplateView)
+
+		if !ok {
+			return trees.NewText(fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView"))
+		}
+
+		dom := v.DOM()
+
+		if ds, err := dom.GetStyle("display"); err == nil {
+			ds.Value = "block"
 		}
 
 		bo, err := tv.Execute()
 
 		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+			tv.txt.Set(fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error()))
+			return tv.hdom
 		}
 
-		return string(bo)
-	}, func(v Views) string {
-		tv, ok := v.(*TemplateView)
+		tv.txt.Set(string(bo))
+		return tv.hdom
+	}, func(v Views) trees.Markup {
+		dom := v.DOM()
 
-		if !ok {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView")
+		if ds, err := dom.GetStyle("display"); err == nil {
+			ds.Value = "block"
 		}
 
-		bo, err := tv.Execute()
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return fmt.Sprintf(`<div style="display:none;">\n%s\n</div>`, string(bo))
+		return dom
 	})
 }
 
-// HiddenTemplateNameStrategy is a simple strategy that when the view is activated calls the View.ExecuteTemplate and when hidden wrap it within a div tag laced with a display none style
-func HiddenTemplateNameStrategy(base string) *ViewStrategy {
-	return NewViewStrategy(func(v Views) string {
+// HiddenTemplateNameStrategy is a simple strategy that when the view is activated calls the View.ExecuteTemplate and when deactive wrap it within a div tag laced with a display none style
+func HiddenTemplateNameStrategy(base string, w trees.MarkupWriter) Strategy {
+
+	return NewViewStrategy(w, func(v Views) trees.Markup {
 		tv, ok := v.(*TemplateView)
 
 		if !ok {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView")
+			return trees.NewText(fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView"))
+		}
+
+		dom := v.DOM()
+
+		if ds, err := dom.GetStyle("display"); err == nil {
+			ds.Value = "block"
 		}
 
 		bo, err := tv.ExecuteTemplate(base)
 
 		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
+			tv.txt.Set(fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error()))
+			return tv.hdom
 		}
 
-		return string(bo)
-	}, func(v Views) string {
-		tv, ok := v.(*TemplateView)
+		tv.txt.Set(string(bo))
+		return tv.hdom
+	}, func(v Views) trees.Markup {
+		dom := v.DOM()
 
-		if !ok {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), "Expected type *TemplateView")
+		if ds, err := dom.GetStyle("display"); err == nil {
+			ds.Value = "block"
 		}
 
-		bo, err := tv.ExecuteTemplate(base)
-
-		if err != nil {
-			return fmt.Sprintf("CustomError(%s): %s", v.Tag(), err.Error())
-		}
-
-		return fmt.Sprintf(`<div style="display:none;">\n%s\n</div>`, string(bo))
+		return dom
 	})
 }
 
@@ -183,28 +249,25 @@ func SourceView(tag, tmpl string, binding interface{}) (v *TemplateView, err err
 		return
 	}
 
-	v = NewTemplateView(tag, tl, SilentTemplateStrategy(), binding)
+	v = NewTemplateView(tag, tl, SilentTemplateStrategy(trees.SimpleMarkupWriter), binding)
 
 	return
 }
 
 // AssetView provides a view that takes the template format of which it will render the view as
 func AssetView(tag, blockName string, binding interface{}, as *assets.AssetTemplate) (v *TemplateView, err error) {
-	v = NewTemplateView(tag, as.Tmpl, SilentTemplateNameStrategy(blockName), binding)
+	v = NewTemplateView(tag, as.Tmpl, SilentTemplateNameStrategy(blockName, trees.SimpleMarkupWriter), binding)
 	return
 }
 
 // NewReactiveTemplateView provides a decorator function to return a new ReactiveView with the same arguments passed to NewView(...)
-func NewReactiveTemplateView(tag string, tl *template.Template, strategy *ViewStrategy, binding interface{}) ReactiveViews {
+func NewReactiveTemplateView(tag string, tl *template.Template, strategy Strategy, binding interface{}) ReactiveViews {
 	return BuildReactiveTemplateView(tag, tl, strategy, binding, true)
 }
 
 // BuildReactiveTemplateView provides a decorator function to return a new ReactiveView with the same arguments passed to NewView(...), useRB -> means UseReactiveBinding
-func BuildReactiveTemplateView(tag string, tl *template.Template, strategy *ViewStrategy, binding interface{}, useRB bool) ReactiveViews {
-	rv := ReactView(NewTemplateView(tag, tl, strategy, binding))
-	if useRB {
-		BindReactor(rv, binding)
-	}
+func BuildReactiveTemplateView(tag string, tl *template.Template, strategy Strategy, binding interface{}, useRB bool) ReactiveViews {
+	rv := ReactView(NewTemplateView(tag, tl, strategy, binding), useRB)
 	return rv
 }
 
@@ -215,17 +278,12 @@ func ReactiveSourceView(tag, tmpl string, binding interface{}, userb bool) (Reac
 		return nil, err
 	}
 
-	rv := ReactView(sv)
-
-	if userb {
-		BindReactor(rv, binding)
-	}
+	rv := ReactView(sv, userb)
 
 	return rv, nil
 }
 
-// TemplateBlueprint defines the component blueprint that it generates, like setting the
-// building blocks that make up a components behaviour
+// TemplateBlueprint defines the component blueprint that it generates using the TemplateView
 type TemplateBlueprint struct {
 	format  *template.Template
 	bluetag string
@@ -246,31 +304,8 @@ func (b *TemplateBlueprint) Type() string {
 	return b.bluetag
 }
 
-// TemplateView builds up a blueprint with the arguments, the name tag giving to the
-// underline view is modded with the blueprint type name + a 5-length random string
-// to make it unique in the state machines. All reactive binding are automatically bounded to the view.
-func (b *TemplateBlueprint) TemplateView(bind interface{}, vs *ViewStrategy, dobind bool) Components {
-	view := BuildReactiveTemplateView(fmt.Sprintf("%s:%s", b.Type(), flux.RandString(5)), b.format, vs, bind, dobind)
-	return NewComponent(view)
-}
-
-// MixTemplateView creates a new component with a combined template if supplied i.e the parsetree of the
-// Blueprint.template adds the parse tree of the supplied template if pressent and if possible else uses the default blueprints template. All reactive binding are automatically bounded to the view.
-func (b *TemplateBlueprint) MixTemplateView(bind interface{}, vs *ViewStrategy, subt *template.Template, dobind bool) (Components, error) {
-	var sub *template.Template
-
-	if subt != nil {
-		so, err := b.format.AddParseTree(subt.Name(), subt.Tree)
-
-		if err != nil {
-			return nil, err
-		}
-
-		sub = so
-	} else {
-		sub = b.format
-	}
-
-	view := BuildReactiveTemplateView(fmt.Sprintf("%s:%s", b.Type(), flux.RandString(5)), sub, vs, bind, dobind)
-	return NewComponent(view), nil
+// View builds up a blueprint with the arguments, the name tag giving to the underline view is modded with the blueprint type name + a 5-length random string to make it unique in the state machines. All reactive binding are done if dobind is true hence boudning the binding change notification to the view.
+func (b *TemplateBlueprint) View(bind interface{}, vs Strategy, dobind bool) Components {
+	view := BuildReactiveTemplateView(MakeBlueprintName(b), b.format, vs, bind, dobind)
+	return NewComponent(view, false)
 }

@@ -2,6 +2,7 @@ package trees
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/influx6/flux"
 	"github.com/influx6/haiku/reactive"
@@ -24,7 +25,24 @@ type Appliable interface {
 type Markup interface {
 	Appliable
 	Mutation
+	Clone() Markup
 	Name() string
+	AddChild(Markup) bool
+}
+
+// SearchableMarkup defines the specification for Markups that allow filtering
+type SearchableMarkup interface {
+	Markup
+	GetStyles(f, val string) []*Style
+	GetStyle(f string) (*Style, error)
+	StyleContains(f, val string) bool
+	GetAttrs(f, val string) []*Attribute
+	GetAttr(f string) (*Attribute, error)
+	AttrContains(f, val string) bool
+	ElementsUsingStyle(f, val string) []*Element
+	ElementsWithAttr(f, val string) []*Element
+	DeepElementsUsingStyle(f, val string, depth int) []*Element
+	DeepElementsWithAttr(f, val string, depth int) []*Element
 }
 
 // Mutable is a base implementation of the Mutation interface{}
@@ -74,15 +92,209 @@ type Element struct {
 }
 
 // NewElement returns a new element instance giving the specificed name
-func NewElement(tag string, autoclose bool) *Element {
+func NewElement(tag string, hasEndingTag bool) *Element {
 	return &Element{
 		Mutation:  NewMutable(),
 		Tagname:   tag,
 		Children:  make([]Markup, 0),
 		Styles:    make([]*Style, 0),
 		Attrs:     make([]*Attribute, 0),
-		autoclose: autoclose,
+		autoclose: hasEndingTag,
 	}
+}
+
+// Clone makes a new copy of the markup structure
+func (e *Element) Clone() Markup {
+	co := NewElement(e.Tagname, e.autoclose)
+
+	//clone the internal styles
+	for _, so := range e.Styles {
+		so.Clone().Apply(co)
+	}
+
+	//clone the internal attribute
+	for _, ao := range e.Attrs {
+		ao.Clone().Apply(co)
+	}
+
+	//clone the internal children
+	for _, ch := range e.Children {
+		ch.Clone().Apply(co)
+	}
+
+	return co
+}
+
+// GetStyles returns the styles that contain the specified name and if not empty that contains the specified value also, note that strings
+// NOTE: string.Contains is used when checking value parameter if present
+func (e *Element) GetStyles(f, val string) []*Style {
+	var found []*Style
+
+	for _, as := range e.Styles {
+		if as.Name != f {
+			continue
+		}
+
+		if val != "" {
+			if !strings.Contains(as.Value, val) {
+				continue
+			}
+		}
+
+		found = append(found, as)
+	}
+
+	return found
+}
+
+// GetStyle returns the style with the specified tag name
+func (e *Element) GetStyle(f string) (*Style, error) {
+	for _, as := range e.Styles {
+		if as.Name == f {
+			return as, nil
+		}
+	}
+	return nil, ErrNotFound
+}
+
+// StyleContains returns the styles that contain the specified name and if the val is not empty then
+// that contains the specified value also, note that strings
+// NOTE: string.Contains is used
+func (e *Element) StyleContains(f, val string) bool {
+	for _, as := range e.Styles {
+		if !strings.Contains(as.Name, f) {
+			continue
+		}
+
+		if val != "" {
+			if !strings.Contains(as.Value, val) {
+				continue
+			}
+		}
+
+		return true
+	}
+
+	return false
+}
+
+// GetAttrs returns the attributes that have the specified text within the naming
+// convention and if it also contains the set val if not an empty "",
+// NOTE: string.Contains is used
+func (e *Element) GetAttrs(f, val string) []*Attribute {
+	var found []*Attribute
+
+	for _, as := range e.Attrs {
+		if as.Name != f {
+			continue
+		}
+
+		if val != "" {
+			if !strings.Contains(as.Value, val) {
+				continue
+			}
+		}
+
+		found = append(found, as)
+	}
+
+	return found
+}
+
+// AttrContains returns the attributes that have the specified text within the naming
+// convention and if it also contains the set val if not an empty "",
+// NOTE: string.Contains is used
+func (e *Element) AttrContains(f, val string) bool {
+	for _, as := range e.Attrs {
+		if !strings.Contains(as.Name, f) {
+			continue
+		}
+
+		if val != "" {
+			if !strings.Contains(as.Value, val) {
+				continue
+			}
+		}
+
+		return true
+	}
+
+	return false
+}
+
+// GetAttr returns the attribute with the specified tag name
+func (e *Element) GetAttr(f string) (*Attribute, error) {
+	for _, as := range e.Attrs {
+		if as.Name == f {
+			return as, nil
+		}
+	}
+	return nil, ErrNotFound
+}
+
+// ElementsUsingStyle returns the children within the element matching the
+// stlye restrictions passed.
+// NOTE: is uses Element.StyleContains
+func (e *Element) ElementsUsingStyle(f, val string) []*Element {
+	return e.DeepElementsUsingStyle(f, val, 1)
+}
+
+// ElementsWithAttr returns the children within the element matching the
+// stlye restrictions passed.
+// NOTE: is uses Element.AttrContains
+func (e *Element) ElementsWithAttr(f, val string) []*Element {
+	return e.DeepElementsWithAttr(f, val, 1)
+}
+
+// DeepElementsUsingStyle returns the children within the element matching the
+// style restrictions passed allowing control of search depth
+// NOTE: is uses Element.StyleContains
+func (e *Element) DeepElementsUsingStyle(f, val string, depth int) []*Element {
+	if depth <= 0 {
+		return nil
+	}
+
+	var found []*Element
+
+	for _, ch := range e.Children {
+		if che, ok := ch.(*Element); ok {
+			if che.StyleContains(f, val) {
+				found = append(found, che)
+				cfo := che.DeepElementsUsingStyle(f, val, depth-1)
+				if len(cfo) > 0 {
+					found = append(found, cfo...)
+				}
+			}
+		}
+	}
+
+	return found
+}
+
+// DeepElementsWithAttr returns the children within the element matching the
+// attributes restrictions passed allowing control of search depth
+// NOTE: is uses Element.AttrContains
+func (e *Element) DeepElementsWithAttr(f, val string, depth int) []*Element {
+	if depth <= 0 {
+		return nil
+	}
+
+	var found []*Element
+
+	for _, ch := range e.Children {
+		if che, ok := ch.(*Element); ok {
+			if che.AttrContains(f, val) {
+				found = append(found, che)
+				cfo := che.DeepElementsWithAttr(f, val, depth-1)
+				if len(cfo) > 0 {
+					found = append(found, cfo...)
+				}
+			}
+		}
+	}
+
+	return found
+
 }
 
 // AutoClosed returns true/false if this element uses a </> or a <></> tag convention
@@ -96,13 +308,15 @@ func (e *Element) Name() string {
 }
 
 // AddChild adds a new markup as the children of this element
-func (e *Element) AddChild(em Markup) {
+func (e *Element) AddChild(em Markup) bool {
 	e.Children = append(e.Children, em)
+	return true
 }
 
 //Apply adds the giving element into the current elements children tree
 func (e *Element) Apply(em *Element) {
 	em.AddChild(e)
+	e.Bind(em, false)
 }
 
 // Text represent a text element
@@ -127,11 +341,71 @@ func NewText(txt string) *Text {
 func MText(m reactive.Observers) *Text {
 	t := NewText(fmt.Sprintf("%+v", m.Get()))
 
-	m.React(func(r flux.Reactor, err error, d interface{}) {
+	m.React(func(r flux.Reactor, _ error, _ interface{}) {
 		t.Set(fmt.Sprintf("%+v", m.Get()))
 	}, true)
 
 	return t
+}
+
+// Clone makes a new copy of the markup structure
+func (t *Text) Clone() Markup {
+	return NewText(t.Get())
+}
+
+// AddChild adds a new markup as the children of this element
+func (t *Text) AddChild(em Markup) bool {
+	return false
+}
+
+// GetStyles implement this method as a noop
+func (t *Text) GetStyles(f, val string) []*Style {
+	return nil
+}
+
+// GetStyle implement this method as a noop
+func (t *Text) GetStyle(f string) (*Style, error) {
+	return nil, ErrNotFound
+}
+
+// StyleContains implement this method as a noop
+func (t *Text) StyleContains(f, val string) bool {
+	return false
+}
+
+// GetAttrs implement this method as a noop
+func (t *Text) GetAttrs(f, val string) []*Attribute {
+	return nil
+}
+
+// GetAttr implement this method as a noop
+func (t *Text) GetAttr(f string) (*Attribute, error) {
+	return nil, ErrNotFound
+}
+
+// AttrContains implement this method as a noop
+func (t *Text) AttrContains(f, val string) bool {
+	return false
+}
+
+// ElementsUsingStyle implement this method as a noop
+func (t *Text) ElementsUsingStyle(f, val string) []*Element {
+	return nil
+}
+
+// ElementsWithAttr implement this method as a noop
+func (t *Text) ElementsWithAttr(f, val string) []*Element {
+	return nil
+}
+
+// DeepElementsUsingStyle implement this method as a noop
+func (t *Text) DeepElementsUsingStyle(f, val string, depth int) []*Element {
+	return nil
+}
+
+// DeepElementsWithAttr implement this method as a noop
+func (t *Text) DeepElementsWithAttr(f, val string, depth int) []*Element {
+	return nil
 }
 
 // Set sets the value of the text
@@ -157,12 +431,18 @@ func (t *Text) Name() string {
 // Apply applies a set change to the giving element children list
 func (t *Text) Apply(e *Element) {
 	e.Children = append(e.Children, t)
+	t.Bind(e, false)
 }
 
 // Attribute define the struct  for attributes
 type Attribute struct {
 	Name  string
 	Value string
+}
+
+//Clone replicates the attribute into a unique instance
+func (a *Attribute) Clone() *Attribute {
+	return &Attribute{Name: a.Name, Value: a.Value}
 }
 
 // Apply applies a set change to the giving element attributes list
@@ -176,7 +456,23 @@ type Style struct {
 	Value string
 }
 
+//Clone replicates the style into a unique instance
+func (s *Style) Clone() *Style {
+	return &Style{Name: s.Name, Value: s.Value}
+}
+
 // Apply applies a set change to the giving element style list
 func (s *Style) Apply(e *Element) {
 	e.Styles = append(e.Styles, s)
+}
+
+//GetSearchable type-asserts the markup provided to a SearchableMarkup else returns nil
+func GetSearchable(m Markup) SearchableMarkup {
+	if tm, ok := m.(*Text); ok {
+		return tm
+	}
+	if em, ok := m.(*Element); ok {
+		return em
+	}
+	return nil
 }

@@ -1,13 +1,12 @@
 package views
 
 import (
-	"log"
 	"testing"
 
 	"github.com/influx6/flux"
 )
 
-var viewableSize = 475
+var viewableSize = 581
 
 func TestViewWithViewable(t *testing.T) {
 	//videoData to be rendered
@@ -22,15 +21,15 @@ func TestViewWithViewable(t *testing.T) {
 		},
 	}
 
-	videos, err := NewTemplateRenderable(`
+	videos, err := SourceView("listset", `
     <ul>
-      {{ range . }}
+      {{ range .Binding }}
         <li>
           <video src="{{.src}}">{{.name}}</video>
         <li>
       {{end}}
     </ul>
-  `)
+  `, videoData)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create video renderer: %s", err)
@@ -55,20 +54,13 @@ func TestViewWithViewable(t *testing.T) {
 		flux.FatalFailed(t, "Unable to create sourceview: %s", err)
 	}
 
-	err = videos.Execute(videoData)
-
-	if err != nil {
-		flux.FatalFailed(t, "Unable to process video template: %s", err)
-	}
-
 	//Lets add this as a viewable with the address set to render with the rootView (note: videos is not a StatefulViewable so the address wont matter but when dealing with a StatefulViewable it does,because it determines the visibility of the element)
 	home.AddView("video", ".", videos)
 
 	home.Engine().All(".", "")
 
-	bo := home.Render()
+	bo := home.RenderHTML()
 
-	log.Printf("bo: %d", len(bo))
 	if len(bo) != viewableSize {
 		flux.FatalFailed(t, "Rendered result with invalid length, expected %d but got %d", viewableSize, len(bo))
 	}
@@ -89,24 +81,18 @@ func TestViewWithStatefulViewable(t *testing.T) {
 		},
 	}
 
-	videos, err := NewTemplateRenderable(`
+	videos, err := SourceView("listset", `
     <ul>
-      {{ range . }}
+      {{ range .Binding }}
         <li>
           <video src="{{.src}}">{{.name}}</video>
         <li>
       {{end}}
     </ul>
-  `)
+  `, videoData)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create video renderer: %s", err)
-	}
-
-	err = videos.Execute(videoData)
-
-	if err != nil {
-		flux.FatalFailed(t, "Unable to process video template: %s", err)
 	}
 
 	vidom, err := SourceView("videoView", `
@@ -163,14 +149,14 @@ func TestViewWithStatefulViewable(t *testing.T) {
 	index.AddView("adom", ".", adom)
 
 	//lets first render with the state address for '.'
-	rootRender := index.Render(".")
+	rootRender := index.RenderHTML(".")
 
 	if len(rootRender) < 100 {
 		flux.FatalFailed(t, "Bad render received: %s", rootRender)
 	}
 
 	//lets first render with the state address for '.'
-	videoRender := index.Render(".videos")
+	videoRender := index.RenderHTML(".videos")
 
 	if len(videoRender) < 100 {
 		flux.FatalFailed(t, "Bad render received: %s", videoRender)

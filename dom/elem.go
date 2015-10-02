@@ -1,11 +1,14 @@
 package dom
 
 import (
+	"html/template"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/influx6/flux"
+	"github.com/influx6/haiku/trees"
 	"github.com/influx6/haiku/views"
 	hodom "honnef.co/go/js/dom"
 )
@@ -89,12 +92,17 @@ func NewEvents(elem hodom.Element) *Events {
 }
 
 // BuildEvents builds a event manager untop of a exisiting views.EventManager and dom element
-func BuildEvents(elem hodom.Element, events *views.EventManager) *Events {
-	eo := Events{
+func BuildEvents(elem hodom.Element, events *views.EventManager, build bool) *Events {
+	eo := &Events{
 		EventManager: events,
 		dom:          elem,
 	}
-	return &eo
+
+	if build {
+		eo.ReRegisterEvents()
+	}
+
+	return eo
 }
 
 // AddEvent allows the adding of event using string values
@@ -192,125 +200,50 @@ func (em *Events) setupEvent(eo *ElemEvent) {
 	}
 }
 
-// Elem represent a standard html element
-type Elem struct {
-	hodom.Element
-	*Events
-}
-
-// NewElement returns a new Element instance for interacting with the dom
-func NewElement(e hodom.Element) *Elem {
-	return &Elem{
-		Element: e,
-		Events:  NewEvents(e),
-	}
-}
-
-// UseElement returns a new Element instance for interacting with the dom
-func UseElement(e hodom.Element, ex *views.EventManager) *Elem {
-	m := &Elem{
-		Element: e,
-		Events:  BuildEvents(e, ex),
-	}
-
-	m.fresh = true
-	m.ReRegisterEvents()
-	return m
-}
-
-//UseDOM overwrites the Events.UseDOM to ensure no issues
-// TODO: find out if this can cause race-conditons
-func (em *Elem) UseDOM(dom hodom.Element) {
-	em.Element = dom
-	em.Events.UseDOM(dom)
-}
-
-// Remove removes this element from this parent
-func (em *Elem) Remove() {
-	pe := em.ParentElement()
-	if pe != nil {
-		pe.RemoveChild(em.Element)
-	}
-}
-
-// Html sets value of the inner html
-func (em *Elem) Html(el, target string) {
-	if target == "" {
-		em.SetInnerHTML(el)
-		return
-	}
-
-	to := em.QuerySelectorAll(target)
-	for _, eo := range to {
-		eo.SetInnerHTML(el)
-	}
-}
-
-// Text sets value of the text content or returns the text content value if it receives no arguments
-func (em *Elem) Text(el, target string) {
-	if target == "" {
-		em.SetTextContent(el)
-		return
-	}
-
-	to := em.QuerySelectorAll(target)
-	for _, eo := range to {
-		eo.SetTextContent(el)
-	}
-}
-
-// ViewElement combines the dom.Element and haiku.View package to create a renderable view
-type ViewElement struct {
-	views.ReactiveViews
-	*Elem
-	target   string
+// ViewComponent combines the dom.Element and haiku.View package to create a renderable view
+type ViewComponent struct {
+	views.Components
+	dom      hodom.Element
+	events   *Events
 	lastAddr []string
+	throttle time.Timer
 }
 
-// ViewComponent creates a new ViewElement with a view component for rendering
-func ViewComponent(dol hodom.Element, v views.Components, targetSelector string) *ViewElement {
-	elem := UseElement(dol, v.Events())
-	return NewViewElement(elem, v, targetSelector)
-}
-
-// ViewDOM creates a new ViewElement from the given set of arguments ready for rendering
-func ViewDOM(dol hodom.Element, v views.Views, targetSelector string) *ViewElement {
-	return NewViewElement(NewElement(dol), v, targetSelector)
-}
-
-// NewViewElement returns a new instance of ViewElement which takes a dom *Element,
-// a View manager and a optional target string which is used when rendring incase we
-// wish to render to a target within the dom.Element and not the element itself has.
-// This should be never be mixed into another View because its the last and should be
-// the last point of rendering, it can be added to a StateEngine for updates on behaviour and state
-// but never for sub-view rendering
-func NewViewElement(elem *Elem, v views.Views, target string) *ViewElement {
-
-	ve := &ViewElement{
-		ReactiveViews: views.ReactView(v),
-		Elem:          elem,
-		target:        target,
+// BasicView creates a new ViewElement with a view component for rendering
+func BasicView(v views.Components, targetSelector string) *ViewComponent {
+	vc := &ViewComponent{
+		Components: v,
+		events:     BuildEvents(nil, v.Events(), false),
+		lastAddr:   []string{"."},
 	}
 
-	ve.React(func(r flux.Reactor, err error, d interface{}) {
-		if err != nil {
-			r.ReplyError(err)
-			return
+	vc.React(func(r flux.Reactor, _ error, _ interface{}) {
+		//if we are not domless then patch
+		if vc.dom != nil {
+			Patch(CreateFragment(string(v.RenderHTML(vc.lastAddr...))), vc.dom)
 		}
-
-		ve.Sync(ve.lastAddr...)
-		r.Reply(d)
 	}, true)
 
-	ve.Sync(".")
-
-	return ve
+	return vc
 }
 
-// Sync calls the views render function and renders out into the attach dom element
-// each time it said to sync, its address is cache for when there is an update by
-// the internal sub-views
-func (v *ViewElement) Sync(addr ...string) {
-	v.lastAddr = addr
-	v.Elem.Html(v.ReactiveViews.Render(addr...), v.target)
+// Mount assigns the dom element to use with the view
+func (v *ViewComponent) Mount(dom hodom.Element) *ViewComponent {
+	v.events.unRegisterEvents()
+	v.dom = dom
+	v.events.dom = dom
+	v.events.ReRegisterEvents()
+	return v
+}
+
+// Render overrides Component.Render
+func (v *ViewComponent) Render(n ...string) trees.Markup {
+	v.lastAddr = n
+	return v.Components.Render(n...)
+}
+
+// RenderHTML overrides Component.Render
+func (v *ViewComponent) RenderHTML(n ...string) template.HTML {
+	v.lastAddr = n
+	return v.Components.RenderHTML(n...)
 }

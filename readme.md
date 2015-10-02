@@ -20,9 +20,10 @@ The structures in this library shamefully only connection with the real essense 
 
 ## Current Features
   - State based view management using a state machine to react to address changes
-  - Pure toString rendering of views and sub-views using go templates
-  - Composable views and sub-views with customizable rendered output using go templates
-  - DOM based Elements that can render views and update views based on view state changes
+  - Nestable views
+  - Pure string rendering of views using either go templates or custom markup system (this provide a better option)
+  - DOM elements tied to Haiku.Components capable of rendering views (using a documentfragment patching method)
+  - Blueprinting the creation of components to easily rebuild them
 
 ## Future Features
   - Create a simple virtual dom diffing system that reduces rendering overhead

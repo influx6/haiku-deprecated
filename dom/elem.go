@@ -2,7 +2,6 @@ package dom
 
 import (
 	"html/template"
-	"log"
 	"strings"
 	"sync"
 	"time"
@@ -219,12 +218,9 @@ func BasicView(v views.Components) *ViewComponent {
 	}
 
 	vc.React(func(r flux.Reactor, _ error, _ interface{}) {
-		log.Printf("reacting for change: %s", vc.dom)
 		//if we are not domless then patch
 		if vc.dom != nil {
-			log.Printf("building html for rendering", v)
 			html := vc.RenderHTML(vc.lastAddr...)
-			log.Printf("html for %s -> %s", v.Tag(), html)
 			Patch(CreateFragment(string(html)), vc.dom)
 		}
 	}, true)

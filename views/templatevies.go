@@ -11,6 +11,8 @@ import (
 )
 
 // TemplateView provides a view system based on html.templates
+// WARNING: TemplateView will wrap their outputs in a tmlview
+// so never try to wrap a full <html></htmL> sequence with them
 type TemplateView struct {
 	Views
 	Tmpl *template.Template

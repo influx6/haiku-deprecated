@@ -150,9 +150,6 @@ func TestViewWithStatefulViewable(t *testing.T) {
 	}
 
 	index, err := SourceView("indexView", `
-  <html>
-    <head></head>
-    <body>
       <section class="gopher-vids">
             {{ (.View "vom").RenderHTML }}
       </section>
@@ -160,8 +157,6 @@ func TestViewWithStatefulViewable(t *testing.T) {
       <section class="fav-audios">
             {{ (.View "adom").RenderHTML }}
       </section>
-    </body>
-  </html>
   `, nil, true)
 
 	if err != nil {

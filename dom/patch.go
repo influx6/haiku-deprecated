@@ -2,7 +2,6 @@ package dom
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	hodom "honnef.co/go/js/dom"
@@ -122,6 +121,11 @@ patchloop:
 				uid = elem.GetAttribute("uid")
 			}
 
+			// if tagname == "tmlview" {
+			// 	frstchild := node.()
+			// 	frstchild.
+			// }
+
 			// if we have no id,class, uid or hash, we digress to bad approach of using Node.IsEqualNode
 			if allEmpty(id, hash, uid) {
 				AddNodeIfNone(live, node)
@@ -160,10 +164,8 @@ patchloop:
 			// lets use our unique id to check for the element if it exists
 			sel := fmt.Sprintf(`%s[uid='%s']`, strings.ToLower(tagname), uid)
 
-			log.Printf("using query for queryselect (%s)", sel)
 			// we know hash and uid are not empty so we kick ass the easy way
 			target := live.QuerySelector(sel)
-			log.Printf("using query for queryselect %s -> %+s - %+s", sel, target, live)
 
 			// if we are nil then its a new node add it and return
 			if target == nil {

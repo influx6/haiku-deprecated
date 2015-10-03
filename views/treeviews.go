@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/influx6/haiku/trees"
-	"github.com/influx6/haiku/trees/elems"
 )
 
 // TreeView provides a pure trees.Markup based view system ontop of the base view allowing creation of views entirely using the trees.Markup structures
@@ -17,7 +16,7 @@ type TreeView struct {
 // Markup whilst still assessing the view.View function comfortably
 type TreeMux func(Views) trees.SearchableMarkup
 
-// NewTreeView returns a new TreeView instance if no TreeMux handle is supplied it uses a Div element as default or in case you return a nil dom tree
+// NewTreeView returns a new TreeView instance if no TreeMux handle is supplied it uses a element with the tagname as default or in case you return a nil dom tree
 func NewTreeView(tag string, strategy Strategy, binding interface{}, mux TreeMux) *TreeView {
 	//the view this tree uses underneath
 	view := NewView(tag, strategy, binding)
@@ -31,11 +30,11 @@ func NewTreeView(tag string, strategy Strategy, binding interface{}, mux TreeMux
 
 		//if still nil ,switch to default div node
 		if dom == nil {
-			dom = elems.Div()
+			dom = trees.NewElement(tag, false)
 		}
 	} else {
 		//no handler so straight to default div
-		dom = elems.Div()
+		dom = trees.NewElement(tag, false)
 	}
 
 	view.switchDOM(dom)

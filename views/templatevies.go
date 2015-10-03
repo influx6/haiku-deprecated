@@ -20,7 +20,7 @@ type TemplateView struct {
 
 // NewTemplateView returns a new view specifically created to use go html.template as a rendering system
 func NewTemplateView(tag string, t *template.Template, strategy Strategy, binding interface{}) *TemplateView {
-	hdom := trees.NewElement("tmlview", false)
+	hdom := trees.NewElement(tag, false)
 	tv := &TemplateView{
 		Views: NewView(tag, strategy, binding),
 		Tmpl:  t,

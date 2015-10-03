@@ -8,6 +8,7 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/influx6/flux"
 	"github.com/influx6/haiku/views"
+	"honnef.co/go/js/dom"
 )
 
 /*
@@ -116,15 +117,20 @@ func panicBrowserDetect() {
 // It ties directly into the page hash or popstate location to provide consistent updates
 type Page struct {
 	*views.StateEngine
-	path *PathObserver
+	path  *PathObserver
+	views []*ViewComponent
 }
 
 // NewPage returns the new state engine powered page
 func NewPage(p *PathObserver) *Page {
-	return &Page{
+	pg := &Page{
 		StateEngine: views.NewStateEngine(),
 		path:        p,
+		views:       make([]*ViewComponent, 0),
 	}
+
+	pg.All(".", nil)
+	return pg
 }
 
 // MyPage builds a new page with the appropriate path manager based on browser support, if the push and popstate were supported it will use that else use a hashpath manager
@@ -138,6 +144,29 @@ func MyPage() *Page {
 	}
 
 	return NewPage(p)
+}
+
+// ErrBadSelector is used to indicate if the selector returned no result
+var ErrBadSelector = errors.New("Selector returned nil")
+
+// Mount adds a component into the page for handling/managing of visiblity and
+// gets the dom referenced by the selector using QuerySelector and returns an error if selector gave no result
+func (p *Page) Mount(selector, addr string, v views.Components) error {
+	n := dom.GetWindow().Document().QuerySelector(selector)
+
+	if n == nil {
+		return ErrBadSelector
+	}
+
+	bv := BasicView(v)
+	p.views = append(p.views, bv)
+	bv.Mount(n)
+	return nil
+}
+
+// AddView adds a view to the page
+func (p *Page) AddView(addr string, v views.Views) {
+	p.UseState(addr, v)
 }
 
 // Address returns the current path and hash of the location api

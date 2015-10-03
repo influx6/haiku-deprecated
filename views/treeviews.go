@@ -1,6 +1,8 @@
 package views
 
 import (
+	"strings"
+
 	"github.com/influx6/haiku/trees"
 	"github.com/influx6/haiku/trees/elems"
 )
@@ -36,6 +38,8 @@ func NewTreeView(tag string, strategy Strategy, binding interface{}, mux TreeMux
 		dom = elems.Div()
 	}
 
+	view.switchDOM(dom)
+
 	return &TreeView{
 		Views:  view,
 		markup: dom,
@@ -49,18 +53,15 @@ func UseTreeView(dom trees.SearchableMarkup, tag string, strategy Strategy, bind
 	})
 }
 
-// DOM overrides the default DOM() method to return the user defined dom tree
-func (t *TreeView) DOM() trees.SearchableMarkup {
-	return t.markup
-}
-
 // DOMDisplayStrategy provides a simple "display:none" strategy for domtrees
 func DOMDisplayStrategy(w trees.MarkupWriter) Strategy {
 	return NewViewStrategy(w, func(v Views) trees.Markup {
 		dom := v.DOM()
 
 		if ds, err := dom.GetStyle("display"); err == nil {
-			ds.Value = "block"
+			if strings.Contains(ds.Value, "none") {
+				ds.Value = "block"
+			}
 		}
 
 		return dom
@@ -94,10 +95,28 @@ func (b *TreeBlueprint) Type() string {
 	return b.tag
 }
 
-// View returns a new Component using the underline TreeView derivative, if `dobind` is true then it binds the reactive binding with the view. The blueprint's dom tree is cloned
-func (b *TreeBlueprint) View(bind interface{}, vs Strategy, dobind bool) Components {
+// TreeBlueprintMux defines a handler for a treeView that lets you buildup the views
+type TreeBlueprintMux func(Views, trees.SearchableMarkup) trees.SearchableMarkup
+
+// CreateComponent returns a new Component using the underline TreeView derivative, if `dobind` is true then it binds the reactive binding with the view. The blueprint's dom tree is cloned
+func (b *TreeBlueprint) CreateComponent(bind interface{}, vs Strategy, dobind bool, mx TreeBlueprintMux) Components {
+	//no strategy is supplid,create one
+	if vs == nil {
+		vs = DOMDisplayStrategy(trees.SimpleMarkupWriter)
+	}
+
 	view := ReactView(NewTreeView(MakeBlueprintName(b), vs, bind, func(v Views) trees.SearchableMarkup {
-		return trees.GetSearchable(b.tree.Clone())
+		cl := trees.GetSearchable(b.tree.Clone())
+		if mx != nil {
+			return mx(v, cl)
+		}
+		return cl
 	}), dobind)
+
 	return NewComponent(view, dobind)
+}
+
+// Create returns a new Component using the default DOMDisplayStrategy
+func (b *TreeBlueprint) Create(bind interface{}, dobind bool) Components {
+	return b.CreateComponent(bind, nil, dobind, nil)
 }

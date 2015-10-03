@@ -97,6 +97,7 @@ type Views interface {
 	AddView(string, string, Viewable) error
 	AddStatefulViewable(string, string, StatefulViewable) error
 	add(string, Viewable) error
+	switchDOM(trees.SearchableMarkup)
 	Strategy() Strategy
 }
 
@@ -235,6 +236,12 @@ func (v *View) String() string {
 	return string(v.RenderHTML())
 }
 
+// switchDOM lets you switch out the dom returned by the view
+func (v *View) switchDOM(dom trees.SearchableMarkup) {
+	v.dom = dom
+}
+
+// add internally adds a view with the tag into the views list
 func (v *View) add(tag string, vm Viewable) error {
 	return v.views.Add(tag, vm)
 }

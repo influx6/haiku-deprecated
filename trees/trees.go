@@ -28,6 +28,7 @@ type Markup interface {
 	Clone() Markup
 	Name() string
 	AddChild(Markup) bool
+	Augment(...Markup) bool
 }
 
 // SearchableMarkup defines the specification for Markups that allow filtering
@@ -313,6 +314,14 @@ func (e *Element) AddChild(em Markup) bool {
 	return true
 }
 
+// Augment provides a generic method for markup addition
+func (e *Element) Augment(m ...Markup) bool {
+	for _, mo := range m {
+		mo.Apply(e)
+	}
+	return true
+}
+
 //Apply adds the giving element into the current elements children tree
 func (e *Element) Apply(em *Element) {
 	em.AddChild(e)
@@ -346,6 +355,11 @@ func MText(m reactive.Observers) *Text {
 	}, true)
 
 	return t
+}
+
+// Augment is implemented as a no-op
+func (t *Text) Augment(m ...Markup) bool {
+	return false
 }
 
 // Clone makes a new copy of the markup structure
@@ -475,4 +489,13 @@ func GetSearchable(m Markup) SearchableMarkup {
 		return em
 	}
 	return nil
+}
+
+// Augment adds new markup to an the root if its Element
+func Augment(root Markup, m ...Markup) {
+	if el, ok := root.(*Element); ok {
+		for _, mo := range m {
+			mo.Apply(el)
+		}
+	}
 }

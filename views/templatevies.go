@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"strings"
 
 	"github.com/influx6/assets"
 	"github.com/influx6/haiku/trees"
@@ -27,13 +28,9 @@ func NewTemplateView(tag string, t *template.Template, strategy Strategy, bindin
 		txt:   trees.NewText(""),
 	}
 
+	tv.Views.switchDOM(hdom)
 	tv.txt.Apply(hdom)
 	return tv
-}
-
-// DOM overrides the default DOM() method to return the user defined dom tree
-func (v *TemplateView) DOM() trees.SearchableMarkup {
-	return v.hdom
 }
 
 // RenderHTML renders the output from .Render() as safe html unescaped
@@ -152,7 +149,9 @@ func HiddenTemplateStrategy(w trees.MarkupWriter) Strategy {
 		dom := v.DOM()
 
 		if ds, err := dom.GetStyle("display"); err == nil {
-			ds.Value = "block"
+			if strings.Contains(ds.Value, "none") {
+				ds.Value = "block"
+			}
 		}
 
 		bo, err := tv.Execute()
@@ -168,7 +167,9 @@ func HiddenTemplateStrategy(w trees.MarkupWriter) Strategy {
 		dom := v.DOM()
 
 		if ds, err := dom.GetStyle("display"); err == nil {
-			ds.Value = "block"
+			if strings.Contains(ds.Value, "none") {
+				ds.Value = "block"
+			}
 		}
 
 		return dom
@@ -304,8 +305,13 @@ func (b *TemplateBlueprint) Type() string {
 	return b.bluetag
 }
 
-// View builds up a blueprint with the arguments, the name tag giving to the underline view is modded with the blueprint type name + a 5-length random string to make it unique in the state machines. All reactive binding are done if dobind is true hence boudning the binding change notification to the view.
-func (b *TemplateBlueprint) View(bind interface{}, vs Strategy, dobind bool) Components {
+// CreateComponent builds up a blueprint with the arguments, the name tag giving to the underline view is modded with the blueprint type name + a 5-length random string to make it unique in the state machines. All reactive binding are done if dobind is true hence boudning the binding change notification to the view.
+func (b *TemplateBlueprint) CreateComponent(bind interface{}, vs Strategy, dobind bool) Components {
 	view := BuildReactiveTemplateView(MakeBlueprintName(b), b.format, vs, bind, dobind)
 	return NewComponent(view, false)
+}
+
+// Create returns a new Component using the default HiddenTemplateStrategy
+func (b *TemplateBlueprint) Create(bind interface{}, dobind bool) Components {
+	return b.CreateComponent(bind, HiddenTemplateStrategy(trees.SimpleMarkupWriter), dobind)
 }

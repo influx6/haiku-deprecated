@@ -210,7 +210,7 @@ type ViewComponent struct {
 }
 
 // BasicView creates a new ViewElement with a view component for rendering
-func BasicView(v views.Components, targetSelector string) *ViewComponent {
+func BasicView(v views.Components) *ViewComponent {
 	vc := &ViewComponent{
 		Components: v,
 		events:     BuildEvents(nil, v.Events(), false),
@@ -233,6 +233,7 @@ func (v *ViewComponent) Mount(dom hodom.Element) *ViewComponent {
 	v.dom = dom
 	v.events.dom = dom
 	v.events.ReRegisterEvents()
+	v.Send(true)
 	return v
 }
 

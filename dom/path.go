@@ -160,6 +160,7 @@ func (p *Page) Mount(selector, addr string, v views.Components) error {
 
 	bv := BasicView(v)
 	p.views = append(p.views, bv)
+	p.AddView(addr, v)
 	bv.Mount(n)
 	return nil
 }

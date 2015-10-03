@@ -2,6 +2,8 @@ package dom
 
 import (
 	"fmt"
+	"log"
+	"strings"
 
 	hodom "honnef.co/go/js/dom"
 )
@@ -156,9 +158,12 @@ patchloop:
 			}
 
 			// lets use our unique id to check for the element if it exists
-			sel := fmt.Sprintf("%s[uid=%s]", tagname, uid)
+			sel := fmt.Sprintf(`%s[uid='%s']`, strings.ToLower(tagname), uid)
+
+			log.Printf("using query for queryselect (%s)", sel)
 			// we know hash and uid are not empty so we kick ass the easy way
 			target := live.QuerySelector(sel)
+			log.Printf("using query for queryselect %s -> %+s - %+s", sel, target, live)
 
 			// if we are nil then its a new node add it and return
 			if target == nil {

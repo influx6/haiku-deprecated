@@ -126,12 +126,12 @@ func NewView(tag string, strategy Strategy, binding interface{}) *View {
 	}
 
 	v.State.UseActivator(func(s *StateStat) {
-		v.DOM().Send(true)
+		// v.DOM().Send(true)
 		v.strategy.SwitchActive()
 	})
 
 	v.State.UseDeactivator(func(s *StateStat) {
-		v.DOM().Send(true)
+		// v.DOM().Send(true)
 		v.strategy.SwitchInActive()
 	})
 
@@ -305,14 +305,15 @@ type ObserveStatefulViewable interface {
 
 // ReactiveViews provides the interface type for ReactiveView
 type ReactiveViews interface {
-	flux.Reactor
 	Views
+	flux.Reactor
 }
 
 // ReactiveView defines a struct that handles the addition of views that react to change, meaning it can deal with the standard Viewable and StatefulViewable types and the combination of Observers by letting the providing listen for change in the main view or subviews to take appropriate action i.e it does nothing than the normal views but only to signal a change reaction from subviews upward to anyone who wishes to listen and react to that
 type ReactiveView struct {
-	flux.Reactor
 	Views
+	flux.Reactor
+	dombinder flux.Reactor
 }
 
 // BindReactor binds the reactorView with a binding value if that value is a flux.Rector type
@@ -324,7 +325,9 @@ func BindReactor(v ReactiveViews, b interface{}) {
 
 // ReactView returns a new ReactiveView instance using a Views type as a composition, thereby turning a simple view into a reactable view. if the `dobind` bool is true and if the binding from the view is reactive then the binding is made to the new ReactiveView
 func ReactView(v Views, dobind bool) ReactiveViews {
-	if rve, ok := v.(ReactiveViews); ok {
+	rve, ok := v.(ReactiveViews)
+
+	if ok {
 		return rve
 	}
 
@@ -375,6 +378,21 @@ func (v *ReactiveView) AddView(tag, addr string, vm Viewable) error {
 	}
 
 	return v.AddViewable(tag, vm)
+}
+
+// switchDOM lets you switch out the dom returned by the view
+func (v *ReactiveView) switchDOM(dom trees.SearchableMarkup) {
+	if v.dombinder != nil {
+		v.dombinder.Close()
+	}
+
+	binder := dom.React(func(r flux.Reactor, _ error, d interface{}) {
+		v.Reactor.Send(d)
+	}, true)
+
+	v.Views.switchDOM(dom)
+
+	v.dombinder = binder
 }
 
 // Blueprint defines a interface type for blueprints

@@ -14,8 +14,9 @@ type component struct {
 
 // NewComponent returns a new component instance
 func NewComponent(v Views, dobind bool) Components {
+	vro := ReactView(v, dobind)
 	co := component{
-		ReactiveViews: ReactView(v, dobind),
+		ReactiveViews: vro,
 		events:        NewEventManager(),
 	}
 

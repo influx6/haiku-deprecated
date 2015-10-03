@@ -4,23 +4,51 @@ import (
 	"testing"
 
 	"github.com/influx6/flux"
+	"github.com/influx6/haiku/trees"
+	"github.com/influx6/haiku/trees/attrs"
+	"github.com/influx6/haiku/trees/elems"
 )
 
-var viewableSize = 581
+//videoData to be rendered
+var videoData = []map[string]string{
+	map[string]string{
+		"src":  "https://youtube.com/xF5R32YF4",
+		"name": "Joyride Lewis!",
+	},
+	map[string]string{
+		"src":  "https://youtube.com/dox32YF4",
+		"name": "Wonderlust Bombs!",
+	},
+}
 
-func TestViewWithViewable(t *testing.T) {
-	//videoData to be rendered
-	videoData := []map[string]interface{}{
-		map[string]interface{}{
-			"src":  "https://youtube.com/xF5R32YF4",
-			"name": "Joyride Lewis!",
-		},
-		map[string]interface{}{
-			"src":  "https://youtube.com/dox32YF4",
-			"name": "Wonderlust Bombs!",
-		},
+var treeRenderlen = 246
+
+func TestReactiveView(t *testing.T) {
+	videos := NewTreeView("rack", DOMDisplayStrategy(trees.SimpleMarkupWriter), videoData, func(v Views) trees.SearchableMarkup {
+		dom := elems.Div()
+
+		for _, data := range videoData {
+			dom.Augment(elems.Video(
+				attrs.Src(data["src"]),
+				elems.Text(data["name"]),
+			))
+		}
+
+		return dom
+	}, true)
+
+	bo := videos.RenderHTML(".")
+
+	if len(bo) != treeRenderlen {
+		flux.FatalFailed(t, "Rendered result with invalid length, expected %d but got %d -> \n %s", treeRenderlen, len(bo), bo)
 	}
 
+	flux.LogPassed(t, "Rendered result accurated with length %d", treeRenderlen)
+}
+
+var viewableSize = 583
+
+func TestViewWithViewable(t *testing.T) {
 	videos, err := SourceView("listset", `
     <ul>
       {{ range .Binding }}
@@ -29,7 +57,7 @@ func TestViewWithViewable(t *testing.T) {
         <li>
       {{end}}
     </ul>
-  `, videoData)
+  `, videoData, true)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create video renderer: %s", err)
@@ -48,7 +76,7 @@ func TestViewWithViewable(t *testing.T) {
         </div>
       </body>
     </html>
-  `, nil)
+  `, nil, true)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create sourceview: %s", err)
@@ -57,12 +85,10 @@ func TestViewWithViewable(t *testing.T) {
 	//Lets add this as a viewable with the address set to render with the rootView (note: videos is not a StatefulViewable so the address wont matter but when dealing with a StatefulViewable it does,because it determines the visibility of the element)
 	home.AddView("video", ".", videos)
 
-	home.Engine().All(".", "")
-
-	bo := home.RenderHTML()
+	bo := home.RenderHTML(".")
 
 	if len(bo) != viewableSize {
-		flux.FatalFailed(t, "Rendered result with invalid length, expected %d but got %d", viewableSize, len(bo))
+		flux.FatalFailed(t, "Rendered result with invalid length, expected %d but got %d -> \n %s", viewableSize, len(bo), bo)
 	}
 
 	flux.LogPassed(t, "Rendered result accurated with length %d", viewableSize)
@@ -89,7 +115,7 @@ func TestViewWithStatefulViewable(t *testing.T) {
         <li>
       {{end}}
     </ul>
-  `, videoData)
+  `, videoData, true)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create video renderer: %s", err)
@@ -99,7 +125,7 @@ func TestViewWithStatefulViewable(t *testing.T) {
     <video-view>
       {{ (.View "video").RenderHTML }}
     </video-view>
-  `, nil)
+  `, nil, true)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create vidom source view: %s", err)
@@ -117,7 +143,7 @@ func TestViewWithStatefulViewable(t *testing.T) {
   	{{range .Views }}
   			{{ .RenderHTML }}
   	{{ end }}
-  `, nil)
+  `, nil, true)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create audio source view: %s", err)
@@ -136,7 +162,7 @@ func TestViewWithStatefulViewable(t *testing.T) {
       </section>
     </body>
   </html>
-  `, nil)
+  `, nil, true)
 
 	if err != nil {
 		flux.FatalFailed(t, "Unable to create index source view: %s", err)

@@ -8,7 +8,7 @@ import (
 
 // TreeView provides a pure trees.Markup based view system ontop of the base view allowing creation of views entirely using the trees.Markup structures
 type TreeView struct {
-	Views
+	ReactiveViews
 	markup trees.SearchableMarkup
 }
 
@@ -17,9 +17,9 @@ type TreeView struct {
 type TreeMux func(Views) trees.SearchableMarkup
 
 // NewTreeView returns a new TreeView instance if no TreeMux handle is supplied it uses a element with the tagname as default or in case you return a nil dom tree
-func NewTreeView(tag string, strategy Strategy, binding interface{}, mux TreeMux) *TreeView {
+func NewTreeView(tag string, strategy Strategy, binding interface{}, mux TreeMux, dobind bool) *TreeView {
 	//the view this tree uses underneath
-	view := NewView(tag, strategy, binding)
+	view := ReactView(NewView(tag, strategy, binding), dobind)
 
 	//the dom tree we want to use for building up
 	var dom trees.SearchableMarkup
@@ -40,16 +40,16 @@ func NewTreeView(tag string, strategy Strategy, binding interface{}, mux TreeMux
 	view.switchDOM(dom)
 
 	return &TreeView{
-		Views:  view,
-		markup: dom,
+		ReactiveViews: view,
+		markup:        dom,
 	}
 }
 
 // UseTreeView uses a predefined dom tree to create a TreeView
-func UseTreeView(dom trees.SearchableMarkup, tag string, strategy Strategy, binding interface{}) *TreeView {
+func UseTreeView(dom trees.SearchableMarkup, tag string, strategy Strategy, binding interface{}, dobind bool) *TreeView {
 	return NewTreeView(tag, strategy, binding, func(v Views) trees.SearchableMarkup {
 		return dom
-	})
+	}, dobind)
 }
 
 // DOMDisplayStrategy provides a simple "display:none" strategy for domtrees
@@ -104,13 +104,13 @@ func (b *TreeBlueprint) CreateComponent(bind interface{}, vs Strategy, dobind bo
 		vs = DOMDisplayStrategy(trees.SimpleMarkupWriter)
 	}
 
-	view := ReactView(NewTreeView(MakeBlueprintName(b), vs, bind, func(v Views) trees.SearchableMarkup {
+	view := NewTreeView(MakeBlueprintName(b), vs, bind, func(v Views) trees.SearchableMarkup {
 		cl := trees.GetSearchable(b.tree.Clone())
 		if mx != nil {
 			return mx(v, cl)
 		}
 		return cl
-	}), dobind)
+	}, dobind)
 
 	return NewComponent(view, dobind)
 }

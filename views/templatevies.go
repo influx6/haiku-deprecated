@@ -19,10 +19,12 @@ type TemplateView struct {
 }
 
 // NewTemplateView returns a new view specifically created to use go html.template as a rendering system
-func NewTemplateView(tag string, t *template.Template, strategy Strategy, binding interface{}) *TemplateView {
+func NewTemplateView(tag string, t *template.Template, strategy Strategy, binding interface{}, dobind bool) *TemplateView {
 	hdom := trees.NewElement(tag, false)
+	view := ReactView(NewView(tag, strategy, binding), dobind)
+
 	tv := &TemplateView{
-		Views: NewView(tag, strategy, binding),
+		Views: view,
 		Tmpl:  t,
 		hdom:  hdom,
 		txt:   trees.NewText(""),
@@ -231,17 +233,17 @@ const ViewLightTemplate = `
 `
 
 // SimpleView provides a view based on the ViewLightTemplate template
-func SimpleView(tag string, binding interface{}) (v *TemplateView, err error) {
-	return SourceView(tag, ViewLightTemplate, binding)
+func SimpleView(tag string, binding interface{}, dobind bool) (v *TemplateView, err error) {
+	return SourceView(tag, ViewLightTemplate, binding, dobind)
 }
 
 // SimpleTreeView provides a view based on the ViewHTMLTemplate template
-func SimpleTreeView(tag string, binding interface{}) (v *TemplateView, err error) {
-	return SourceView(tag, ViewHTMLTemplate, binding)
+func SimpleTreeView(tag string, binding interface{}, dobind bool) (v *TemplateView, err error) {
+	return SourceView(tag, ViewHTMLTemplate, binding, dobind)
 }
 
 // SourceView provides a view that takes the template format of which it will render the view as
-func SourceView(tag, tmpl string, binding interface{}) (v *TemplateView, err error) {
+func SourceView(tag, tmpl string, binding interface{}, dobind bool) (v *TemplateView, err error) {
 	var tl *template.Template
 
 	tl, err = template.New(tag).Parse(tmpl)
@@ -250,38 +252,15 @@ func SourceView(tag, tmpl string, binding interface{}) (v *TemplateView, err err
 		return
 	}
 
-	v = NewTemplateView(tag, tl, SilentTemplateStrategy(trees.SimpleMarkupWriter), binding)
+	v = NewTemplateView(tag, tl, SilentTemplateStrategy(trees.SimpleMarkupWriter), binding, dobind)
 
 	return
 }
 
 // AssetView provides a view that takes the template format of which it will render the view as
-func AssetView(tag, blockName string, binding interface{}, as *assets.AssetTemplate) (v *TemplateView, err error) {
-	v = NewTemplateView(tag, as.Tmpl, SilentTemplateNameStrategy(blockName, trees.SimpleMarkupWriter), binding)
+func AssetView(tag, blockName string, binding interface{}, as *assets.AssetTemplate, dobind bool) (v *TemplateView, err error) {
+	v = NewTemplateView(tag, as.Tmpl, SilentTemplateNameStrategy(blockName, trees.SimpleMarkupWriter), binding, dobind)
 	return
-}
-
-// NewReactiveTemplateView provides a decorator function to return a new ReactiveView with the same arguments passed to NewView(...)
-func NewReactiveTemplateView(tag string, tl *template.Template, strategy Strategy, binding interface{}) ReactiveViews {
-	return BuildReactiveTemplateView(tag, tl, strategy, binding, true)
-}
-
-// BuildReactiveTemplateView provides a decorator function to return a new ReactiveView with the same arguments passed to NewView(...), useRB -> means UseReactiveBinding
-func BuildReactiveTemplateView(tag string, tl *template.Template, strategy Strategy, binding interface{}, useRB bool) ReactiveViews {
-	rv := ReactView(NewTemplateView(tag, tl, strategy, binding), useRB)
-	return rv
-}
-
-// ReactiveSourceView provides a view that takes the template format of which it will render the view as
-func ReactiveSourceView(tag, tmpl string, binding interface{}, userb bool) (ReactiveViews, error) {
-	sv, err := SourceView(tag, tmpl, binding)
-	if err != nil {
-		return nil, err
-	}
-
-	rv := ReactView(sv, userb)
-
-	return rv, nil
 }
 
 // TemplateBlueprint defines the component blueprint that it generates using the TemplateView
@@ -307,7 +286,7 @@ func (b *TemplateBlueprint) Type() string {
 
 // CreateComponent builds up a blueprint with the arguments, the name tag giving to the underline view is modded with the blueprint type name + a 5-length random string to make it unique in the state machines. All reactive binding are done if dobind is true hence boudning the binding change notification to the view.
 func (b *TemplateBlueprint) CreateComponent(bind interface{}, vs Strategy, dobind bool) Components {
-	view := BuildReactiveTemplateView(MakeBlueprintName(b), b.format, vs, bind, dobind)
+	view := NewTemplateView(MakeBlueprintName(b), b.format, vs, bind, dobind)
 	return NewComponent(view, false)
 }
 

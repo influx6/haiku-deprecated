@@ -123,17 +123,24 @@ func main() {
 	}
 	defer file.Close()
 
-	fmt.Fprint(file, `//Package elems contains definition for different html element types
+	fmt.Fprint(file, `// Package elems contains definition for different html element types and some custom node types
 
 //go:generate go run generate.go
 
 // Documentation source: "HTML element reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/HTML/Element, licensed under CC-BY-SA 2.5.
+
+// Documentation for custom types lies within the  "github.com/influx6/haiku/trees" package
 
 package elems
 
 import (
 	"github.com/influx6/haiku/trees"
 )
+
+// Text provides the concrete implementation for using the trees.Text struct
+func Text(txt string) *trees.Text {
+	return trees.NewText(txt)
+}
 
 `)
 

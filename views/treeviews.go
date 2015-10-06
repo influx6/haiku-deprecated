@@ -21,6 +21,16 @@ func NewTreeView(tag string, strategy Strategy, binding interface{}, mux TreeMux
 	//the view this tree uses underneath
 	view := ReactView(NewView(tag, strategy, binding), dobind)
 
+	var tagname string
+
+	tags := strings.Split(tag, ":")
+
+	if len(tags) > 1 {
+		tagname = tags[0]
+	} else {
+		tagname = tag
+	}
+
 	//the dom tree we want to use for building up
 	var dom trees.SearchableMarkup
 
@@ -30,11 +40,11 @@ func NewTreeView(tag string, strategy Strategy, binding interface{}, mux TreeMux
 
 		//if still nil ,switch to default div node
 		if dom == nil {
-			dom = trees.NewElement(tag, false)
+			dom = trees.NewElement(tagname, false)
 		}
 	} else {
 		//no handler so straight to default div
-		dom = trees.NewElement(tag, false)
+		dom = trees.NewElement(tagname, false)
 	}
 
 	view.switchDOM(dom)
@@ -97,25 +107,29 @@ func (b *TreeBlueprint) Type() string {
 // TreeBlueprintMux defines a handler for a treeView that lets you buildup the views
 type TreeBlueprintMux func(Views, trees.SearchableMarkup) trees.SearchableMarkup
 
-// CreateComponent returns a new Component using the underline TreeView derivative, if `dobind` is true then it binds the reactive binding with the view. The blueprint's dom tree is cloned
+// CreateComponent returns a new component using CreateComponent
 func (b *TreeBlueprint) CreateComponent(bind interface{}, vs Strategy, dobind bool, mx TreeBlueprintMux) Components {
-	//no strategy is supplid,create one
-	if vs == nil {
-		vs = DOMDisplayStrategy(trees.SimpleMarkupWriter)
-	}
-
-	view := NewTreeView(MakeBlueprintName(b), vs, bind, func(v Views) trees.SearchableMarkup {
+	return CreateComponent(MakeBlueprintName(b), bind, vs, func(v Views) trees.SearchableMarkup {
 		cl := trees.GetSearchable(b.tree.Clone())
 		if mx != nil {
 			return mx(v, cl)
 		}
 		return cl
 	}, dobind)
-
-	return NewComponent(view, dobind)
 }
 
 // Create returns a new Component using the default DOMDisplayStrategy
 func (b *TreeBlueprint) Create(bind interface{}, dobind bool) Components {
 	return b.CreateComponent(bind, nil, dobind, nil)
+}
+
+// CreateComponent returns a new Component using the underline TreeView derivative, if `dobind` is true then it binds the reactive binding with the view. The blueprint's dom tree is cloned
+func CreateComponent(name string, bind interface{}, vs Strategy, mx TreeMux, dobind bool) Components {
+	//no strategy is supplid,create one
+	if vs == nil {
+		vs = DOMDisplayStrategy(trees.SimpleMarkupWriter)
+	}
+
+	view := NewTreeView(name, vs, bind, mx, dobind)
+	return NewComponent(view)
 }

@@ -14,7 +14,7 @@ import (
 // WARNING: TemplateView will wrap their outputs in a tmlview
 // so never try to wrap a full <html></htmL> sequence with them
 type TemplateView struct {
-	Views
+	ReactiveViews
 	Tmpl *template.Template
 	hdom trees.SearchableMarkup
 	txt  *trees.Text
@@ -26,13 +26,13 @@ func NewTemplateView(tag string, t *template.Template, strategy Strategy, bindin
 	view := ReactView(NewView(tag, strategy, binding), dobind)
 
 	tv := &TemplateView{
-		Views: view,
-		Tmpl:  t,
-		hdom:  hdom,
-		txt:   trees.NewText(""),
+		ReactiveViews: view,
+		Tmpl:          t,
+		hdom:          hdom,
+		txt:           trees.NewText(""),
 	}
 
-	tv.Views.switchDOM(hdom)
+	tv.ReactiveViews.switchDOM(hdom)
 	tv.txt.Apply(hdom)
 	return tv
 }
@@ -70,14 +70,14 @@ func (v *TemplateView) Render(m ...string) trees.Markup {
 // ExecuteTemplate calls the internal template.Template.ExecuteTemplate and returns the data from the rendering operation. The template is runned with the name but the view as the object/binding
 func (v *TemplateView) ExecuteTemplate(name string) ([]byte, error) {
 	var buf bytes.Buffer
-	err := v.Tmpl.ExecuteTemplate(&buf, name, v.Views)
+	err := v.Tmpl.ExecuteTemplate(&buf, name, v.ReactiveViews)
 	return buf.Bytes(), err
 }
 
 // Execute calls the internal template.Template.Execute and returns the data from the rendering operation. The template is runned with the name but the view as the object/binding
 func (v *TemplateView) Execute() ([]byte, error) {
 	var buf bytes.Buffer
-	err := v.Tmpl.Execute(&buf, v.Views)
+	err := v.Tmpl.Execute(&buf, v.ReactiveViews)
 	return buf.Bytes(), err
 }
 
@@ -289,7 +289,7 @@ func (b *TemplateBlueprint) Type() string {
 // CreateComponent builds up a blueprint with the arguments, the name tag giving to the underline view is modded with the blueprint type name + a 5-length random string to make it unique in the state machines. All reactive binding are done if dobind is true hence boudning the binding change notification to the view.
 func (b *TemplateBlueprint) CreateComponent(bind interface{}, vs Strategy, dobind bool) Components {
 	view := NewTemplateView(MakeBlueprintName(b), b.format, vs, bind, dobind)
-	return NewComponent(view, false)
+	return NewComponent(view)
 }
 
 // Create returns a new Component using the default HiddenTemplateStrategy

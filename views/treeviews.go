@@ -109,7 +109,7 @@ type TreeBlueprintMux func(Views, trees.SearchableMarkup) trees.SearchableMarkup
 
 // CreateComponent returns a new component using CreateComponent
 func (b *TreeBlueprint) CreateComponent(bind interface{}, vs Strategy, dobind bool, mx TreeBlueprintMux) Components {
-	return CreateComponent(MakeBlueprintName(b), bind, vs, func(v Views) trees.SearchableMarkup {
+	return ConstructComponent(MakeBlueprintName(b), bind, vs, func(v Views) trees.SearchableMarkup {
 		cl := trees.GetSearchable(b.tree.Clone())
 		if mx != nil {
 			return mx(v, cl)
@@ -123,8 +123,8 @@ func (b *TreeBlueprint) Create(bind interface{}, dobind bool) Components {
 	return b.CreateComponent(bind, nil, dobind, nil)
 }
 
-// CreateComponent returns a new Component using the underline TreeView derivative, if `dobind` is true then it binds the reactive binding with the view. The blueprint's dom tree is cloned
-func CreateComponent(name string, bind interface{}, vs Strategy, mx TreeMux, dobind bool) Components {
+// ConstructComponent returns a new Component using the underline TreeView derivative, if `dobind` is true then it binds the reactive binding with the view. The blueprint's dom tree is cloned
+func ConstructComponent(name string, bind interface{}, vs Strategy, mx TreeMux, dobind bool) Components {
 	//no strategy is supplid,create one
 	if vs == nil {
 		vs = DOMDisplayStrategy(trees.SimpleMarkupWriter)
@@ -132,4 +132,9 @@ func CreateComponent(name string, bind interface{}, vs Strategy, mx TreeMux, dob
 
 	view := NewTreeView(name, vs, bind, mx, dobind)
 	return NewComponent(view)
+}
+
+// CreateComponent returns a new component with the default strategy used but allows customization on the other arguments
+func CreateComponent(name string, bind interface{}, mx TreeMux, dobind bool) Components {
+	return ConstructComponent(name, bind, nil, mx, dobind)
 }

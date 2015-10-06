@@ -1,4 +1,4 @@
-# Haiku
+# Haiku ([[Haiku-ui](https://haiku-ui.io)])
 [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/influx6/haiku)
 [![Travis](https://travis-ci.org/influx6/haiku.svg?branch=master)](https://travis-ci.org/influx6/haiku)
 
@@ -9,7 +9,7 @@ Haiku (although with a interesting name) actually is a ui framework that tries t
     go get -u github.com/influx6/haiku/...
 
 # Usage
-  See [Haiku-Examples](https://github.com/influx6/haiku-examples) for a more indepth examples and approaches in using Haiku.
+  See [Haiku-ui](https://github.com/influx6/haiku-ui) for a more in depth examples and approaches in using Haiku.
 
 ## Goals
   - Create simple go idiomatic view mangement system.

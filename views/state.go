@@ -2,13 +2,10 @@ package views
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 	"strings"
 	"sync"
 	"sync/atomic"
-
-	"github.com/influx6/flux"
 )
 
 // excessStops is a regexp for matching more than one fullstops in the state address which then gets replaced into a single fullstop
@@ -20,29 +17,23 @@ var ErrStateNotFound = errors.New("State Not Found")
 // ErrInvalidStateAddr is returned when a wrong length or format state address is found
 var ErrInvalidStateAddr = errors.New("State Not Found")
 
-// StateStat defines a struct that provides the current state address points and data
-type StateStat struct {
-	Traj string
-	Data interface{}
-}
-
 // StateResponse defines the function type used by state in response to a state call
-type StateResponse func(*StateStat)
+type StateResponse func()
 
 //StateValidator defines a function type used in the state validator process
-type StateValidator func(string, string, *StateStat) bool
+type StateValidator func(string, string) bool
 
 // States represent the interface defining a state type
 type States interface {
 	Active() bool
-	Tag() string
+	// Tag() string
 	Engine() *StateEngine
-	Activate(*StateStat)
-	Deactivate(*StateStat)
+	Activate()
+	Deactivate()
 	UseActivator(StateResponse) States
 	UseDeactivator(StateResponse) States
 	OverrideValidator(StateValidator) States
-	acceptable(string, string, *StateStat) bool
+	acceptable(string, string) bool
 }
 
 // State represents a single state of with a specific tag and address
@@ -52,7 +43,7 @@ type State struct {
 	active int64
 
 	// tag represent the identifier key used in a super-state
-	tag string
+	// tag string
 
 	// activator and deactivator provide actions to occur when the state is set to be active
 	activator   StateResponse
@@ -71,19 +62,12 @@ type State struct {
 }
 
 // NewState builds a new state with a tag and single address point .eg home or files ..etc
-func NewState(tag string) *State {
-	ns := State{
-		tag: tag,
-	}
+func NewState() *State {
+	ns := State{}
 
 	ns.engine = BuildStateEngine(&ns)
 
 	return &ns
-}
-
-// Tag returns the custom tag of this state unique to it
-func (s *State) Tag() string {
-	return s.tag
 }
 
 // Active returns true/false if this state is active
@@ -121,7 +105,7 @@ func (s *State) OverrideValidator(so StateValidator) States {
 }
 
 // Activate activates the state
-func (s *State) Activate(so *StateStat) {
+func (s *State) Activate() {
 	if s.active > 1 {
 		return
 	}
@@ -133,33 +117,34 @@ func (s *State) Activate(so *StateStat) {
 	//activate all the subroot states first so they can
 	//do any population they want
 	for _, ko := range subs {
-		ko.Activate(so)
+		ko.Activate()
 	}
 
 	s.ro.Lock()
 
 	if s.activator != nil {
-		s.activator(so)
+		s.activator()
 	}
 
 	s.ro.Unlock()
 }
 
 // Deactivate deactivates the state
-func (s *State) Deactivate(so *StateStat) {
+func (s *State) Deactivate() {
 	if s.active < 1 {
 		return
 	}
 	atomic.StoreInt64(&s.active, 0)
+
 	s.do.Lock()
-	if s.activator != nil {
-		s.deactivator(so)
+	if s.deactivator != nil {
+		s.deactivator()
 	}
 	s.do.Unlock()
 }
 
 // acceptable checks if the state matches the current point
-func (s *State) acceptable(addr string, point string, so *StateStat) bool {
+func (s *State) acceptable(addr string, point string) bool {
 	if s.optionalValidator == nil {
 		if addr == point {
 			return true
@@ -168,27 +153,17 @@ func (s *State) acceptable(addr string, point string, so *StateStat) bool {
 	}
 
 	s.vo.Lock()
-	state := s.optionalValidator(addr, point, so)
+	state := s.optionalValidator(addr, point)
 	s.vo.Unlock()
 	return state
 }
 
 // StateEngine represents the engine that handles the state machine based operations for state-address based states
 type StateEngine struct {
-	states *flux.SyncCollector
+	rw     sync.RWMutex
+	states map[States]string
 	owner  States
 	curr   States
-}
-
-// stateLocation is used to give state objects an address
-type stateLocation struct {
-	States
-	Addr string
-}
-
-// String returns a string representation of the StateLocation
-func (s *stateLocation) String() string {
-	return fmt.Sprintf("StateLocation for %s at %s", s.Tag(), s.Addr)
 }
 
 // NewStateEngine returns a new engine with a default empty state
@@ -199,38 +174,27 @@ func NewStateEngine() *StateEngine {
 // BuildStateEngine returns a new StateEngine instance set with a particular state as its owner
 func BuildStateEngine(s States) *StateEngine {
 	es := StateEngine{
-		states: flux.NewSyncCollector(),
+		states: make(map[States]string),
 		owner:  s,
 	}
 	return &es
 }
 
 // AddState adds a new state into the engine with the tag used to identify the state, if the address is a empty string then the address recieves the tag as its value, remember the address is a single address point .eg home or files and not the length of the extend address eg .root.home.files
-func (se *StateEngine) AddState(tag, addr string) States {
-	if addr == "" {
-		addr = tag
-	}
-
-	sa := NewState(tag)
-	se.states.Set(sa.Tag(), &stateLocation{
-		States: sa,
-		Addr:   addr,
-	})
+func (se *StateEngine) AddState(addr string) States {
+	sa := NewState()
+	se.add(addr, sa)
 
 	return sa
 }
 
 // UseState adds a state into the StateEngine with a specific tag, the state address point is still used in matching against it
 func (se *StateEngine) UseState(addr string, s States) States {
-
 	if addr == "" {
-		addr = s.Tag()
+		addr = "."
 	}
 
-	se.states.Set(s.Tag(), &stateLocation{
-		States: s,
-		Addr:   addr,
-	})
+	se.add(addr, s)
 
 	return s
 }
@@ -257,46 +221,91 @@ func (se *StateEngine) State() States {
 }
 
 // Partial renders the partial of the last state of the state address
-func (se *StateEngine) Partial(addr string, data interface{}) error {
+func (se *StateEngine) Partial(addr string) error {
 	points, err := se.prepare(addr)
 
 	if err != nil {
 		return err
 	}
 
-	stat := &StateStat{
-		Traj: fmt.Sprintf(".%s", strings.Join(points, ".")),
-		Data: data,
-	}
-
-	return se.trajectory(points, stat, true)
+	return se.trajectory(points, true)
 }
 
 // All renders the partial of the last state of the state address
-func (se *StateEngine) All(addr string, data interface{}) error {
+func (se *StateEngine) All(addr string) error {
 	points, err := se.prepare(addr)
 
 	if err != nil {
 		return err
 	}
 
-	stat := &StateStat{
-		Traj: fmt.Sprintf(".%s", strings.Join(points, ".")),
-		Data: data,
-	}
-
-	return se.trajectory(points, stat, false)
+	return se.trajectory(points, false)
 }
 
 // DeactivateAll deactivates all states connected to this engine
-func (se *StateEngine) DeactivateAll(dso *StateStat) {
-	se.states.Each(eachState(func(so *stateLocation, tag string, _ func()) {
-		so.Deactivate(dso)
-	}))
+func (se *StateEngine) DeactivateAll() {
+	se.eachState(func(so States, tag string, _ func()) {
+		so.Deactivate()
+	})
+}
+
+func (se *StateEngine) eachState(fx func(States, string, func())) {
+	if fx == nil {
+		return
+	}
+	se.rw.RLock()
+	defer se.rw.RUnlock()
+
+	var stop bool
+
+	for so, addr := range se.states {
+		if stop {
+			break
+		}
+		fx(so, addr, func() {
+			stop = true
+		})
+	}
+}
+
+func (se *StateEngine) getAddr(s States) string {
+	se.rw.RLock()
+	defer se.rw.RUnlock()
+
+	return se.states[s]
+}
+
+func (se *StateEngine) get(addr string) States {
+	se.rw.RLock()
+	defer se.rw.RUnlock()
+
+	for sm, ao := range se.states {
+		if ao != addr {
+			continue
+		}
+
+		return sm
+	}
+
+	return nil
+}
+
+func (se *StateEngine) add(addr string, s States) {
+	se.rw.RLock()
+	_, ok := se.states[s]
+	se.rw.RUnlock()
+
+	if ok {
+		return
+	}
+
+	se.rw.Lock()
+	se.states[s] = addr
+	se.rw.Unlock()
 }
 
 // trajectory is the real engine which checks the path and passes down the StateStat to the sub-states and determines wether its a full view or partial view
-func (se *StateEngine) trajectory(points []string, so *StateStat, partial bool) error {
+func (se *StateEngine) trajectory(points []string, partial bool) error {
 
 	subs, nosubs := se.diffSubs()
 
@@ -304,17 +313,17 @@ func (se *StateEngine) trajectory(points []string, so *StateStat, partial bool) 
 	if len(points) < 1 {
 		//deactivate all the non-subroot states
 		for _, ko := range nosubs {
-			ko.Deactivate(so)
+			ko.Deactivate()
 		}
 
 		//if the engine has a root state activate it since in doing so,it will activate its own children else manually activate the children
 		if se.owner != nil {
-			se.owner.Activate(so)
+			se.owner.Activate()
 		} else {
 			//activate all the subroot states first so they can
 			//do be ready for the root. We call this here incase the StateEngine has no root state
 			for _, ko := range subs {
-				ko.Activate(so)
+				ko.Activate()
 			}
 		}
 
@@ -324,24 +333,19 @@ func (se *StateEngine) trajectory(points []string, so *StateStat, partial bool) 
 	//cache the first point so we dont loose it
 	point := points[0]
 
-	var state *stateLocation
-
-	state, _ = se.states.Get(point).(*stateLocation)
+	var state = se.get(point)
 
 	if state == nil {
-
-		for _, ko := range nosubs {
-			if sko, ok := ko.(*stateLocation); ok {
-				if sko.acceptable(sko.Addr, point, so) {
-					state = sko
-					break
-				}
-			}
-		}
-
-		if state == nil {
-			return ErrStateNotFound
-		}
+		// for _, ko := range nosubs {
+		// 	if sko.acceptable(se.getAddr(ko), point, so) {
+		// 		state = ko
+		// 		break
+		// 	}
+		// }
+		//
+		// if state == nil {
+		return ErrStateNotFound
+		// }
 	}
 
 	//set this state as the current active state
@@ -351,7 +355,7 @@ func (se *StateEngine) trajectory(points []string, so *StateStat, partial bool) 
 	points = points[1:]
 
 	//we pass down the points since that will handle the loadup downwards
-	err := state.Engine().trajectory(points, so, partial)
+	err := state.Engine().trajectory(points, partial)
 
 	if err != nil {
 		return err
@@ -365,7 +369,7 @@ func (se *StateEngine) trajectory(points []string, so *StateStat, partial bool) 
 		// }
 
 		if se.owner != nil {
-			se.owner.Activate(so)
+			se.owner.Activate()
 		}
 	}
 
@@ -404,11 +408,11 @@ func (se *StateEngine) prepare(addr string) ([]string, error) {
 func (se *StateEngine) diffOnlySubs() []States {
 	var subs []States
 
-	se.states.Each(eachState(func(so *stateLocation, tag string, _ func()) {
-		if so.Addr == "." {
+	se.eachState(func(so States, addr string, _ func()) {
+		if addr == "." {
 			subs = append(subs, so)
 		}
-	}))
+	})
 
 	return subs
 }
@@ -417,11 +421,11 @@ func (se *StateEngine) diffOnlySubs() []States {
 func (se *StateEngine) diffOnlyNotSubs() []States {
 	var subs []States
 
-	se.states.Each(eachState(func(so *stateLocation, tag string, _ func()) {
-		if so.Addr != "." {
+	se.eachState(func(so States, addr string, _ func()) {
+		if addr != "." {
 			subs = append(subs, so)
 		}
-	}))
+	})
 
 	return subs
 }
@@ -429,22 +433,13 @@ func (se *StateEngine) diffOnlyNotSubs() []States {
 func (se *StateEngine) diffSubs() ([]States, []States) {
 	var nosubs, subs []States
 
-	se.states.Each(eachState(func(so *stateLocation, tag string, _ func()) {
-		if so.Addr == "." {
+	se.eachState(func(so States, addr string, _ func()) {
+		if addr == "." {
 			subs = append(subs, so)
 		} else {
 			nosubs = append(nosubs, so)
 		}
-	}))
+	})
 
 	return subs, nosubs
-}
-
-// eachState provides a function decorator for calling ech on a flux.SyncCollector
-func eachState(fx func(*stateLocation, string, func())) flux.StringEachfunc {
-	return func(item interface{}, key string, stop func()) {
-		if so, ok := item.(*stateLocation); ok {
-			fx(so, key, stop)
-		}
-	}
 }

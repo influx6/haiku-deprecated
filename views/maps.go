@@ -5,21 +5,21 @@ import (
 	"sync"
 )
 
-// ErrExists is returned when the ViewLists has the tag already assigned
+// ErrExists is returned when the ViewLists has the tag already asigned
 var ErrExists = errors.New("Tag already assigned")
 
-// ViewMap represent a set of Viewable element tagged by a string key
+// ViewMap represent a set of Views element tagged by a string key
 type ViewMap map[string]int
 
-// ViewList represent a list of Viewable elements
-type ViewList []Viewable
+// ViewList represent a list of Views elements
+type ViewList []Views
 
-// ViewLists is a race-free struct providing a map for storing and retrieving Viewables which is used by *View
+// ViewLists is a race-free struct providing a map for storing and retrieving Views which is used by *View
 type ViewLists struct {
 	//a map of keys and index values
 	mo   sync.RWMutex
 	keys ViewMap
-	//the slice of Viewables
+	//the slice of Views
 	ro    sync.RWMutex
 	lists ViewList
 }
@@ -33,7 +33,7 @@ func NewViewLists() *ViewLists {
 	return &vm
 }
 
-// Has returns true/false if the tag has a Viewable
+// Has returns true/false if the tag has a Views
 func (vm *ViewLists) Has(tag string) bool {
 	vm.mo.RLock()
 	_, ok := vm.keys[tag]
@@ -41,8 +41,8 @@ func (vm *ViewLists) Has(tag string) bool {
 	return ok
 }
 
-// Add adds a Viewable to the view lists
-func (vm *ViewLists) Add(tag string, v Viewable) error {
+// Add adds a Views to the view lists
+func (vm *ViewLists) Add(tag string, v Views) error {
 	if vm.Has(tag) {
 		return ErrExists
 	}
@@ -64,8 +64,8 @@ func (vm *ViewLists) Add(tag string, v Viewable) error {
 	return nil
 }
 
-// Remove removes the Viewable if the given tag exists
-func (vm *ViewLists) Remove(tag string) Viewable {
+// Remove removes the Views if the given tag exists
+func (vm *ViewLists) Remove(tag string) Views {
 	ind, ok := vm.index(tag)
 
 	if !ok {
@@ -85,15 +85,15 @@ func (vm *ViewLists) Remove(tag string) Viewable {
 	return v
 }
 
-// Get returns the Viewable with the giving tag if found else nil
-func (vm *ViewLists) Get(tag string) Viewable {
+// Get returns the Views with the giving tag if found else nil
+func (vm *ViewLists) Get(tag string) Views {
 	ind, ok := vm.index(tag)
 
 	if !ok {
 		return nil
 	}
 
-	var v Viewable
+	var v Views
 
 	vm.ro.RLock()
 	v = vm.lists[ind]

@@ -202,7 +202,7 @@ func (em *Events) setupEvent(eo *ElemEvent) {
 
 // ViewComponent combines the dom.Element and haiku.View package to create a renderable view
 type ViewComponent struct {
-	views.Components
+	views.Views
 	dom      hodom.Element
 	events   *Events
 	lastAddr []string
@@ -210,11 +210,11 @@ type ViewComponent struct {
 }
 
 // BasicView creates a new ViewElement with a view component for rendering
-func BasicView(v views.Components) *ViewComponent {
+func BasicView(v views.Views) *ViewComponent {
 	vc := &ViewComponent{
-		Components: v,
-		events:     BuildEvents(nil, v.Events(), false),
-		lastAddr:   []string{"."},
+		Views:    v,
+		events:   BuildEvents(nil, v.Events(), false),
+		lastAddr: []string{"."},
 	}
 
 	vc.React(func(r flux.Reactor, _ error, _ interface{}) {
@@ -241,11 +241,11 @@ func (v *ViewComponent) Mount(dom hodom.Element) *ViewComponent {
 // Render overrides Component.Render
 func (v *ViewComponent) Render(n ...string) trees.Markup {
 	v.lastAddr = n
-	return v.Components.Render(n...)
+	return v.Views.Render(n...)
 }
 
 // RenderHTML overrides Component.Render
 func (v *ViewComponent) RenderHTML(n ...string) template.HTML {
 	v.lastAddr = n
-	return v.Components.RenderHTML(n...)
+	return v.Views.RenderHTML(n...)
 }

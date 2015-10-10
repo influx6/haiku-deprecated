@@ -129,7 +129,7 @@ func NewPage(p *PathObserver) *Page {
 		views:       make([]*ViewComponent, 0),
 	}
 
-	pg.All(".", nil)
+	pg.All(".")
 	return pg
 }
 
@@ -151,7 +151,7 @@ var ErrBadSelector = errors.New("Selector returned nil")
 
 // Mount adds a component into the page for handling/managing of visiblity and
 // gets the dom referenced by the selector using QuerySelector and returns an error if selector gave no result
-func (p *Page) Mount(selector, addr string, v views.Components) error {
+func (p *Page) Mount(selector, addr string, v views.Views) error {
 	n := dom.GetWindow().Document().QuerySelector(selector)
 
 	if n == nil {

@@ -29,11 +29,7 @@ type Markup interface {
 	Name() string
 	AddChild(Markup) bool
 	Augment(...Markup) bool
-}
 
-// SearchableMarkup defines the specification for Markups that allow filtering
-type SearchableMarkup interface {
-	Markup
 	GetStyles(f, val string) []*Style
 	GetStyle(f string) (*Style, error)
 	StyleContains(f, val string) bool
@@ -93,14 +89,14 @@ type Element struct {
 }
 
 // NewElement returns a new element instance giving the specificed name
-func NewElement(tag string, hasEndingTag bool) *Element {
+func NewElement(tag string, hasNoEndingTag bool) *Element {
 	return &Element{
 		Mutation:  NewMutable(),
 		Tagname:   tag,
 		Children:  make([]Markup, 0),
 		Styles:    make([]*Style, 0),
 		Attrs:     make([]*Attribute, 0),
-		autoclose: hasEndingTag,
+		autoclose: hasNoEndingTag,
 	}
 }
 
@@ -478,17 +474,6 @@ func (s *Style) Clone() *Style {
 // Apply applies a set change to the giving element style list
 func (s *Style) Apply(e *Element) {
 	e.Styles = append(e.Styles, s)
-}
-
-//GetSearchable type-asserts the markup provided to a SearchableMarkup else returns nil
-func GetSearchable(m Markup) SearchableMarkup {
-	if tm, ok := m.(*Text); ok {
-		return tm
-	}
-	if em, ok := m.(*Element); ok {
-		return em
-	}
-	return nil
 }
 
 // Augment adds new markup to an the root if its Element

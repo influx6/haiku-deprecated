@@ -78,11 +78,21 @@ func Engine(mf *MutationRange) ReactorSearch {
 	return ml
 }
 
+// SafeReactorStore returns a safe interface that presents allowable methods for the outside world
+type SafeReactorStore interface {
+	ReactorSearch
+	AsEngine() ReactorSearch
+	Size() int
+}
+
 // ReactorStore provides an interface for storing reactor states
 type ReactorStore interface {
 	ReactorSearch
 	Mutate(v interface{}) (Immutable, bool)
 	AsEngine() ReactorSearch
+	Size() int
+	Empty()
+	setInitialMutation(mi Immutable)
 }
 
 // ListManager defines the managment of mutation changes and provides a simple interface to query the changes over a span of time range

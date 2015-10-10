@@ -8,8 +8,6 @@ import (
 
 //Immutable defines an interface method rules for immutables types. All types meeting this rule must be single type values
 type Immutable interface {
-	next() Immutable
-	previous() Immutable
 	Value() interface{}
 	Mutate(interface{}) (Immutable, bool)
 	Allowed(interface{}) bool
@@ -19,6 +17,10 @@ type Immutable interface {
 	AdjustFuture(time.Time)
 	Seq() int
 	destroy()
+	next() Immutable
+	previous() Immutable
+	unsetNext()
+	unsetPrevious()
 }
 
 //atom provides a base type for golang base types
@@ -102,6 +104,14 @@ func (a *atom) next() Immutable {
 	return a.nxt
 }
 
+func (a *atom) unsetPrevious() {
+	a.prv = nil
+}
+
+func (a *atom) unsetNext() {
+	a.nxt = nil
+}
+
 //Clone returns a new Immutable
 func (a *atom) clone() *atom {
 	m := MakeAtom(a.val, a.dotype, a.link, a.timer)
@@ -117,10 +127,12 @@ func (a *atom) clone() *atom {
 
 func (a *atom) destroy() {
 	if a.nxt != nil && a.nxt != a {
+		a.nxt.unsetPrevious()
 		a.nxt.destroy()
 		a.nxt = nil
 	}
 	if a.prv != nil && a.prv != a {
+		a.prv.unsetNext()
 		a.prv.destroy()
 		a.prv = nil
 	}
@@ -149,11 +161,11 @@ func MakeAtom(data interface{}, dt, link bool, tm Timer) *atom {
 }
 
 //StrictAtom returns a base type for golang base types(int,string,...etc)
-func StrictAtom(data interface{}, link bool) Immutable {
+func StrictAtom(data interface{}, link bool) *atom {
 	return MakeAtom(data, true, link, nil)
 }
 
 //UnstrictAtom returns a base type for golang base types(int,string,...etc)
-func UnstrictAtom(data interface{}, link bool) Immutable {
+func UnstrictAtom(data interface{}, link bool) *atom {
 	return MakeAtom(data, false, link, nil)
 }

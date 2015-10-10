@@ -10,7 +10,7 @@ import (
 	"github.com/influx6/flux"
 )
 
-// Observers define an interface for Observers
+// Observers define an interface for observable mutators without time features
 type Observers interface {
 	flux.Reactor
 	yaml.Unmarshaler
@@ -20,7 +20,7 @@ type Observers interface {
 	Get() interface{}
 	Set(interface{})
 	String() string
-	Equals(interface{}) bool
+	Equals(flux.Equaler) bool
 }
 
 // Observer defines a basic reactive value
@@ -75,7 +75,7 @@ func (r *Observer) mutate(ndata interface{}) bool {
 }
 
 // Equals return true/false if the value equals the data
-func (r *Observer) Equals(n interface{}) bool {
+func (r *Observer) Equals(n flux.Equaler) bool {
 	return r.Get() == n
 }
 

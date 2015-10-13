@@ -126,9 +126,9 @@ func (m *ElementWriter) Print(e *Element) string {
 	//management attributes
 	mido := []*Attribute{hash, uid}
 
-	if e.Removed() {
-		mido = append(mido, &Attribute{"haikuRemoved", ""})
-	}
+	// if e.Removed() {
+	// 	mido = append(mido, &Attribute{"haikuRemoved", ""})
+	// }
 
 	//write out the hash and uid as attributes
 	hashes := m.attrWriter.Print(mido)

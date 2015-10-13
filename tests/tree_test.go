@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -31,7 +30,7 @@ func TestMarkup(t *testing.T) {
 }
 
 var normalRender = `<div hash="901EZEzzkP"  uid="3exhgHR9" style=""><text hash="7LpjEzxUYJ"  uid="K7JcYkjP" style=" display:inline;">20</text></div>`
-var removedRender = `<div hash="aPFZXtl2eW"  uid="2pml1sB0" style=""><text hash="OsBtKTop5x"  uid="ZTcrqLpT"  haikuRemoved="" style=" display:inline;">20</text></div>`
+var removedRender = `<div hash="aPFZXtl2eW"  uid="2pml1sB0" style=""><text hash="OsBtKTop5x"  uid="ZTcrqLpT" haikuRemoved="" style=" display:inline;">20</text></div>`
 var cleanRender = `<div hash="aPFZXtl2eW"  uid="2pml1sB0" style=""></div>`
 
 func TestMarkupRemoveRender(t *testing.T) {
@@ -53,7 +52,7 @@ func TestMarkupRemoveRender(t *testing.T) {
 	printer.AllowRemoved()
 
 	if ds := printer.Print(div); len(ds) != len(normalRender) {
-		flux.FatalFailed(t, "Renders produced unequal results between \n %s and \n %s", ds, normalRender)
+		flux.FatalFailed(t, "1 Renders produced unequal results between \n %s and \n %s", ds, normalRender)
 	}
 
 	trees.ElementsWithTag(divCl, "text")[0].Remove()
@@ -63,13 +62,13 @@ func TestMarkupRemoveRender(t *testing.T) {
 	}
 
 	if ds := printer.Print(divCl); len(ds) != len(removedRender) {
-		flux.FatalFailed(t, "Renders produced unequal results between \n %s and \n %s", ds, removedRender)
+		flux.FatalFailed(t, "2 Renders produced unequal results between \n %s and \n %s", ds, removedRender)
 	}
 
 	printer.DisallowRemoved()
 
 	if ds := printer.Print(divCl); len(ds) != len(cleanRender) {
-		flux.FatalFailed(t, "Renders produced unequal results between \n %s and \n %s", ds, cleanRender)
+		flux.FatalFailed(t, "3 Renders produced unequal results between \n %s and \n %s", ds, cleanRender)
 	}
 
 	divCl.CleanRemoved()
@@ -152,14 +151,22 @@ func TestMarkupReconciliation2(t *testing.T) {
 	nrender := printer.Print(div)
 	crender := printer.Print(divCl)
 
-	fmt.Printf("%s\n\n", nrender)
-	fmt.Printf("%s\n\n", crender)
+	// fmt.Printf("%s\n\n", nrender)
+	// fmt.Printf("%s\n\n", crender)
 
 	//reconcile with the original div
 	divCl.Reconcile(div)
 
 	rcrender := printer.Print(divCl)
 
-	fmt.Printf("%s\n\n", rcrender)
-	// flux.LogPassed(t, "Successfully reconciled dom markup!")
+	if rcrender == crender {
+		flux.FatalFailed(t, "1. Renders produced wrong results between \n %s and \n %s", rcrender, crender)
+	}
+
+	if rcrender == nrender {
+		flux.FatalFailed(t, "2. Renders produced wrong results between \n %s and \n %s", rcrender, nrender)
+	}
+
+	// fmt.Printf("%s\n\n", rcrender)
+	flux.LogPassed(t, "Successfully reconciled dom markup!")
 }

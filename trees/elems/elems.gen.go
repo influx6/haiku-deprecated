@@ -13,10 +13,9 @@ import (
 )
 
 // Text provides the concrete implementation for using the trees.Text struct
-func Text(txt string) *trees.Text {
+func Text(txt string) *trees.Element {
 	return trees.NewText(txt)
 }
-
 
 // Anchor provides the following for html elements ->
 // The HTML Anchor Element (<a>) defines a hyperlink to a location on the same page or any other page on the Web. It can also be used (in an obsolete way) to create an anchor point—a destination for hyperlinks within the content of a page, so that links aren't limited to connecting simply to the top of a page.
@@ -107,7 +106,7 @@ func Bold(markup ...trees.Appliable) *trees.Element {
 }
 
 // Base provides the following for html elements ->
-// The HTML Base Element (<base>) specifies the base URL to use for all relative URLs contained within a document. There can be only one <base> element in a document.
+// The HTML <base> element specifies the base URL to use for all relative URLs contained within a document. There can be only one <base> element in a document.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
 func Base(markup ...trees.Appliable) *trees.Element {
 	e := trees.NewElement("base",true)
@@ -613,7 +612,7 @@ func ListItem(markup ...trees.Appliable) *trees.Element {
 }
 
 // Link provides the following for html elements ->
-// The HTML Link Element (<link>) specifies relationships between the current document and an external resource. Possible uses for this element include defining a relational framework for navigation. This Element is most used to link to style sheets.
+// The HTML <link> element specifies relationships between the current document and an external resource. Possible uses for this element include defining a relational framework for navigation. This Element is most used to link to style sheets.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link
 func Link(markup ...trees.Appliable) *trees.Element {
 	e := trees.NewElement("link",false)
@@ -657,7 +656,7 @@ func Mark(markup ...trees.Appliable) *trees.Element {
 }
 
 // Menu provides the following for html elements ->
-// Technical review completed.
+// The HTML <menu> element represents a group of commands that a user can perform or activate. This includes both list menus, which might appear across the top of a screen, as well as context menus, such as those that might appear underneath a button after it has been clicked.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu
 func Menu(markup ...trees.Appliable) *trees.Element {
 	e := trees.NewElement("menu",false)
@@ -679,7 +678,7 @@ func MenuItem(markup ...trees.Appliable) *trees.Element {
 }
 
 // Meta provides the following for html elements ->
-// The HTML Meta Element (<meta>) represents any metadata information that cannot be represented by one of the other HTML meta-related elements (<base>, <link>, <script>, <style> or <title>).
+// The HTML <meta> element represents any metadata information that cannot be represented by one of the other HTML meta-related elements (<base>, <link>, <script>, <style> or <title>).
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
 func Meta(markup ...trees.Appliable) *trees.Element {
 	e := trees.NewElement("meta",true)
@@ -1009,7 +1008,7 @@ func Strong(markup ...trees.Appliable) *trees.Element {
 }
 
 // Style provides the following for html elements ->
-// The HTML Style Element (<style>) contains style information for a document, or part of a document. By default, the style instructions written inside that element are expected to be CSS.
+// The HTML <style> element contains style information for a document, or part of a document. By default, the style instructions written inside that element are expected to be CSS.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style
 func Style(markup ...trees.Appliable) *trees.Element {
 	e := trees.NewElement("style",false)
@@ -1152,7 +1151,7 @@ func Time(markup ...trees.Appliable) *trees.Element {
 }
 
 // Title provides the following for html elements ->
-// The HTML Title Element (<title>) defines the title of the document, shown in a browser's title bar or on the page's tab. It can only contain text and any contained tags are not interpreted.
+// The HTML <title> element defines the title of the document, shown in a browser's title bar or on the page's tab. It can only contain text and any contained tags are not interpreted.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title
 func Title(markup ...trees.Appliable) *trees.Element {
 	e := trees.NewElement("title",false)

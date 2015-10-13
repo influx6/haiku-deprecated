@@ -138,10 +138,9 @@ import (
 )
 
 // Text provides the concrete implementation for using the trees.Text struct
-func Text(txt string) *trees.Text {
+func Text(txt string) *trees.Element {
 	return trees.NewText(txt)
 }
-
 `)
 
 	doc.Find(".quick-links a").Each(func(i int, s *goquery.Selection) {

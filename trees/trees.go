@@ -1,52 +1,58 @@
 package trees
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/influx6/flux"
-	"github.com/influx6/haiku/reactive"
+)
+
+const (
+	//NoAction is the default reconcile response for markup reconcilation process
+	NoAction = iota
+	//ChangeHash determines if the old hash should be replaced
+	ChangeHash
+	//KeepHash determines the old hash should be kept
+	KeepHash
 )
 
 // Mutation defines the capability of an element to state its
 // state if mutation occured
 type Mutation interface {
-	flux.Reactor
+	// flux.Reactor
 	UID() string
 	Hash() string
-}
-
-// Appliable define the interface specification for applying changes to elements elements in tree
-type Appliable interface {
-	Apply(*Element)
+	swapHash(string)
+	swapUID(string)
+	Removed() bool
+	Remove()
+	UpdateHash()
 }
 
 // Markup provide a basic specification type of how a element resolves its content
 type Markup interface {
 	Appliable
 	Mutation
-	Clone() Markup
-	Name() string
-	AddChild(Markup) bool
-	Augment(...Markup) bool
+	Styles
+	Attributes
+	Clonable
+	MarkupChildren
+	Reconcilable
 
-	GetStyles(f, val string) []*Style
-	GetStyle(f string) (*Style, error)
-	StyleContains(f, val string) bool
-	GetAttrs(f, val string) []*Attribute
-	GetAttr(f string) (*Attribute, error)
-	AttrContains(f, val string) bool
-	ElementsUsingStyle(f, val string) []*Element
-	ElementsWithAttr(f, val string) []*Element
-	DeepElementsUsingStyle(f, val string, depth int) []*Element
-	DeepElementsWithAttr(f, val string, depth int) []*Element
+	Name() string
+	Augment(...Markup)
+
+	CleanRemoved()
+	AutoClosed() bool
+	TextContent() string
+	Empty()
 }
 
 // Mutable is a base implementation of the Mutation interface{}
 type Mutable struct {
-	flux.Reactor
-	uid  string
-	hash string
+	// flux.Reactor
+	uid     string
+	hash    string
+	removed bool
 }
 
 // NewMutable returns a new mutable instance
@@ -56,16 +62,30 @@ func NewMutable() *Mutable {
 		hash: flux.RandString(10),
 	}
 
-	m.Reactor = flux.Reactive(func(r flux.Reactor, err error, d interface{}) {
-		m.hash = flux.RandString(10)
-		if err != nil {
-			r.ReplyError(err)
-		} else {
-			r.Reply(d)
-		}
-	})
+	// m.Reactor = flux.Reactive(func(r flux.Reactor, err error, d interface{}) {
+	// 	if err != nil {
+	// 		r.ReplyError(err)
+	// 	} else {
+	// 		r.Reply(d)
+	// 	}
+	// })
 
 	return m
+}
+
+// UpdateHash updates the mutable hash value
+func (m *Mutable) UpdateHash() {
+	m.hash = flux.RandString(10)
+}
+
+// Remove marks this mutable as removed making this irreversible
+func (m *Mutable) Remove() {
+	m.removed = true
+}
+
+// Removed returns true/false if the mutable is marked removed
+func (m *Mutable) Removed() bool {
+	return !!m.removed
 }
 
 // Hash returns the current hash of the mutable
@@ -78,56 +98,401 @@ func (m *Mutable) UID() string {
 	return m.uid
 }
 
+// swapHash provides a backdoor to swap the hash
+func (m *Mutable) swapHash(h string) {
+	m.hash = h
+}
+
+// swapUID provides a backdoor to swap uid
+func (m *Mutable) swapUID(uid string) {
+	m.uid = uid
+}
+
 // Element represent a concrete implementation of a element node
 type Element struct {
 	Mutation
-	Tagname   string
-	Styles    []*Style
-	Attrs     []*Attribute
-	Children  []Markup
-	autoclose bool
+	tagname         string
+	styles          []*Style
+	attrs           []*Attribute
+	children        []Markup
+	textContent     string
+	autoclose       bool
+	allowChildren   bool
+	allowStyles     bool
+	allowAttributes bool
+}
+
+// NewText returns a new Text instance element
+// TODO: should we allow styles here ?
+func NewText(txt string) *Element {
+	em := NewElement("text", false)
+	(&Style{"display", "inline"}).Apply(em)
+	em.allowChildren = false
+	em.allowAttributes = false
+	em.allowStyles = false
+	em.textContent = txt
+	return em
 }
 
 // NewElement returns a new element instance giving the specificed name
 func NewElement(tag string, hasNoEndingTag bool) *Element {
 	return &Element{
-		Mutation:  NewMutable(),
-		Tagname:   tag,
-		Children:  make([]Markup, 0),
-		Styles:    make([]*Style, 0),
-		Attrs:     make([]*Attribute, 0),
-		autoclose: hasNoEndingTag,
+		Mutation:        NewMutable(),
+		tagname:         strings.TrimSpace(tag),
+		children:        make([]Markup, 0),
+		styles:          make([]*Style, 0),
+		attrs:           make([]*Attribute, 0),
+		autoclose:       hasNoEndingTag,
+		allowChildren:   true,
+		allowStyles:     true,
+		allowAttributes: true,
 	}
+}
+
+// Remove sets the markup as removable and adds a 'haikuRemove' attribute to it
+func (e *Element) Remove() {
+	if !e.Removed() {
+		e.attrs = append(e.attrs, &Attribute{"haikuRemoved", ""})
+		e.Mutation.Remove()
+	}
+}
+
+// Empty resets the elements children list as 0 length
+func (e *Element) Empty() {
+	e.children = e.children[:0]
+}
+
+// Name returns the tag name of the element
+func (e *Element) Name() string {
+	return e.tagname
+}
+
+// TextContent returns the elements text value if its a text type else an empty string
+func (e *Element) TextContent() string {
+	return e.textContent
+}
+
+// CleanRemoved removes all the chilren marked as removed
+func (e *Element) CleanRemoved() {
+	for n, em := range e.children {
+		if em.Removed() {
+			copy(e.children[n:], e.children[n+1:])
+			e.children = e.children[:len(e.children)-1]
+		} else {
+			em.CleanRemoved()
+		}
+	}
+}
+
+// Augment provides a generic method for markup addition
+func (e *Element) Augment(m ...Markup) {
+	if !e.allowChildren {
+		return
+	}
+	for _, mo := range m {
+		mo.Apply(e)
+	}
+}
+
+// AutoClosed returns true/false if this element uses a </> or a <></> tag convention
+func (e *Element) AutoClosed() bool {
+	return e.autoclose
+}
+
+// Reconcilable defines the interface of markups that can reconcile their content against another
+type Reconcilable interface {
+	Reconcile(Markup) bool
+}
+
+// Reconcile checks if the attribute matches and upgrades its value if matched
+func (a *Attribute) Reconcile(m *Attribute) bool {
+	if strings.TrimSpace(a.Name) == strings.TrimSpace(m.Name) {
+		a.Value = m.Value
+		return true
+	}
+	return false
+}
+
+// Reconcile checks if the style matches and upgrades its value if matched
+func (s *Style) Reconcile(m *Style) bool {
+	if strings.TrimSpace(s.Name) == strings.TrimSpace(m.Name) {
+		s.Value = m.Value
+		return true
+	}
+	return false
+}
+
+// Reconcile takes a old markup and reconciles its uid and its children with the new formation,it returns a true/false
+// telling the parent if the children swapped hashes
+/* the reconcilation uses the order in which elements are added, if the order and element types are kept,
+then the uid are swapped else it firsts checks the element type and if not the same adds the old one into
+the new list as removed then continues the check. The system takes position of elements in the old and new
+as very important and I cant stress this enough, "Element Positioning" in the markup are very important,
+if a Anchor was the first element in the old render and the next pass returns a Div in the new render, the Anchor
+will be marked as removed and will be removed from the dom and ignored by the writers. When two elements position
+are same and their types are the same then a checkup process is doing using the elements attributes, this is done to
+determine if the hash value of the new should be swapped with the old. We can use style properties here because they are
+the most volatile of the set and will periodically be either changed and returned to normal values eg display: none to display: block and vise-versa, so only attributes are used in the check process
+*/
+func (e *Element) Reconcile(em Markup) bool {
+	// are we reconciling the proper elements type ? if not skip (i.e different types cant reconcile eachother)]
+	// TODO: decide if we should mark the markup as removed in this case as a catchall system
+	if e.Name() != em.Name() {
+		return false
+	}
+
+	//since the tagname are the same, swap uids
+	// olduid := em.UID()
+	e.swapUID(em.UID())
+
+	//since the tagname are the same and we have swapped uid, to determine who gets or keeps
+	// its hash we will check the attributes against each other, but also the hash is dependent on the
+	// children also, if the children observered there was a change
+	oldHash := em.Hash()
+	// newHash := e.Hash()
+
+	// if we have a special case for text element then we do things differently
+	if e.Name() == "text" {
+		//if the contents are equal,keep the prev hash
+		if e.TextContent() == em.TextContent() {
+			e.swapHash(oldHash)
+			return false
+		}
+		return true
+	}
+
+	newChildren := e.Children()
+	oldChildren := em.Children()
+	maxSize := len(newChildren)
+	oldMaxSize := len(oldChildren)
+
+	if maxSize <= 0 {
+		// if the element had no children too, swap hash
+		if oldMaxSize <= 0 {
+			e.swapHash(oldHash)
+			return false
+		}
+
+		return true
+	}
+
+	var childChanged bool
+
+	for n, och := range oldChildren {
+		if maxSize > n {
+			nch := newChildren[n]
+
+			// log.Printf("checking old (%s) with new(%s)", och.Name(), nch.Name())
+
+			if nch.Reconcile(och) {
+				// log.Printf("old (%s) with new(%s) changed!", och.Name(), nch.Name())
+				childChanged = true
+			}
+
+			continue
+		}
+
+		och.Remove()
+		e.AddChild(och)
+	}
+
+	//if the sizes of the new node is more than the old node then ,we definitely changed
+	if maxSize > oldMaxSize {
+		return true
+	}
+
+	// log.Printf("did child change: %+s -> %t", e.Name(), childChanged)
+	// log.Printf("are attributes of children %s equal -> %t", e.Name(), EqualAttributes(e, em))
+
+	if !childChanged && EqualAttributes(e, em) {
+		// log.Printf("children did not change: %+s -> %+s", e.Name(), em.Name())
+		e.swapHash(oldHash)
+		return false
+	}
+
+	// log.Printf("\n")
+	return true
+}
+
+// MarkupChildren defines the interface of an element that has children
+type MarkupChildren interface {
+	AddChild(Markup)
+	Children() []Markup
+}
+
+// AddChild adds a new markup as the children of this element
+func (e *Element) AddChild(em Markup) {
+	if e.allowChildren {
+		e.children = append(e.children, em)
+	}
+}
+
+// Children returns the children list for the element
+func (e *Element) Children() []Markup {
+	return e.children
+}
+
+// Style define the style specification for element styles
+type Style struct {
+	Name  string
+	Value string
+}
+
+// Attribute define the struct  for attributes
+type Attribute struct {
+	Name  string
+	Value string
+}
+
+// Styles interface defines a type that has Styles
+type Styles interface {
+	Styles() []*Style
+}
+
+// Styles return the internal style list of the element
+func (e *Element) Styles() []*Style {
+	return e.styles
+}
+
+// Attributes interface defines a type that has Attributes
+type Attributes interface {
+	Attributes() []*Attribute
+}
+
+// Attributes return the internal attribute list of the element
+func (e *Element) Attributes() []*Attribute {
+	return e.attrs
+}
+
+// Appliable define the interface specification for applying changes to elements elements in tree
+type Appliable interface {
+	Apply(*Element)
+}
+
+//Apply adds the giving element into the current elements children tree
+func (e *Element) Apply(em *Element) {
+	if em.allowChildren {
+		em.AddChild(e)
+		// e.Bind(em, false)
+	}
+}
+
+// Apply applies a set change to the giving element attributes list
+func (a *Attribute) Apply(e *Element) {
+	if e.allowAttributes {
+		e.attrs = append(e.attrs, a)
+	}
+}
+
+// Apply applies a set change to the giving element style list
+func (s *Style) Apply(e *Element) {
+	if e.allowStyles {
+		e.styles = append(e.styles, s)
+	}
+}
+
+// Clonable defines an interface for objects that can be cloned
+type Clonable interface {
+	Clone() Markup
+}
+
+//Clone replicates the style into a unique instance
+func (s *Style) Clone() *Style {
+	return &Style{Name: s.Name, Value: s.Value}
+}
+
+//Clone replicates the attribute into a unique instance
+func (a *Attribute) Clone() *Attribute {
+	return &Attribute{Name: a.Name, Value: a.Value}
 }
 
 // Clone makes a new copy of the markup structure
 func (e *Element) Clone() Markup {
-	co := NewElement(e.Tagname, e.autoclose)
+	co := NewElement(e.Name(), e.AutoClosed())
+
+	//copy over the textContent
+	co.textContent = e.textContent
+
+	//copy over the attribute lockers
+	co.allowChildren = e.allowChildren
+	co.allowAttributes = e.allowAttributes
+
+	if e.Removed() {
+		co.Removed()
+	}
 
 	//clone the internal styles
-	for _, so := range e.Styles {
+	for _, so := range e.styles {
 		so.Clone().Apply(co)
 	}
 
+	co.allowStyles = e.allowStyles
+
 	//clone the internal attribute
-	for _, ao := range e.Attrs {
+	for _, ao := range e.attrs {
 		ao.Clone().Apply(co)
 	}
 
+	// co.allowAttributes = e.allowAttributes
 	//clone the internal children
-	for _, ch := range e.Children {
+	for _, ch := range e.children {
 		ch.Clone().Apply(co)
 	}
 
 	return co
 }
 
+// Augment adds new markup to an the root if its Element
+func Augment(root Markup, m ...Markup) {
+	if el, ok := root.(*Element); ok {
+		for _, mo := range m {
+			mo.Apply(el)
+		}
+	}
+}
+
+// EqualAttributes returns true/false if the elements and the giving markup have equal attribute
+func EqualAttributes(e, em Markup) bool {
+	oldAttrs := em.Attributes()
+
+	if len(oldAttrs) <= 0 {
+		if len(e.Attributes()) <= 0 {
+			return true
+		}
+		return false
+	}
+
+	//set to equal as the logic will try to assert its falsiness
+	var equal = true
+
+	for _, oa := range oldAttrs {
+		//lets get the attribute type from the element, if it exists then check the value if its equal
+		// continue the loop and check the rest, else we found a contention point, attribute of old markup
+		// does not exists in new markup, so we break and mark as different,letting the new markup keep its hash
+		// but if the loop finishes and all are equal then we swap the hashes
+		if ta, err := GetAttr(e, oa.Name); err == nil {
+			if ta.Value == oa.Value {
+				continue
+			}
+
+			equal = false
+			break
+		} else {
+			equal = false
+			break
+		}
+	}
+
+	return equal
+}
+
 // GetStyles returns the styles that contain the specified name and if not empty that contains the specified value also, note that strings
 // NOTE: string.Contains is used when checking value parameter if present
-func (e *Element) GetStyles(f, val string) []*Style {
+func GetStyles(e Markup, f, val string) []*Style {
 	var found []*Style
+	var styles = e.Styles()
 
-	for _, as := range e.Styles {
+	for _, as := range styles {
 		if as.Name != f {
 			continue
 		}
@@ -145,8 +510,9 @@ func (e *Element) GetStyles(f, val string) []*Style {
 }
 
 // GetStyle returns the style with the specified tag name
-func (e *Element) GetStyle(f string) (*Style, error) {
-	for _, as := range e.Styles {
+func GetStyle(e Markup, f string) (*Style, error) {
+	styles := e.Styles()
+	for _, as := range styles {
 		if as.Name == f {
 			return as, nil
 		}
@@ -157,8 +523,9 @@ func (e *Element) GetStyle(f string) (*Style, error) {
 // StyleContains returns the styles that contain the specified name and if the val is not empty then
 // that contains the specified value also, note that strings
 // NOTE: string.Contains is used
-func (e *Element) StyleContains(f, val string) bool {
-	for _, as := range e.Styles {
+func StyleContains(e Markup, f, val string) bool {
+	styles := e.Styles()
+	for _, as := range styles {
 		if !strings.Contains(as.Name, f) {
 			continue
 		}
@@ -178,10 +545,11 @@ func (e *Element) StyleContains(f, val string) bool {
 // GetAttrs returns the attributes that have the specified text within the naming
 // convention and if it also contains the set val if not an empty "",
 // NOTE: string.Contains is used
-func (e *Element) GetAttrs(f, val string) []*Attribute {
+func GetAttrs(e Markup, f, val string) []*Attribute {
+
 	var found []*Attribute
 
-	for _, as := range e.Attrs {
+	for _, as := range e.Attributes() {
 		if as.Name != f {
 			continue
 		}
@@ -201,8 +569,8 @@ func (e *Element) GetAttrs(f, val string) []*Attribute {
 // AttrContains returns the attributes that have the specified text within the naming
 // convention and if it also contains the set val if not an empty "",
 // NOTE: string.Contains is used
-func (e *Element) AttrContains(f, val string) bool {
-	for _, as := range e.Attrs {
+func AttrContains(e Markup, f, val string) bool {
+	for _, as := range e.Attributes() {
 		if !strings.Contains(as.Name, f) {
 			continue
 		}
@@ -220,8 +588,8 @@ func (e *Element) AttrContains(f, val string) bool {
 }
 
 // GetAttr returns the attribute with the specified tag name
-func (e *Element) GetAttr(f string) (*Attribute, error) {
-	for _, as := range e.Attrs {
+func GetAttr(e Markup, f string) (*Attribute, error) {
+	for _, as := range e.Attributes() {
 		if as.Name == f {
 			return as, nil
 		}
@@ -231,38 +599,39 @@ func (e *Element) GetAttr(f string) (*Attribute, error) {
 
 // ElementsUsingStyle returns the children within the element matching the
 // stlye restrictions passed.
-// NOTE: is uses Element.StyleContains
-func (e *Element) ElementsUsingStyle(f, val string) []*Element {
-	return e.DeepElementsUsingStyle(f, val, 1)
+// NOTE: is uses StyleContains
+func ElementsUsingStyle(e Markup, f, val string) []Markup {
+	return DeepElementsUsingStyle(e, f, val, 1)
 }
 
 // ElementsWithAttr returns the children within the element matching the
 // stlye restrictions passed.
-// NOTE: is uses Element.AttrContains
-func (e *Element) ElementsWithAttr(f, val string) []*Element {
-	return e.DeepElementsWithAttr(f, val, 1)
+// NOTE: is uses AttrContains
+func ElementsWithAttr(e Markup, f, val string) []Markup {
+	return DeepElementsWithAttr(e, f, val, 1)
 }
 
 // DeepElementsUsingStyle returns the children within the element matching the
 // style restrictions passed allowing control of search depth
-// NOTE: is uses Element.StyleContains
-func (e *Element) DeepElementsUsingStyle(f, val string, depth int) []*Element {
+// NOTE: is uses StyleContains
+// WARNING: depth must start at 1
+func DeepElementsUsingStyle(e Markup, f, val string, depth int) []Markup {
 	if depth <= 0 {
 		return nil
 	}
 
-	var found []*Element
+	var found []Markup
 
-	for _, ch := range e.Children {
-		if che, ok := ch.(*Element); ok {
-			if che.StyleContains(f, val) {
-				found = append(found, che)
-				cfo := che.DeepElementsUsingStyle(f, val, depth-1)
-				if len(cfo) > 0 {
-					found = append(found, cfo...)
-				}
+	for _, ch := range e.Children() {
+		// if che, ok := ch.(*Element); ok {
+		if StyleContains(ch, f, val) {
+			found = append(found, ch)
+			cfo := DeepElementsUsingStyle(ch, f, val, depth-1)
+			if len(cfo) > 0 {
+				found = append(found, cfo...)
 			}
 		}
+		// }
 	}
 
 	return found
@@ -271,216 +640,58 @@ func (e *Element) DeepElementsUsingStyle(f, val string, depth int) []*Element {
 // DeepElementsWithAttr returns the children within the element matching the
 // attributes restrictions passed allowing control of search depth
 // NOTE: is uses Element.AttrContains
-func (e *Element) DeepElementsWithAttr(f, val string, depth int) []*Element {
+// WARNING: depth must start at 1
+func DeepElementsWithAttr(e Markup, f, val string, depth int) []Markup {
 	if depth <= 0 {
 		return nil
 	}
 
-	var found []*Element
+	var found []Markup
 
-	for _, ch := range e.Children {
-		if che, ok := ch.(*Element); ok {
-			if che.AttrContains(f, val) {
-				found = append(found, che)
-				cfo := che.DeepElementsWithAttr(f, val, depth-1)
-				if len(cfo) > 0 {
-					found = append(found, cfo...)
-				}
+	for _, ch := range e.Children() {
+		// if che, ok := ch.(*Element); ok {
+		if AttrContains(ch, f, val) {
+			found = append(found, ch)
+			cfo := DeepElementsWithAttr(ch, f, val, depth-1)
+			if len(cfo) > 0 {
+				found = append(found, cfo...)
 			}
 		}
+		// }
 	}
 
 	return found
-
 }
 
-// AutoClosed returns true/false if this element uses a </> or a <></> tag convention
-func (e *Element) AutoClosed() bool {
-	return e.autoclose
+// ElementsWithTag returns elements matching the tag type in the parent markup children list
+// only without going deeper into children's children lists
+func ElementsWithTag(e Markup, f string) []Markup {
+	return DeepElementsWithTag(e, f, 1)
 }
 
-// Name returns the tag name of the element
-func (e *Element) Name() string {
-	return e.Tagname
-}
-
-// AddChild adds a new markup as the children of this element
-func (e *Element) AddChild(em Markup) bool {
-	e.Children = append(e.Children, em)
-	return true
-}
-
-// Augment provides a generic method for markup addition
-func (e *Element) Augment(m ...Markup) bool {
-	for _, mo := range m {
-		mo.Apply(e)
-	}
-	return true
-}
-
-//Apply adds the giving element into the current elements children tree
-func (e *Element) Apply(em *Element) {
-	em.AddChild(e)
-	e.Bind(em, false)
-}
-
-// Text represent a text element
-type Text struct {
-	Mutation
-	text string
-}
-
-// NewText returns a new Text instance element
-func NewText(txt string) *Text {
-	mo := NewMutable()
-
-	t := &Text{
-		Mutation: mo,
-		text:     txt,
+// DeepElementsWithTag returns elements matching the tag type in the parent markup
+// and depending on the depth will walk down other children within the children.
+// WARNING: depth must start at 1
+func DeepElementsWithTag(e Markup, f string, depth int) []Markup {
+	if depth <= 0 {
+		return nil
 	}
 
-	return t
-}
+	f = strings.TrimSpace(strings.ToLower(f))
 
-// MText returns a text tied to an observable
-func MText(m reactive.Observers) *Text {
-	t := NewText(fmt.Sprintf("%+v", m.Get()))
+	var found []Markup
 
-	m.React(func(r flux.Reactor, _ error, _ interface{}) {
-		t.Set(fmt.Sprintf("%+v", m.Get()))
-	}, true)
-
-	return t
-}
-
-// Augment is implemented as a no-op
-func (t *Text) Augment(m ...Markup) bool {
-	return false
-}
-
-// Clone makes a new copy of the markup structure
-func (t *Text) Clone() Markup {
-	return NewText(t.Get())
-}
-
-// AddChild adds a new markup as the children of this element
-func (t *Text) AddChild(em Markup) bool {
-	return false
-}
-
-// GetStyles implement this method as a noop
-func (t *Text) GetStyles(f, val string) []*Style {
-	return nil
-}
-
-// GetStyle implement this method as a noop
-func (t *Text) GetStyle(f string) (*Style, error) {
-	return nil, ErrNotFound
-}
-
-// StyleContains implement this method as a noop
-func (t *Text) StyleContains(f, val string) bool {
-	return false
-}
-
-// GetAttrs implement this method as a noop
-func (t *Text) GetAttrs(f, val string) []*Attribute {
-	return nil
-}
-
-// GetAttr implement this method as a noop
-func (t *Text) GetAttr(f string) (*Attribute, error) {
-	return nil, ErrNotFound
-}
-
-// AttrContains implement this method as a noop
-func (t *Text) AttrContains(f, val string) bool {
-	return false
-}
-
-// ElementsUsingStyle implement this method as a noop
-func (t *Text) ElementsUsingStyle(f, val string) []*Element {
-	return nil
-}
-
-// ElementsWithAttr implement this method as a noop
-func (t *Text) ElementsWithAttr(f, val string) []*Element {
-	return nil
-}
-
-// DeepElementsUsingStyle implement this method as a noop
-func (t *Text) DeepElementsUsingStyle(f, val string, depth int) []*Element {
-	return nil
-}
-
-// DeepElementsWithAttr implement this method as a noop
-func (t *Text) DeepElementsWithAttr(f, val string, depth int) []*Element {
-	return nil
-}
-
-// Set sets the value of the text
-func (t *Text) Set(tx string) {
-	if t.text == tx {
-		return
-	}
-
-	t.text = tx
-	t.Send(t)
-}
-
-// Get returns the value of the text
-func (t *Text) Get() string {
-	return t.text
-}
-
-// Name returns the tag name of the element
-func (t *Text) Name() string {
-	return "text"
-}
-
-// Apply applies a set change to the giving element children list
-func (t *Text) Apply(e *Element) {
-	e.Children = append(e.Children, t)
-	t.Bind(e, false)
-}
-
-// Attribute define the struct  for attributes
-type Attribute struct {
-	Name  string
-	Value string
-}
-
-//Clone replicates the attribute into a unique instance
-func (a *Attribute) Clone() *Attribute {
-	return &Attribute{Name: a.Name, Value: a.Value}
-}
-
-// Apply applies a set change to the giving element attributes list
-func (a *Attribute) Apply(e *Element) {
-	e.Attrs = append(e.Attrs, a)
-}
-
-// Style define the style specification for element styles
-type Style struct {
-	Name  string
-	Value string
-}
-
-//Clone replicates the style into a unique instance
-func (s *Style) Clone() *Style {
-	return &Style{Name: s.Name, Value: s.Value}
-}
-
-// Apply applies a set change to the giving element style list
-func (s *Style) Apply(e *Element) {
-	e.Styles = append(e.Styles, s)
-}
-
-// Augment adds new markup to an the root if its Element
-func Augment(root Markup, m ...Markup) {
-	if el, ok := root.(*Element); ok {
-		for _, mo := range m {
-			mo.Apply(el)
+	for _, ch := range e.Children() {
+		// if che, ok := ch.(*Element); ok {
+		if ch.Name() == f {
+			found = append(found, ch)
+			cfo := DeepElementsWithTag(ch, f, depth-1)
+			if len(cfo) > 0 {
+				found = append(found, cfo...)
+			}
 		}
+		// }
 	}
+
+	return found
 }

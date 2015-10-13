@@ -1,10 +1,14 @@
-package views
+package events
 
 import (
 	"errors"
 	"fmt"
 	"strings"
 	"sync"
+
+	"github.com/gopherjs/gopherjs/js"
+	// hodom "honnef.co/go/js/dom"
+	hodom "github.com/influx6/dom"
 )
 
 // EventSubs defines the event interface methods for meta info
@@ -13,13 +17,21 @@ type EventSubs interface {
 	ID() string
 	EventType() string
 	EventSelector() string
+	Offload()
 	SetStopPropagation(n bool)
 	SetStopImmediatePropagation(n bool)
 	SetPreventDefault(n bool)
 	StopPropagation() bool
 	StopImmediatePropagation() bool
 	PreventDefault() bool
+	DOM(hodom.Element)
+	TriggerMatch(hodom.Event)
+	Trigger(hodom.Event)
 }
+
+// JSEventMux represents a js.listener function which is returned when attached
+// using AddEventListeners and is used for removals with RemoveEventListeners
+type JSEventMux func(*js.Object)
 
 // EventSub represent a single event configuration for dom.Elem objects
 // instance which allows chaining of events listeners like middleware
@@ -32,6 +44,8 @@ type EventSub struct {
 	stopPropagate          bool
 	stopImmediatePropagate bool
 	preventDefault         bool
+	jslink                 JSEventMux
+	dom                    hodom.Element
 }
 
 // NewEventSub returns a new event element config
@@ -40,6 +54,83 @@ func NewEventSub(evtype, evtarget string) *EventSub {
 		Type:       evtype,
 		Target:     evtarget,
 		FlatChains: FlatChainIdentity(),
+	}
+}
+
+// DOM sets up the event subs for listening
+func (e *EventSub) DOM(dom hodom.Element) {
+	e.Offload()
+	e.dom = dom
+	e.jslink = e.dom.AddEventListener(e.EventType(), true, e.TriggerMatch)
+}
+
+// Offload removes all event bindings from current dom element
+func (e *EventSub) Offload() {
+	if e.dom == nil {
+		return
+	}
+
+	if e.jslink != nil {
+		e.dom.RemoveEventListener(e.EventType(), true, e.jslink)
+		e.jslink = nil
+	}
+}
+
+// Trigger provides bypass for triggering this event sub by passing down an event
+// directly without matching target or selector
+func (e *EventSub) Trigger(h hodom.Event) {
+	e.HandleContext(h)
+}
+
+// TriggerMatch check if the current event from a specific parent matches the
+// eventarget by using the eventsub selector,if the target is within the results for
+// that selector then it triggers the event subscribers
+func (e *EventSub) TriggerMatch(h hodom.Event) {
+	// if e.dom != nil
+	if strings.ToLower(h.Type()) != strings.ToLower(e.EventType()) {
+		return
+	}
+
+	//get the targets parent
+	parent := h.Target().ParentElement()
+
+	var match bool
+
+	//get all possible matches of this query
+	posis := parent.QuerySelectorAll(e.EventSelector())
+
+	//get the current event target
+	target := h.Target()
+
+	// log.Printf("Checking: %s for %s", target, e.ID())
+
+	//is our target part of those that match the selector
+	for _, item := range posis {
+		if item.Underlying() != target.Underlying() {
+			continue
+		}
+		match = true
+		break
+	}
+
+	//if we match then run the listeners registered
+	if match {
+		//if we dont want immediatepropagation kill it else check propagation also
+		if e.StopImmediatePropagation() {
+			h.StopImmediatePropagation()
+		} else {
+			//if we dont want propagation kill it
+			if e.StopPropagation() {
+				h.StopPropagation()
+			}
+		}
+
+		//we want to PreventDefault then stop default action
+		if e.PreventDefault() {
+			h.PreventDefault()
+		}
+
+		e.HandleContext(h)
 	}
 }
 
@@ -99,14 +190,19 @@ type EventManager struct {
 	//events contain the events to be registered on an element
 	// it contains the element and the selector type used to match it
 	// that is, the value of ElemEvent.Target
-	events map[string]EventSubs
-	ro     sync.RWMutex
+	events   map[string]EventSubs
+	attaches map[*EventManager]bool
+	ro       sync.RWMutex
+	wo       sync.RWMutex
+	//current dom node attached
+	dom hodom.Element
 }
 
 // NewEventManager returns a new event manager instance
 func NewEventManager() *EventManager {
 	em := EventManager{
-		events: make(map[string]EventSubs),
+		events:   make(map[string]EventSubs),
+		attaches: make(map[*EventManager]bool),
 	}
 
 	return &em
@@ -153,6 +249,52 @@ func (em *EventManager) NewEvent(evtype, evselector string) (EventSubs, bool) {
 	return emo, true
 }
 
+// AttachManager allows a manager to get attached to another manajor to receive a dom binding
+// when this receives one
+func (em *EventManager) AttachManager(esm *EventManager) {
+	//incase of stupid loops, are we attached to the supplied manager? if so duck this
+	if esm.HasManager(em) {
+		return
+	}
+
+	//if we have it already we skip
+	if em.HasManager(esm) {
+		return
+	}
+
+	//its not found so we add it
+	em.wo.Lock()
+	em.attaches[esm] = true
+	em.wo.Unlock()
+
+	//do we already have a dom attached?, then notify this manager immediately
+	if em.dom != nil {
+		esm.LoadDOM(em.dom)
+	}
+}
+
+// DetachManager detaches the manager if attached already
+func (em *EventManager) DetachManager(esm *EventManager) {
+	//if we dont have it attached then skip
+	if !em.HasManager(esm) {
+		return
+	}
+
+	//we got one so we kill it
+	em.wo.Lock()
+	delete(em.attaches, esm)
+	em.wo.Unlock()
+}
+
+// HasManager returns true/false if a manager was already attached
+func (em *EventManager) HasManager(esm *EventManager) bool {
+	//have we already attached before
+	em.wo.RLock()
+	ok := em.attaches[esm]
+	em.wo.RUnlock()
+	return ok
+}
+
 //AddEvent adds Event elements into the event manager if a
 //event element is already matching that is the combination of selector#eventtype
 // then it returns false but if added then true
@@ -183,6 +325,31 @@ func (em *EventManager) EachEvent(fx func(EventSubs)) {
 		fx(eo)
 	}
 	em.ro.Unlock()
+}
+
+// EachManager runnings a function over all attached managers
+func (em *EventManager) EachManager(fx func(*EventManager)) {
+	em.wo.Lock()
+	for eo := range em.attaches {
+		fx(eo)
+	}
+	em.wo.Unlock()
+}
+
+// LoadDOM passes down the dom element to all EventSub to initialize and listen for their respective events
+func (em *EventManager) LoadDOM(dom hodom.Element) {
+	//replace the current dom node be used
+	em.dom = dom
+
+	// send the dom out to all registered event subs for loadup
+	em.EachEvent(func(es EventSubs) {
+		es.DOM(dom)
+	})
+
+	// send out to all other attach eventmanagers for loadup
+	em.EachManager(func(ems *EventManager) {
+		ems.LoadDOM(dom)
+	})
 }
 
 // GetEventID returns the id for a ElemEvent object

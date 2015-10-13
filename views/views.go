@@ -5,8 +5,11 @@ import (
 	"strings"
 
 	"github.com/influx6/flux"
+	"github.com/influx6/haiku/events"
 	"github.com/influx6/haiku/trees"
 	"github.com/influx6/haiku/trees/elems"
+	// hodom "honnef.co/go/js/dom"
+	hodom "github.com/influx6/dom"
 )
 
 // Views define a Haiku Component
@@ -14,10 +17,11 @@ type Views interface {
 	flux.Reactor
 	States
 	Show()
-	Events() *EventManager
+	Events() *events.EventManager
 	Hide()
 	Render(...string) trees.Markup
 	RenderHTML(...string) template.HTML
+	Mount(hodom.Element)
 }
 
 // ViewStates defines the two possible behavioral state of a view's markup
@@ -31,7 +35,7 @@ type HideView struct{}
 // Render marks the given markup as display:none
 func (v *HideView) Render(m trees.Markup) {
 	//if we are allowed to query for styles then check and change display
-	if ds, err := m.GetStyle("display"); err == nil {
+	if ds, err := trees.GetStyle(m, "display"); err == nil {
 		if !strings.Contains(ds.Value, "none") {
 			ds.Value = "none"
 		}
@@ -44,7 +48,7 @@ type ShowView struct{}
 // Render marks the given markup with a display: block
 func (v *ShowView) Render(m trees.Markup) {
 	//if we are allowed to query for styles then check and change display
-	if ds, err := m.GetStyle("display"); err == nil {
+	if ds, err := trees.GetStyle(m, "display"); err == nil {
 		if strings.Contains(ds.Value, "none") {
 			ds.Value = "block"
 		}
@@ -62,8 +66,11 @@ type View struct {
 	ShowState   ViewStates
 	activeState ViewStates
 	encoder     trees.MarkupWriter
-	events      *EventManager
+	events      *events.EventManager
 	fx          ViewMux
+	dom         hodom.Element
+	//liveMarkup represent the current rendered markup
+	liveMarkup trees.Markup
 }
 
 // NewView returns a basic view
@@ -78,10 +85,20 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 		States:    NewState(),
 		HideState: &HideView{},
 		ShowState: &ShowView{},
-		events:    NewEventManager(),
+		events:    events.NewEventManager(),
 		encoder:   writer,
 		fx:        fx,
 	}
+
+	//set up the reaction chain, if we have node attach then render to it
+	vm.React(func(r flux.Reactor, _ error, _ interface{}) {
+		//if we are not domless then patch
+		if vm.dom != nil {
+			html := vm.RenderHTML()
+			// log.Printf("Sending to fragment: -> \n %s", html)
+			Patch(CreateFragment(string(html)), vm.dom)
+		}
+	}, true)
 
 	vm.States.UseActivator(func() {
 		vm.Show()
@@ -92,6 +109,13 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 	})
 
 	return
+}
+
+// Mount is to be called in the browser to loadup this view with a dom
+func (v *View) Mount(dom hodom.Element) {
+	v.dom = dom
+	v.events.LoadDOM(dom)
+	v.Send(true)
 }
 
 // Show activates the view to generate a visible markup
@@ -111,7 +135,7 @@ func (v *View) Hide() {
 }
 
 // Events returns the views events manager
-func (v *View) Events() *EventManager {
+func (v *View) Events() *events.EventManager {
 	return v.events
 }
 
@@ -128,6 +152,12 @@ func (v *View) Render(m ...string) trees.Markup {
 	if dom == nil {
 		return elems.Div()
 	}
+
+	if v.liveMarkup != nil {
+		dom.Reconcile(v.liveMarkup)
+	}
+
+	v.liveMarkup = dom
 
 	return dom
 }

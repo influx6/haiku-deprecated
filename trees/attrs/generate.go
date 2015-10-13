@@ -43,6 +43,7 @@ var inputs = []string{
 
 //attrs contains set of definable attributes
 var attrs = []string{
+	"name",
 	"checked",
 	"className",
 	"autofocus",

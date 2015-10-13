@@ -3,6 +3,8 @@ package trees
 import (
 	"fmt"
 	"strings"
+
+	"github.com/go-humble/detect"
 )
 
 // This contains printers for the tree dom definition structures
@@ -22,6 +24,10 @@ const attrformt = ` %s="%s"`
 
 // Print returns a stringed repesentation of the attribute object
 func (m *AttrWriter) Print(a []*Attribute) string {
+	if len(a) <= 0 {
+		return ""
+	}
+
 	attrs := []string{}
 
 	for _, ar := range a {
@@ -46,6 +52,10 @@ const styleformt = " %s:%s;"
 
 // Print returns a stringed repesentation of the style object
 func (m *StyleWriter) Print(s []*Style) string {
+	if len(s) <= 0 {
+		return ""
+	}
+
 	css := []string{}
 
 	for _, cs := range s {
@@ -55,51 +65,79 @@ func (m *StyleWriter) Print(s []*Style) string {
 	return strings.Join(css, " ")
 }
 
-// TextWriter writes out the text element/node for the vdom into a string
-type TextWriter struct{}
-
-// SimpleTextWriter provides a basic text writer
-var SimpleTextWriter = &TextWriter{}
-
-// Print returns the string representation of the text object
-func (m *TextWriter) Print(t *Text) string {
-	return t.Get()
-}
+// // TextWriter writes out the text element/node for the vdom into a string
+// type TextWriter struct{}
+//
+// // SimpleTextWriter provides a basic text writer
+// var SimpleTextWriter = &TextWriter{}
+//
+// // Print returns the string representation of the text object
+// func (m *TextWriter) Print(t *Text) string {
+// 	return t.Get()
+// }
 
 // ElementWriter writes out the element out as a string matching the html tag rules
 type ElementWriter struct {
-	attrWriter  AttrPrinter
-	styleWriter StylePrinter
-	text        *TextWriter
+	attrWriter   AttrPrinter
+	styleWriter  StylePrinter
+	allowRemoved bool
+	// text        *TextWriter
 }
 
 // SimpleElementWriter provides a default writer using the basic attribute and style writers
-var SimpleElementWriter = NewElementWriter(SimpleAttrWriter, SimpleStyleWriter, SimpleTextWriter)
+var SimpleElementWriter = NewElementWriter(SimpleAttrWriter, SimpleStyleWriter /*, SimpleTextWriter*/)
 
 // NewElementWriter returns a new writer for Element objects
-func NewElementWriter(aw AttrPrinter, sw StylePrinter, tw *TextWriter) *ElementWriter {
+func NewElementWriter(aw AttrPrinter, sw StylePrinter) *ElementWriter {
 	return &ElementWriter{
 		attrWriter:  aw,
 		styleWriter: sw,
-		text:        tw,
+		// text:        tw,
 	}
 }
 
+/*<<<---------------code within this region is usually for testing purposes------------*/
+
+// DisallowRemoved is used to switch off the check to allow rendering of elements set as removed
+func (m *ElementWriter) DisallowRemoved() {
+	m.allowRemoved = false
+}
+
+// AllowRemoved is used to switch off the check to allow rendering of elements set as removed
+func (m *ElementWriter) AllowRemoved() {
+	m.allowRemoved = true
+}
+
+/* ----------------code within this region is usually for testing purposes----------->>>*/
+
 // Print returns the string representation of the element
 func (m *ElementWriter) Print(e *Element) string {
+	// if we are on the server && is this element marked as removed, if so we skip and return an empty string
+	if detect.IsServer() {
+		if e.Removed() && !m.allowRemoved {
+			return ""
+		}
+	}
 
 	//collect uid and hash of the element so we can write them along
 	hash := &Attribute{"hash", e.Hash()}
 	uid := &Attribute{"uid", e.UID()}
 
+	//management attributes
+	mido := []*Attribute{hash, uid}
+
+	if e.Removed() {
+		mido = append(mido, &Attribute{"haikuRemoved", ""})
+	}
+
 	//write out the hash and uid as attributes
-	hashes := m.attrWriter.Print([]*Attribute{hash, uid})
+	hashes := m.attrWriter.Print(mido)
 
 	//write out the elements attributes using the AttrWriter
-	attrs := m.attrWriter.Print(e.Attrs)
+	attrs := m.attrWriter.Print(e.Attributes())
 
 	//write out the elements inline-styles using the StyleWriter
-	style := m.styleWriter.Print(e.Styles)
+	style := m.styleWriter.Print(e.Styles())
 
 	var closer string
 	var beginbrack string
@@ -108,15 +146,15 @@ func (m *ElementWriter) Print(e *Element) string {
 		closer = "/>"
 	} else {
 		beginbrack = ">"
-		closer = fmt.Sprintf("</%s>", e.Tagname)
+		closer = fmt.Sprintf("</%s>", e.Name())
 	}
 
 	var children = []string{}
 
-	for _, ch := range e.Children {
-		if tch, ok := ch.(*Text); ok {
-			children = append(children, m.text.Print(tch))
-		}
+	for _, ch := range e.Children() {
+		// if tch, ok := ch.(*Text); ok {
+		// 	children = append(children, m.text.Print(tch))
+		// }
 		if ech, ok := ch.(*Element); ok {
 			if ech == e {
 				continue
@@ -127,11 +165,12 @@ func (m *ElementWriter) Print(e *Element) string {
 
 	//lets create the elements markup now
 	return strings.Join([]string{
-		fmt.Sprintf("<%s", e.Tagname),
+		fmt.Sprintf("<%s", e.Name()),
 		hashes,
 		attrs,
-		style,
+		fmt.Sprintf(` style="%s"`, style),
 		beginbrack,
+		e.textContent,
 		strings.Join(children, "\n"),
 		closer,
 	}, "")
@@ -157,9 +196,9 @@ func NewMarkupWriter(em *ElementWriter) MarkupWriter {
 
 // Write returns a stringed repesentation of the markup object
 func (m *markupWriter) Write(ma Markup) (string, error) {
-	if tmr, ok := ma.(*Text); ok {
-		return m.ElementWriter.text.Print(tmr), nil
-	}
+	// if tmr, ok := ma.(*Text); ok {
+	// 	return m.ElementWriter.text.Print(tmr), nil
+	// }
 
 	if emr, ok := ma.(*Element); ok {
 		return m.ElementWriter.Print(emr), nil

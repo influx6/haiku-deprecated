@@ -70,6 +70,11 @@ const (
     
 )
   
+// Name defines attributes of type "Name" for html element types
+func Name(val string) *trees.Attribute {
+  return &trees.Attribute{Name: "name", Value: val }
+}
+    
 // Checked defines attributes of type "Checked" for html element types
 func Checked(val string) *trees.Attribute {
   return &trees.Attribute{Name: "checked", Value: val }

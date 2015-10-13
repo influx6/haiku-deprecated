@@ -1,9 +1,10 @@
-package views
+package events
 
 import (
 	"sync"
 
-	hodom "honnef.co/go/js/dom"
+	// hodom "honnef.co/go/js/dom"
+	hodom "github.com/influx6/dom"
 )
 
 // NextHandler provides next call for flat chains
@@ -55,6 +56,14 @@ func (r *FlatChain) UnChain() {
 	}
 
 	prev.useNext(nil)
+}
+
+// Bind provides a wrapper over the Next binder function call
+func (r *FlatChain) Bind(rnx func(hodom.Event)) FlatChains {
+	return r.Next(func(ev hodom.Event, nx NextHandler) {
+		rnx(ev)
+		nx(ev)
+	})
 }
 
 // Next allows the chain of the function as a FlatHandler

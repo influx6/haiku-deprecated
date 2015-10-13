@@ -1,10 +1,10 @@
-package dom
+package views
 
 import (
 	"fmt"
 	"strings"
 
-	hodom "honnef.co/go/js/dom"
+	hodom "github.com/influx6/dom"
 )
 
 // CreateFragment returns a DocumentFragment with the given html dom
@@ -90,6 +90,7 @@ func PatchTree(fragment hodom.Node, live hodom.Element, level int) {
 	shadowNodes := fragment.ChildNodes()
 	// FIXED: instead of going through the children which may be many,
 	// liveNodes := fragment.ChildNodes()
+	// log.Printf("patchtree will now add: \n%+s", shadowNodes)
 
 patchloop:
 	for _, node := range shadowNodes {
@@ -173,6 +174,20 @@ patchloop:
 				continue patchloop
 			}
 
+			//if we are to be removed then remove the target
+			if elem.HasAttribute("haikuRemoved") {
+				target.ParentNode().RemoveChild(target)
+				continue patchloop
+			}
+
+			//if the new node has no children, then just replace it
+			if len(elem.ChildNodes()) <= 0 {
+				live.ReplaceChild(node, target)
+				continue patchloop
+			}
+
+			//here we are not be removed and we do have kids
+
 			// if the target hash is exactly the same with ours skip it
 			if target.GetAttribute("hash") == hash {
 				continue patchloop
@@ -180,11 +195,24 @@ patchloop:
 
 			//so we got this dude, are we already one level deep ? if so swap else
 			// run through the children with Patch
-			if level >= 1 {
-				live.ReplaceChild(node, target)
-			} else {
-				PatchTree(node, target, 1)
+			// if level >= 1 {
+			// live.ReplaceChild(node, target)
+			attrs := elem.Attributes()
+
+			for key, value := range attrs {
+				target.SetAttribute(key, value)
 			}
+
+			if len(target.ChildNodes()) <= 1 {
+				target.SetInnerHTML("")
+				for _, enode := range elem.ChildNodes() {
+					target.AppendChild(enode)
+				}
+				continue patchloop
+			}
+
+			PatchTree(elem, target, 0)
+			// }
 
 		default:
 			// add it if its not an element

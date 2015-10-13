@@ -32147,8 +32147,8 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	};
 	ElementWriter.prototype.AllowRemoved = function() { return this.$val.AllowRemoved(); };
 	ElementWriter.ptr.prototype.Print = function(e) {
-		var $ptr, _i, _r, _r$1, _r$10, _r$11, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tuple, attrs, beginbrack, ch, children, closer, e, ech, hash, hashes, m, mido, ok, style, uid, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _tuple = $f._tuple; attrs = $f.attrs; beginbrack = $f.beginbrack; ch = $f.ch; children = $f.children; closer = $f.closer; e = $f.e; ech = $f.ech; hash = $f.hash; hashes = $f.hashes; m = $f.m; mido = $f.mido; ok = $f.ok; style = $f.style; uid = $f.uid; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _i, _r, _r$1, _r$10, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tuple, attrs, beginbrack, ch, children, closer, e, ech, hash, hashes, m, mido, ok, style, uid, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _tuple = $f._tuple; attrs = $f.attrs; beginbrack = $f.beginbrack; ch = $f.ch; children = $f.children; closer = $f.closer; e = $f.e; ech = $f.ech; hash = $f.hash; hashes = $f.hashes; m = $f.m; mido = $f.mido; ok = $f.ok; style = $f.style; uid = $f.uid; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		m = this;
 		/* */ if (detect.IsServer()) { $s = 1; continue; }
 		/* */ $s = 2; continue;
@@ -32165,56 +32165,50 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		_r$2 = e.Mutation.UID(); /* */ $s = 7; case 7: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		uid = new Attribute.ptr("uid", _r$2);
 		mido = new sliceType$2([hash, uid]);
-		_r$3 = e.Mutation.Removed(); /* */ $s = 10; case 10: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		/* */ if (_r$3) { $s = 8; continue; }
-		/* */ $s = 9; continue;
-		/* if (_r$3) { */ case 8:
-			mido = $append(mido, new Attribute.ptr("haikuRemoved", ""));
-		/* } */ case 9:
-		_r$4 = m.attrWriter.Print(mido); /* */ $s = 11; case 11: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		hashes = _r$4;
-		_r$5 = m.attrWriter.Print(e.Attributes()); /* */ $s = 12; case 12: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-		attrs = _r$5;
-		_r$6 = m.styleWriter.Print(e.Styles()); /* */ $s = 13; case 13: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-		style = _r$6;
+		_r$3 = m.attrWriter.Print(mido); /* */ $s = 8; case 8: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		hashes = _r$3;
+		_r$4 = m.attrWriter.Print(e.Attributes()); /* */ $s = 9; case 9: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		attrs = _r$4;
+		_r$5 = m.styleWriter.Print(e.Styles()); /* */ $s = 10; case 10: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		style = _r$5;
 		closer = "";
 		beginbrack = "";
-		/* */ if (e.AutoClosed()) { $s = 14; continue; }
-		/* */ $s = 15; continue;
-		/* if (e.AutoClosed()) { */ case 14:
+		/* */ if (e.AutoClosed()) { $s = 11; continue; }
+		/* */ $s = 12; continue;
+		/* if (e.AutoClosed()) { */ case 11:
 			closer = "/>";
-			$s = 16; continue;
-		/* } else { */ case 15:
+			$s = 13; continue;
+		/* } else { */ case 12:
 			beginbrack = ">";
-			_r$7 = fmt.Sprintf("</%s>", new sliceType$1([new $String(e.Name())])); /* */ $s = 17; case 17: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-			closer = _r$7;
-		/* } */ case 16:
+			_r$6 = fmt.Sprintf("</%s>", new sliceType$1([new $String(e.Name())])); /* */ $s = 14; case 14: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+			closer = _r$6;
+		/* } */ case 13:
 		children = new sliceType([]);
 		_ref = e.Children();
 		_i = 0;
-		/* while (true) { */ case 18:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 19; continue; }
+		/* while (true) { */ case 15:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 16; continue; }
 			ch = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
 			_tuple = $assertType(ch, ptrType$1, true); ech = _tuple[0]; ok = _tuple[1];
-			/* */ if (ok) { $s = 20; continue; }
-			/* */ $s = 21; continue;
-			/* if (ok) { */ case 20:
-				/* */ if (ech === e) { $s = 22; continue; }
-				/* */ $s = 23; continue;
-				/* if (ech === e) { */ case 22:
+			/* */ if (ok) { $s = 17; continue; }
+			/* */ $s = 18; continue;
+			/* if (ok) { */ case 17:
+				/* */ if (ech === e) { $s = 19; continue; }
+				/* */ $s = 20; continue;
+				/* if (ech === e) { */ case 19:
 					_i++;
-					/* continue; */ $s = 18; continue;
-				/* } */ case 23:
-				_r$8 = m.Print(ech); /* */ $s = 24; case 24: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
-				children = $append(children, _r$8);
-			/* } */ case 21:
+					/* continue; */ $s = 15; continue;
+				/* } */ case 20:
+				_r$7 = m.Print(ech); /* */ $s = 21; case 21: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+				children = $append(children, _r$7);
+			/* } */ case 18:
 			_i++;
-		/* } */ $s = 18; continue; case 19:
-		_r$9 = fmt.Sprintf("<%s", new sliceType$1([new $String(e.Name())])); /* */ $s = 25; case 25: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
-		_r$10 = fmt.Sprintf(" style=\"%s\"", new sliceType$1([new $String(style)])); /* */ $s = 26; case 26: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
-		_r$11 = strings.Join(new sliceType([_r$9, hashes, attrs, _r$10, beginbrack, e.textContent, strings.Join(children, "\n"), closer]), ""); /* */ $s = 27; case 27: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
-		return _r$11;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ElementWriter.ptr.prototype.Print }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f.attrs = attrs; $f.beginbrack = beginbrack; $f.ch = ch; $f.children = children; $f.closer = closer; $f.e = e; $f.ech = ech; $f.hash = hash; $f.hashes = hashes; $f.m = m; $f.mido = mido; $f.ok = ok; $f.style = style; $f.uid = uid; $f.$s = $s; $f.$r = $r; return $f;
+		/* } */ $s = 15; continue; case 16:
+		_r$8 = fmt.Sprintf("<%s", new sliceType$1([new $String(e.Name())])); /* */ $s = 22; case 22: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+		_r$9 = fmt.Sprintf(" style=\"%s\"", new sliceType$1([new $String(style)])); /* */ $s = 23; case 23: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+		_r$10 = strings.Join(new sliceType([_r$8, hashes, attrs, _r$9, beginbrack, e.textContent, strings.Join(children, "\n"), closer]), ""); /* */ $s = 24; case 24: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+		return _r$10;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ElementWriter.ptr.prototype.Print }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f.attrs = attrs; $f.beginbrack = beginbrack; $f.ch = ch; $f.children = children; $f.closer = closer; $f.e = e; $f.ech = ech; $f.hash = hash; $f.hashes = hashes; $f.m = m; $f.mido = mido; $f.ok = ok; $f.style = style; $f.uid = uid; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ElementWriter.prototype.Print = function(e) { return this.$val.Print(e); };
 	NewMarkupWriter = function(em) {
@@ -32450,11 +32444,10 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 			/* */ $s = 10; continue;
 			/* if (e.TextContent() === _r$3) { */ case 9:
 				$r = e.Mutation.swapHash(oldHash); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				return true;
+				return false;
 			/* } */ case 10:
-			return false;
+			return true;
 		/* } */ case 8:
-		childChanged = false;
 		newChildren = e.Children();
 		_r$4 = em.Children(); /* */ $s = 13; case 13: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		oldChildren = _r$4;
@@ -32467,10 +32460,11 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 			/* */ $s = 17; continue;
 			/* if (oldMaxSize <= 0) { */ case 16:
 				$r = e.Mutation.swapHash(oldHash); /* */ $s = 18; case 18: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				return true;
+				return false;
 			/* } */ case 17:
-			return false;
+			return true;
 		/* } */ case 15:
+		childChanged = false;
 		_ref = oldChildren;
 		_i = 0;
 		/* while (true) { */ case 19:
@@ -32494,6 +32488,9 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 			e.AddChild(och);
 			_i++;
 		/* } */ $s = 19; continue; case 20:
+		if (maxSize > oldMaxSize) {
+			return true;
+		}
 		if (!(!childChanged)) { _v = false; $s = 29; continue s; }
 		_r$6 = EqualAttributes(e, em); /* */ $s = 30; case 30: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 		_v = _r$6; case 29:
@@ -32501,9 +32498,9 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		/* */ $s = 28; continue;
 		/* if (_v) { */ case 27:
 			$r = e.Mutation.swapHash(oldHash); /* */ $s = 31; case 31: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			return true;
+			return false;
 		/* } */ case 28:
-		return false;
+		return true;
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Element.ptr.prototype.Reconcile }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._v = _v; $f.childChanged = childChanged; $f.e = e; $f.em = em; $f.maxSize = maxSize; $f.n = n; $f.nch = nch; $f.newChildren = newChildren; $f.och = och; $f.oldChildren = oldChildren; $f.oldHash = oldHash; $f.oldMaxSize = oldMaxSize; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Element.prototype.Reconcile = function(em) { return this.$val.Reconcile(em); };
@@ -32616,36 +32613,47 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	};
 	Element.prototype.Clone = function() { return this.$val.Clone(); };
 	EqualAttributes = function(e, em) {
-		var $ptr, _i, _r, _r$1, _ref, _tuple, changed, e, em, err, oa, oldAttrs, ta, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; _tuple = $f._tuple; changed = $f.changed; e = $f.e; em = $f.em; err = $f.err; oa = $f.oa; oldAttrs = $f.oldAttrs; ta = $f.ta; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _i, _r, _r$1, _r$2, _ref, _tuple, e, em, equal, err, oa, oldAttrs, ta, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _ref = $f._ref; _tuple = $f._tuple; e = $f.e; em = $f.em; equal = $f.equal; err = $f.err; oa = $f.oa; oldAttrs = $f.oldAttrs; ta = $f.ta; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = em.Attributes(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		oldAttrs = _r;
-		changed = false;
+		/* */ if (oldAttrs.$length <= 0) { $s = 2; continue; }
+		/* */ $s = 3; continue;
+		/* if (oldAttrs.$length <= 0) { */ case 2:
+			_r$1 = e.Attributes(); /* */ $s = 6; case 6: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			/* */ if (_r$1.$length <= 0) { $s = 4; continue; }
+			/* */ $s = 5; continue;
+			/* if (_r$1.$length <= 0) { */ case 4:
+				return true;
+			/* } */ case 5:
+			return false;
+		/* } */ case 3:
+		equal = true;
 		_ref = oldAttrs;
 		_i = 0;
-		/* while (true) { */ case 2:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 3; continue; }
+		/* while (true) { */ case 7:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 8; continue; }
 			oa = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			_r$1 = GetAttr(e, oa.Name); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-			_tuple = _r$1; ta = _tuple[0]; err = _tuple[1];
-			/* */ if ($interfaceIsEqual(err, $ifaceNil)) { $s = 5; continue; }
-			/* */ $s = 6; continue;
-			/* if ($interfaceIsEqual(err, $ifaceNil)) { */ case 5:
+			_r$2 = GetAttr(e, oa.Name); /* */ $s = 9; case 9: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+			_tuple = _r$2; ta = _tuple[0]; err = _tuple[1];
+			/* */ if ($interfaceIsEqual(err, $ifaceNil)) { $s = 10; continue; }
+			/* */ $s = 11; continue;
+			/* if ($interfaceIsEqual(err, $ifaceNil)) { */ case 10:
 				if (ta.Value === oa.Value) {
 					_i++;
-					/* continue; */ $s = 2; continue;
+					/* continue; */ $s = 7; continue;
 				}
-				changed = true;
-				/* break; */ $s = 3; continue;
-				$s = 7; continue;
-			/* } else { */ case 6:
-				changed = true;
-				/* break; */ $s = 3; continue;
-			/* } */ case 7:
+				equal = false;
+				/* break; */ $s = 8; continue;
+				$s = 12; continue;
+			/* } else { */ case 11:
+				equal = false;
+				/* break; */ $s = 8; continue;
+			/* } */ case 12:
 			_i++;
-		/* } */ $s = 2; continue; case 3:
-		return changed;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EqualAttributes }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._tuple = _tuple; $f.changed = changed; $f.e = e; $f.em = em; $f.err = err; $f.oa = oa; $f.oldAttrs = oldAttrs; $f.ta = ta; $f.$s = $s; $f.$r = $r; return $f;
+		/* } */ $s = 7; continue; case 8:
+		return equal;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EqualAttributes }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._ref = _ref; $f._tuple = _tuple; $f.e = e; $f.em = em; $f.equal = equal; $f.err = err; $f.oa = oa; $f.oldAttrs = oldAttrs; $f.ta = ta; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.EqualAttributes = EqualAttributes;
 	GetStyle = function(e, f) {

@@ -32,10 +32,10 @@ func main() {
 	page.Mount("body", ".", menu)
 
 	go func() {
-		<-time.After(2000 * time.Millisecond)
+		<-time.After(3 * time.Second)
 		menuItem = menuItem[1:]
 		menu.Send(true)
-		<-time.After(2000 * time.Millisecond)
+		<-time.After(5 * time.Second)
 		menuItem = append(menuItem, "border", "section", "chief")
 		menu.Send(true)
 	}()

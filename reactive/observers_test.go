@@ -17,7 +17,7 @@ type foobar struct {
 
 // TestObserverPayload test the capability of loading data into an Observer using yaml data payload
 func TestObserverPayload(t *testing.T) {
-	name, _ := ObserveTransform("", false)
+	name := ObserveAtom("", false)
 
 	bar := &foobar{Name: name}
 
@@ -59,7 +59,7 @@ func TestImmutable(t *testing.T) {
 	var ws sync.WaitGroup
 	ws.Add(1)
 
-	models, _ := ObserveTransform("model", false)
+	models := ObserveAtom("model", false)
 
 	if models.Get() != "model" {
 		t.Fatal("Wrong returned value:", models.Get())

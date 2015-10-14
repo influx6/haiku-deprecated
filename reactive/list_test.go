@@ -9,7 +9,7 @@ import (
 )
 
 func TestMutationRange(t *testing.T) {
-	models := StrictAtom("model", true)
+	models := Atom("model", true)
 	models.Mutate("admin")
 	models.Mutate("users")
 	grps, _ := models.Mutate("groups")
@@ -27,7 +27,7 @@ func TestMutationRange(t *testing.T) {
 }
 
 func TestMutationIterator(t *testing.T) {
-	models := StrictAtom("model", true)
+	models := Atom("model", true)
 	models.Mutate("admin")
 	models.Mutate("users")
 	grps, _ := models.Mutate("groups")
@@ -68,7 +68,7 @@ func TestMutationIterator(t *testing.T) {
 
 func TestRestrictedListManager(t *testing.T) {
 
-	lm := NewListManager(4, StrictAtom(20, true))
+	lm := NewListManager(4, Atom(20, true))
 
 	if lm.MaxRange() > 4 {
 		flux.FatalFailed(t, "Incorrect mutation range returned, expected 4")

@@ -35,27 +35,14 @@ type Observer struct {
 // 	return Reactive(StrictAtom(m, chain))
 // }
 
-//ObserveTransform returns a new Reactive instance from an interface and is more strict
-// in that it enforces a atomic data type of either string, bool, int... basically all
-// basic data types in go
-func ObserveTransform(m interface{}, chain bool) (*Observer, error) {
-	var im Immutable
-	var err error
-
-	if im, err = MakeType(m, chain); err != nil {
-		return nil, err
-	}
-
-	return Reactive(im), nil
-}
-
-//ObserveAtom returns a new Reactive instance from an interface
+//ObserveAtom returns a new observer instance from an interface
 func ObserveAtom(m interface{}, chain bool) *Observer {
-	return Reactive(StrictAtom(m, chain))
+	// return Reactive(StrictAtom(m, chain))
+	return ObserveImmutable(Atom(m, chain))
 }
 
-//Reactive returns a new Reactive instance
-func Reactive(m Immutable) *Observer {
+//ObserveImmutable returns a new Observer instance
+func ObserveImmutable(m Immutable) *Observer {
 	return &Observer{
 		Reactor: flux.ReactIdentity(),
 		data:    m,

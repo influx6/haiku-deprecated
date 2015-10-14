@@ -78,7 +78,7 @@ func TestReactor(t *testing.T) {
 
 func TestTimeObject(t *testing.T) {
 	// create a time object with the time features enabled
-	memos := StrictTime(0, true)
+	memos := AtomTime(0, true)
 
 	ws := new(sync.WaitGroup)
 
@@ -120,7 +120,7 @@ func TestTimeObject(t *testing.T) {
 
 func TestDisabledTimeObject(t *testing.T) {
 	//create a time object with the timefeatures disabled
-	memos := StrictTime(0, false)
+	memos := AtomTime(0, false)
 
 	flux.LogPassed(t, "Object has correct size: %d", memos.Store().Size())
 

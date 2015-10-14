@@ -1,7 +1,6 @@
 package views
 
 import (
-	"html/template"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -19,7 +18,7 @@ type Views interface {
 	Events() *events.EventManager
 	Hide()
 	Render(...string) trees.Markup
-	RenderHTML(...string) template.HTML
+	RenderHTML(...string) string
 	Mount(*js.Object)
 	UseMux(ViewMux)
 }
@@ -93,11 +92,8 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 	//set up the reaction chain, if we have node attach then render to it
 	vm.React(func(r flux.Reactor, _ error, _ interface{}) {
 		//if we are not domless then patch
-		// log.Printf("will render")
 		if vm.dom != nil {
 			html := vm.RenderHTML()
-			// log.Printf("will render markup: %s \n-------------------", html)
-			// log.Printf("Sending to fragment: -> \n %s", html)
 			Patch(CreateFragment(string(html)), vm.dom)
 		}
 	}, true)
@@ -173,7 +169,7 @@ func (v *View) Render(m ...string) trees.Markup {
 }
 
 // RenderHTML renders out the views markup as a string wrapped with template.HTML
-func (v *View) RenderHTML(m ...string) template.HTML {
+func (v *View) RenderHTML(m ...string) string {
 	ma, _ := v.encoder.Write(v.Render(m...))
-	return template.HTML(ma)
+	return ma
 }

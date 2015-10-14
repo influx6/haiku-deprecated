@@ -139,6 +139,10 @@ func (t *TimeReactor) TimeLord() (*TimeCop, error) {
 	return t.TimeLordRange(0, 0)
 }
 
+// ErrLogicLocked is returned when trying to load a logic block into a TemplateRender
+// when it is already loaded with one
+var ErrLogicLocked = errors.New("Time feature not allowed")
+
 // TimeLordRange disconnects the time-reactor to the change stream, and uses a supplied range the provided durations but if both duration are 0,simply performs the same operation as the TimeLord() function by returning the total beginning of all events to the current time(LamportTime) if the first duration is not 0 but the second is,it uses the SnapFrom of the EventIterator else uses the SnapRange function of the EventIterator. If the TimeReactor is disabled, this will always return an error
 func (t *TimeReactor) TimeLordRange(fo, to time.Duration) (*TimeCop, error) {
 	if !t.enableTime {
@@ -282,23 +286,23 @@ func newTimeObject(v *atom) (t *TimeObject) {
 	}
 }
 
-// StrictTime returns a observer with Time abilities which is set to accept a specific type only
-func StrictTime(v interface{}, enableTime bool) (t *TimeObject) {
-	nmt := newTimeObject(StrictAtom(v, true))
+// AtomTime returns a observer with Time abilities which is set to accept a specific type only
+func AtomTime(v interface{}, enableTime bool) (t *TimeObject) {
+	nmt := newTimeObject(Atom(v, true))
 	if !enableTime {
 		nmt.DisableTime()
 	}
 	return nmt
 }
 
-// UnstrictTime returns a observer with Time abilities set to accept any type
-func UnstrictTime(v interface{}, enableTime bool) (t *TimeObject) {
-	nmt := newTimeObject(UnstrictAtom(v, true))
-	if !enableTime {
-		nmt.DisableTime()
-	}
-	return nmt
-}
+// // UnstrictTime returns a observer with Time abilities set to accept any type
+// func UnstrictTime(v interface{}, enableTime bool) (t *TimeObject) {
+// 	nmt := newTimeObject(Atom(v, true))
+// 	if !enableTime {
+// 		nmt.DisableTime()
+// 	}
+// 	return nmt
+// }
 
 // Equals return true/false if the value equals the data
 func (r *TimeObject) Equals(n flux.Equaler) bool {
@@ -344,9 +348,9 @@ func (r *TimeObject) Set(ndata interface{}) {
 	if r.TimeEnabled() {
 		r.Time.Send(ndata)
 	} else {
-		if r.origin.Allowed(ndata) {
-			r.origin.val = ndata
-		}
+		// if r.origin.Allowed(ndata) {
+		r.origin.val = ndata
+		// }
 	}
 }
 

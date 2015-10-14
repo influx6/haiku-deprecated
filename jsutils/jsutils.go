@@ -74,11 +74,16 @@ func CreateDocumentFragment() *js.Object {
 	return doc.Call("createDocumentFragment")
 }
 
+// var onlySpace = regexp
+
 // CleanAllTextNode removes all texts nodes within the container root
 func CleanAllTextNode(o *js.Object) {
 	for _, to := range ChildNodeList(o) {
-		if to.Get("nodeType").Int() == 3 && to.Get("textContent").String() != "" {
-			o.Call("removeChild", to)
+		if to.Get("nodeType").Int() == 3 {
+			textContent := strings.TrimSpace(to.Get("textContent").String())
+			if textContent != "" {
+				o.Call("removeChild", to)
+			}
 		}
 	}
 }

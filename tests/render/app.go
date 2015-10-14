@@ -25,7 +25,7 @@ func main() {
 	var menuItem = []string{"shops", "janitor", "booky", "drummer"}
 
 	menu := views.NewView(func() trees.Markup {
-		div := elems.Form(elems.Paragraph(elems.Label(elems.Text("name")), elems.Input(attrs.Type("text"))))
+		div := elems.Form(elems.Text("welcome"), elems.Paragraph(elems.Label(elems.Text("name")), elems.Input(attrs.Type("text"))))
 
 		var so = elems.Select()
 		for _, mi := range menuItem {

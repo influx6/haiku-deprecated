@@ -188,9 +188,6 @@ patchloop:
 			continue patchloop
 		}
 
-		//cleanout all the targets text-nodes
-		// jsutils.CleanAllTextNode(target)
-
 		// log.Printf("Checking size of children %s %d", sel, len(nchildren))
 		//if the new node has no children, then just replace it
 		// if len(elem.ChildNodes()) <= 0 {
@@ -206,6 +203,9 @@ patchloop:
 		if jsutils.GetAttribute(target, "hash") == hash {
 			continue patchloop
 		}
+
+		//cleanout all the targets text-nodes
+		jsutils.CleanAllTextNode(target)
 
 		//so we got this dude, are we already one level deep ? if so swap else
 		// run through the children with Patch

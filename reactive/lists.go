@@ -28,9 +28,9 @@ func NewMutationRange(r, t Immutable) *MutationRange {
 }
 
 // Allowed calls the tail allowed function
-func (m *MutationRange) Allowed(v interface{}) bool {
-	return m.tail.Allowed(v)
-}
+// func (m *MutationRange) Allowed(v interface{}) bool {
+// 	return m.tail.Allowed(v)
+// }
 
 // Tail returns the tail Immutable for this list
 func (m *MutationRange) Tail() Immutable {
@@ -113,11 +113,11 @@ func NewListManager(maxr int, mf Immutable) *ListManager {
 			mc.setInitialMutation(mf)
 		} else {
 			var cm Immutable
-			if mf.Restricted() {
-				cm = StrictAtom(mf.Value(), true)
-			} else {
-				cm = UnstrictAtom(mf.Value(), true)
-			}
+			// if mf.Restricted() {
+			cm = Atom(mf.Value(), true)
+			// } else {
+			// 	cm = UnstrictAtom(mf.Value(), true)
+			// }
 			mc.setInitialMutation(cm)
 		}
 	}
@@ -135,7 +135,7 @@ func (m *ListManager) Mutate(v interface{}) (Immutable, bool) {
 	size := m.Size()
 
 	if size <= 0 {
-		fm := UnstrictAtom(v, true)
+		fm := Atom(v, true)
 		m.setInitialMutation(fm)
 		return fm, true
 	}

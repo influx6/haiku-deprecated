@@ -3,6 +3,7 @@ package views
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/go-humble/detect"
@@ -42,8 +43,10 @@ func Path() *PathObserver {
 }
 
 // Follow creates a Pathspec from the hash and path and sends it
-func (p *PathObserver) Follow(hash, path string) {
-	p.FollowSpec(PathSpec{Hash: hash, Path: path, Sequence: strings.Replace(path, "/", ".", -1)})
+func (p *PathObserver) Follow(path, hash string) {
+	cleanHash := strings.Replace(hash, "#", ".", -1)
+	cleanHash = strings.Replace(cleanHash, "/", ".", -1)
+	p.FollowSpec(PathSpec{Hash: hash, Path: path, Sequence: cleanHash})
 }
 
 // FollowSpec just passes down the Pathspec
@@ -55,7 +58,9 @@ func (p *PathObserver) FollowSpec(ps PathSpec) {
 func (p *PathObserver) NotifyPage(pg *Pages) {
 	p.React(func(r flux.Reactor, _ error, d interface{}) {
 		// if err != nil { r.SendError(err) }
+		log.Printf("will Sequence: %s", d)
 		if ps, ok := d.(PathSpec); ok {
+			log.Printf("Sequence: %s", ps.Sequence)
 			pg.All(ps.Sequence)
 		}
 	}, true)
@@ -156,6 +161,7 @@ func NewPage(p *HistoryProvider) *Pages {
 		HistoryProvider: p,
 	}
 
+	p.NotifyPage(pg)
 	pg.All(".")
 	return pg
 }

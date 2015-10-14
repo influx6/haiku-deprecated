@@ -2,7 +2,7 @@ package reactive
 
 import (
 	"fmt"
-	"reflect"
+	// "reflect"
 	"time"
 )
 
@@ -10,9 +10,9 @@ import (
 type Immutable interface {
 	Value() interface{}
 	Mutate(interface{}) (Immutable, bool)
-	Allowed(interface{}) bool
+	// Allowed(interface{}) bool
 	LinkAllowed() bool
-	Restricted() bool
+	// Restricted() bool
 	Stamp() time.Time
 	AdjustFuture(time.Time)
 	Seq() int
@@ -25,14 +25,14 @@ type Immutable interface {
 
 //atom provides a base type for golang base types
 type atom struct {
-	val    interface{}
-	kind   reflect.Kind
-	dotype bool
-	link   bool
-	nxt    Immutable
-	prv    Immutable
-	stamp  *TimeStamp
-	timer  Timer
+	val interface{}
+	// kind   reflect.Kind
+	// dotype bool
+	link  bool
+	nxt   Immutable
+	prv   Immutable
+	stamp *TimeStamp
+	timer Timer
 }
 
 //LinkAllowed returns true/false if this allows mutation links
@@ -40,26 +40,26 @@ func (a *atom) LinkAllowed() bool {
 	return a.link
 }
 
-//Restricted returns true/false if kind check is on
-func (a *atom) Restricted() bool {
-	return a.dotype
-}
+// //Restricted returns true/false if kind check is on
+// func (a *atom) Restricted() bool {
+// 	return a.dotype
+// }
 
 //AdjustFuture allows a atom timer to be adjusted for the next mutation
 func (a *atom) AdjustFuture(ms time.Time) {
 	a.timer.AdjustTime(ms)
 }
 
-//Allowed changes the value of the atom
-func (a *atom) Allowed(m interface{}) bool {
-	if a.dotype {
-		if AcceptableKind(a.kind, m) {
-			return true
-		}
-		return false
-	}
-	return true
-}
+// //Allowed changes the value of the atom
+// func (a *atom) Allowed(m interface{}) bool {
+// 	// if a.dotype {
+// 	// 	if AcceptableKind(a.kind, m) {
+// 	// 		return true
+// 	// 	}
+// 	// 	return false
+// 	// }
+// 	return true
+// }
 
 //String returns the value in fmt.formatted fashion
 func (a *atom) String() string {
@@ -77,7 +77,10 @@ func (a *atom) Mutate(v interface{}) (Immutable, bool) {
 		return a.nxt.Mutate(v)
 	}
 
-	if !a.Allowed(v) || a.val == v {
+	// if !a.Allowed(v) || a.val == v {
+	// 	return a, false
+	// }
+	if a.val == v {
 		return a, false
 	}
 
@@ -114,7 +117,7 @@ func (a *atom) unsetNext() {
 
 //Clone returns a new Immutable
 func (a *atom) clone() *atom {
-	m := MakeAtom(a.val, a.dotype, a.link, a.timer)
+	m := MakeAtom(a.val, a.link, a.timer)
 
 	if a.link {
 		m.prv = a
@@ -138,34 +141,34 @@ func (a *atom) destroy() {
 	}
 }
 
-//Type returns the type of kind
-func (a *atom) Kind() reflect.Kind {
-	return a.kind
-}
+// //Type returns the type of kind
+// func (a *atom) Kind() reflect.Kind {
+// 	return a.kind
+// }
 
 //MakeAtom provides more control on the creation of an atom
-func MakeAtom(data interface{}, dt, link bool, tm Timer) *atom {
+func MakeAtom(data interface{}, link bool, tm Timer) *atom {
 
 	if tm == nil {
 		tm = NewLamport(0)
 	}
 
 	return &atom{
-		val:    data,
-		kind:   reflect.TypeOf(data).Kind(),
-		dotype: dt,
-		link:   link,
-		stamp:  tm.GetTime(),
-		timer:  tm,
+		val: data,
+		// kind:   reflect.TypeOf(data).Kind(),
+		// dotype: dt,
+		link:  link,
+		stamp: tm.GetTime(),
+		timer: tm,
 	}
 }
 
-//StrictAtom returns a base type for golang base types(int,string,...etc)
-func StrictAtom(data interface{}, link bool) *atom {
-	return MakeAtom(data, true, link, nil)
+//Atom returns a base type for golang base types(int,string,...etc)
+func Atom(data interface{}, link bool) *atom {
+	return MakeAtom(data, link, nil)
 }
 
-//UnstrictAtom returns a base type for golang base types(int,string,...etc)
-func UnstrictAtom(data interface{}, link bool) *atom {
-	return MakeAtom(data, false, link, nil)
-}
+// //UnstrictAtom returns a base type for golang base types(int,string,...etc)
+// func UnstrictAtom(data interface{}, link bool) *atom {
+// 	return MakeAtom(data, false, link, nil)
+// }

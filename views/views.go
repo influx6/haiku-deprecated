@@ -1,6 +1,7 @@
 package views
 
 import (
+	"html/template"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -18,7 +19,7 @@ type Views interface {
 	Events() *events.EventManager
 	Hide()
 	Render(...string) trees.Markup
-	RenderHTML(...string) string
+	RenderHTML(...string) template.HTML
 	Mount(*js.Object)
 	UseMux(ViewMux)
 }
@@ -55,7 +56,7 @@ func (v *ShowView) Render(m trees.Markup) {
 }
 
 // ViewMux defines a markup generating function for view
-type ViewMux func() trees.Markup
+type ViewMux func(Views) trees.Markup
 
 // View represent a basic Haiku view
 type View struct {
@@ -151,7 +152,11 @@ func (v *View) Render(m ...string) trees.Markup {
 
 	v.Engine().All(m[0])
 
-	dom := v.fx()
+	var dom trees.Markup
+
+	if v.fx != nil {
+		dom = v.fx(v)
+	}
 
 	if dom == nil {
 		return elems.Div()
@@ -169,7 +174,7 @@ func (v *View) Render(m ...string) trees.Markup {
 }
 
 // RenderHTML renders out the views markup as a string wrapped with template.HTML
-func (v *View) RenderHTML(m ...string) string {
+func (v *View) RenderHTML(m ...string) template.HTML {
 	ma, _ := v.encoder.Write(v.Render(m...))
-	return ma
+	return template.HTML(ma)
 }

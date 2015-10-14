@@ -32182,11 +32182,32 @@ $packages["github.com/influx6/haiku/jsutils"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/types"] = (function() {
-	var $pkg = {}, $init, js, Event, ptrType;
+	var $pkg = {}, $init, js, EventHandler, Event, EventMeta, ptrType;
 	js = $packages["github.com/gopherjs/gopherjs/js"];
+	EventHandler = $pkg.EventHandler = $newType(4, $kindFunc, "types.EventHandler", "EventHandler", "github.com/influx6/haiku/types", null);
 	Event = $pkg.Event = $newType(8, $kindInterface, "types.Event", "Event", "github.com/influx6/haiku/types", null);
+	EventMeta = $pkg.EventMeta = $newType(0, $kindStruct, "types.EventMeta", "EventMeta", "github.com/influx6/haiku/types", function(Type_, Target_, StopPropagation_, StopImmediatePropagation_, PreventDefault_, Removed_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.Type = "";
+			this.Target = "";
+			this.StopPropagation = false;
+			this.StopImmediatePropagation = false;
+			this.PreventDefault = false;
+			this.Removed = false;
+			return;
+		}
+		this.Type = Type_;
+		this.Target = Target_;
+		this.StopPropagation = StopPropagation_;
+		this.StopImmediatePropagation = StopImmediatePropagation_;
+		this.PreventDefault = PreventDefault_;
+		this.Removed = Removed_;
+	});
 	ptrType = $ptrType(js.Object);
+	EventHandler.init([Event], [], false);
 	Event.init([{prop: "Bubbles", name: "Bubbles", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Cancelable", name: "Cancelable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Core", name: "Core", pkg: "", typ: $funcType([], [ptrType], false)}, {prop: "CurrentTarget", name: "CurrentTarget", pkg: "", typ: $funcType([], [ptrType], false)}, {prop: "DefaultPrevented", name: "DefaultPrevented", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "EventPhase", name: "EventPhase", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $funcType([], [], false)}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $funcType([], [], false)}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $funcType([], [], false)}, {prop: "Target", name: "Target", pkg: "", typ: $funcType([], [ptrType], false)}, {prop: "Timestamp", name: "Timestamp", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Type", name: "Type", pkg: "", typ: $funcType([], [$String], false)}]);
+	EventMeta.init([{prop: "Type", name: "Type", pkg: "", typ: $String, tag: ""}, {prop: "Target", name: "Target", pkg: "", typ: $String, tag: ""}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $Bool, tag: ""}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $Bool, tag: ""}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $Bool, tag: ""}, {prop: "Removed", name: "Removed", pkg: "", typ: $Bool, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -32197,7 +32218,7 @@ $packages["github.com/influx6/haiku/types"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/events"] = (function() {
-	var $pkg = {}, $init, errors, fmt, js, jsutils, types, strings, sync, NextHandler, FlatHandler, FlatChains, FlatChain, JSEventMux, EventObject, EventMeta, EventSub, EventManager, ptrType, ptrType$1, ptrType$2, sliceType$1, ptrType$3, ptrType$5, ptrType$6, sliceType$2, funcType$1, funcType$2, mapType, mapType$1, FlatChainIdentity, NewFlatChain, NewEventSub, MetaEventSub, NewEventManager, GetEventID, BuildEventID;
+	var $pkg = {}, $init, errors, fmt, js, jsutils, types, strings, sync, FlatHandler, FlatChains, FlatChain, JSEventMux, EventObject, EventSub, EventManager, ptrType, ptrType$1, ptrType$2, sliceType$1, ptrType$3, ptrType$5, ptrType$6, sliceType$2, funcType$1, funcType$2, mapType, mapType$1, FlatChainIdentity, NewFlatChain, NewEventSub, MetaEventSub, NewEventManager, GetEventID, BuildEventID;
 	errors = $packages["errors"];
 	fmt = $packages["fmt"];
 	js = $packages["github.com/gopherjs/gopherjs/js"];
@@ -32205,7 +32226,6 @@ $packages["github.com/influx6/haiku/events"] = (function() {
 	types = $packages["github.com/influx6/haiku/types"];
 	strings = $packages["strings"];
 	sync = $packages["sync"];
-	NextHandler = $pkg.NextHandler = $newType(4, $kindFunc, "events.NextHandler", "NextHandler", "github.com/influx6/haiku/events", null);
 	FlatHandler = $pkg.FlatHandler = $newType(4, $kindFunc, "events.FlatHandler", "FlatHandler", "github.com/influx6/haiku/events", null);
 	FlatChains = $pkg.FlatChains = $newType(8, $kindInterface, "events.FlatChains", "FlatChains", "github.com/influx6/haiku/events", null);
 	FlatChain = $pkg.FlatChain = $newType(0, $kindStruct, "events.FlatChain", "FlatChain", "github.com/influx6/haiku/events", function(op_, prev_, next_) {
@@ -32228,24 +32248,6 @@ $packages["github.com/influx6/haiku/events"] = (function() {
 			return;
 		}
 		this.Object = Object_;
-	});
-	EventMeta = $pkg.EventMeta = $newType(0, $kindStruct, "events.EventMeta", "EventMeta", "github.com/influx6/haiku/events", function(Type_, Target_, StopPropagation_, StopImmediatePropagation_, PreventDefault_, Removed_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Type = "";
-			this.Target = "";
-			this.StopPropagation = false;
-			this.StopImmediatePropagation = false;
-			this.PreventDefault = false;
-			this.Removed = false;
-			return;
-		}
-		this.Type = Type_;
-		this.Target = Target_;
-		this.StopPropagation = StopPropagation_;
-		this.StopImmediatePropagation = StopImmediatePropagation_;
-		this.PreventDefault = PreventDefault_;
-		this.Removed = Removed_;
 	});
 	EventSub = $pkg.EventSub = $newType(0, $kindStruct, "events.EventSub", "EventSub", "github.com/influx6/haiku/events", function(EventMeta_, FlatChains_, jslink_, dom_) {
 		this.$val = this;
@@ -32277,7 +32279,7 @@ $packages["github.com/influx6/haiku/events"] = (function() {
 		this.wo = wo_;
 		this.dom = dom_;
 	});
-	ptrType = $ptrType(EventMeta);
+	ptrType = $ptrType(types.EventMeta);
 	ptrType$1 = $ptrType(EventSub);
 	ptrType$2 = $ptrType(EventManager);
 	sliceType$1 = $sliceType($emptyInterface);
@@ -32484,7 +32486,7 @@ $packages["github.com/influx6/haiku/events"] = (function() {
 	EventObject.prototype.StopPropagation = function() { return this.$val.StopPropagation(); };
 	NewEventSub = function(evtype, evtarget) {
 		var $ptr, evtarget, evtype;
-		return new EventSub.ptr(new EventMeta.ptr(evtype, evtarget, false, false, false, false), FlatChainIdentity(), $throwNilPointerError, null);
+		return new EventSub.ptr(new types.EventMeta.ptr(evtype, evtarget, false, false, false, false), FlatChainIdentity(), $throwNilPointerError, null);
 	};
 	$pkg.NewEventSub = NewEventSub;
 	MetaEventSub = function(meta) {
@@ -32931,17 +32933,15 @@ $packages["github.com/influx6/haiku/events"] = (function() {
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BuildEventID }; } $f.$ptr = $ptr; $f._r = _r; $f.eselect = eselect; $f.etype = etype; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.BuildEventID = BuildEventID;
-	ptrType$3.methods = [{prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([NextHandler], [FlatChains], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([types.Event], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}];
+	ptrType$3.methods = [{prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([types.EventHandler], [FlatChains], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([types.Event], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}];
 	ptrType$6.methods = [{prop: "Core", name: "Core", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "Bubbles", name: "Bubbles", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Cancelable", name: "Cancelable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "CurrentTarget", name: "CurrentTarget", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "DefaultPrevented", name: "DefaultPrevented", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "EventPhase", name: "EventPhase", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Target", name: "Target", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "Timestamp", name: "Timestamp", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Type", name: "Type", pkg: "", typ: $funcType([], [$String], false)}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $funcType([], [], false)}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $funcType([], [], false)}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $funcType([], [], false)}];
 	ptrType$1.methods = [{prop: "DOM", name: "DOM", pkg: "", typ: $funcType([ptrType$5], [], false)}, {prop: "Offload", name: "Offload", pkg: "", typ: $funcType([], [], false)}, {prop: "Trigger", name: "Trigger", pkg: "", typ: $funcType([types.Event], [], false)}, {prop: "TriggerMatch", name: "TriggerMatch", pkg: "", typ: $funcType([types.Event], [], false)}, {prop: "EventSelector", name: "EventSelector", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "EventType", name: "EventType", pkg: "", typ: $funcType([], [$String], false)}];
 	ptrType$2.methods = [{prop: "HasEvent", name: "HasEvent", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "GetEvent", name: "GetEvent", pkg: "", typ: $funcType([$String], [ptrType$1, $error], false)}, {prop: "NewEventMeta", name: "NewEventMeta", pkg: "", typ: $funcType([ptrType], [ptrType$1, $Bool], false)}, {prop: "NewEvent", name: "NewEvent", pkg: "", typ: $funcType([$String, $String], [ptrType$1, $Bool], false)}, {prop: "AttachManager", name: "AttachManager", pkg: "", typ: $funcType([ptrType$2], [], false)}, {prop: "DetachManager", name: "DetachManager", pkg: "", typ: $funcType([ptrType$2], [], false)}, {prop: "HasManager", name: "HasManager", pkg: "", typ: $funcType([ptrType$2], [$Bool], false)}, {prop: "RemoveEvent", name: "RemoveEvent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "AddEvent", name: "AddEvent", pkg: "", typ: $funcType([ptrType$1], [$Bool], false)}, {prop: "AddEvents", name: "AddEvents", pkg: "", typ: $funcType([sliceType$2], [], true)}, {prop: "EachEvent", name: "EachEvent", pkg: "", typ: $funcType([funcType$1], [], false)}, {prop: "EachManager", name: "EachManager", pkg: "", typ: $funcType([funcType$2], [], false)}, {prop: "DisconnectRemoved", name: "DisconnectRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "OffloadDOM", name: "OffloadDOM", pkg: "", typ: $funcType([], [], false)}, {prop: "LoadUpEvents", name: "LoadUpEvents", pkg: "", typ: $funcType([], [], false)}, {prop: "LoadDOM", name: "LoadDOM", pkg: "", typ: $funcType([ptrType$5], [$Bool], false)}];
-	NextHandler.init([types.Event], [], false);
-	FlatHandler.init([types.Event, NextHandler], [], false);
-	FlatChains.init([{prop: "Bind", name: "Bind", pkg: "", typ: $funcType([NextHandler], [FlatChains], false)}, {prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([types.Event], [], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}]);
+	FlatHandler.init([types.Event, types.EventHandler], [], false);
+	FlatChains.init([{prop: "Bind", name: "Bind", pkg: "", typ: $funcType([types.EventHandler], [FlatChains], false)}, {prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([types.Event], [], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}]);
 	FlatChain.init([{prop: "op", name: "op", pkg: "github.com/influx6/haiku/events", typ: FlatHandler, tag: ""}, {prop: "prev", name: "prev", pkg: "github.com/influx6/haiku/events", typ: FlatChains, tag: ""}, {prop: "next", name: "next", pkg: "github.com/influx6/haiku/events", typ: FlatChains, tag: ""}]);
 	JSEventMux.init([ptrType$5], [], false);
 	EventObject.init([{prop: "Object", name: "", pkg: "", typ: ptrType$5, tag: ""}]);
-	EventMeta.init([{prop: "Type", name: "Type", pkg: "", typ: $String, tag: ""}, {prop: "Target", name: "Target", pkg: "", typ: $String, tag: ""}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $Bool, tag: ""}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $Bool, tag: ""}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $Bool, tag: ""}, {prop: "Removed", name: "Removed", pkg: "", typ: $Bool, tag: ""}]);
 	EventSub.init([{prop: "EventMeta", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "FlatChains", name: "", pkg: "", typ: FlatChains, tag: ""}, {prop: "jslink", name: "jslink", pkg: "github.com/influx6/haiku/events", typ: JSEventMux, tag: ""}, {prop: "dom", name: "dom", pkg: "github.com/influx6/haiku/events", typ: ptrType$5, tag: ""}]);
 	EventManager.init([{prop: "events", name: "events", pkg: "github.com/influx6/haiku/events", typ: mapType, tag: ""}, {prop: "attaches", name: "attaches", pkg: "github.com/influx6/haiku/events", typ: mapType$1, tag: ""}, {prop: "ro", name: "ro", pkg: "github.com/influx6/haiku/events", typ: sync.RWMutex, tag: ""}, {prop: "wo", name: "wo", pkg: "github.com/influx6/haiku/events", typ: sync.RWMutex, tag: ""}, {prop: "dom", name: "dom", pkg: "github.com/influx6/haiku/events", typ: ptrType$5, tag: ""}]);
 	$init = function() {
@@ -32961,12 +32961,13 @@ $packages["github.com/influx6/haiku/events"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/trees"] = (function() {
-	var $pkg = {}, $init, errors, fmt, detect, flux, events, strings, AttrPrinter, AttrWriter, StylePrinter, StyleWriter, ElementWriter, MarkupWriter, markupWriter, Mutation, Markup, Mutable, Element, Style, Attribute, Event, Appliable, sliceType, sliceType$1, ptrType, sliceType$2, ptrType$1, ptrType$2, sliceType$3, ptrType$3, sliceType$4, sliceType$5, ptrType$4, ptrType$5, ptrType$6, ptrType$7, ptrType$8, ptrType$9, ptrType$10, ptrType$11, NewElementWriter, NewMarkupWriter, NewMutable, NewText, NewElement, NewEvent, ReconcileEvents, EqualAttributes, GetStyle, GetAttr;
+	var $pkg = {}, $init, errors, fmt, detect, flux, events, types, strings, AttrPrinter, AttrWriter, StylePrinter, StyleWriter, ElementWriter, MarkupWriter, markupWriter, Mutation, Markup, Mutable, Element, Style, Attribute, Event, Appliable, sliceType, sliceType$1, ptrType, sliceType$2, ptrType$1, ptrType$2, sliceType$3, ptrType$3, sliceType$4, sliceType$5, ptrType$4, ptrType$5, ptrType$6, ptrType$7, ptrType$8, ptrType$9, ptrType$10, ptrType$11, NewElementWriter, NewMarkupWriter, NewMutable, NewText, NewElement, NewEvent, ReconcileEvents, EqualAttributes, GetStyle, GetAttr;
 	errors = $packages["errors"];
 	fmt = $packages["fmt"];
 	detect = $packages["github.com/go-humble/detect"];
 	flux = $packages["github.com/influx6/flux"];
 	events = $packages["github.com/influx6/haiku/events"];
+	types = $packages["github.com/influx6/haiku/types"];
 	strings = $packages["strings"];
 	AttrPrinter = $pkg.AttrPrinter = $newType(8, $kindInterface, "trees.AttrPrinter", "AttrPrinter", "github.com/influx6/haiku/trees", null);
 	AttrWriter = $pkg.AttrWriter = $newType(0, $kindStruct, "trees.AttrWriter", "AttrWriter", "github.com/influx6/haiku/trees", function() {
@@ -33092,7 +33093,7 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	sliceType$5 = $sliceType(Markup);
 	ptrType$4 = $ptrType(events.EventManager);
 	ptrType$5 = $ptrType(events.EventSub);
-	ptrType$6 = $ptrType(events.EventMeta);
+	ptrType$6 = $ptrType(types.EventMeta);
 	ptrType$7 = $ptrType(AttrWriter);
 	ptrType$8 = $ptrType(StyleWriter);
 	ptrType$9 = $ptrType(ElementWriter);
@@ -33626,7 +33627,7 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	Element.prototype.Attributes = function() { return this.$val.Attributes(); };
 	NewEvent = function(etype, eselector, efx) {
 		var $ptr, efx, eselector, etype;
-		return new Event.ptr(new events.EventMeta.ptr(etype, eselector, false, false, false, false), efx);
+		return new Event.ptr(new types.EventMeta.ptr(etype, eselector, false, false, false, false), efx);
 	};
 	$pkg.NewEvent = NewEvent;
 	Event.ptr.prototype.StopImmediatePropagation = function() {
@@ -33709,7 +33710,7 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	Event.ptr.prototype.Clone = function() {
 		var $ptr, e;
 		e = this;
-		return new Event.ptr(new events.EventMeta.ptr(e.Meta.Type, e.Meta.Target, false, false, false, false), e.Fx);
+		return new Event.ptr(new types.EventMeta.ptr(e.Meta.Type, e.Meta.Target, false, false, false, false), e.Fx);
 	};
 	Event.prototype.Clone = function() { return this.$val.Clone(); };
 	Style.ptr.prototype.Clone = function() {
@@ -33937,7 +33938,7 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	Element.init([{prop: "Mutation", name: "", pkg: "", typ: Mutation, tag: ""}, {prop: "tagname", name: "tagname", pkg: "github.com/influx6/haiku/trees", typ: $String, tag: ""}, {prop: "events", name: "events", pkg: "github.com/influx6/haiku/trees", typ: sliceType$3, tag: ""}, {prop: "styles", name: "styles", pkg: "github.com/influx6/haiku/trees", typ: sliceType$4, tag: ""}, {prop: "attrs", name: "attrs", pkg: "github.com/influx6/haiku/trees", typ: sliceType$2, tag: ""}, {prop: "children", name: "children", pkg: "github.com/influx6/haiku/trees", typ: sliceType$5, tag: ""}, {prop: "textContent", name: "textContent", pkg: "github.com/influx6/haiku/trees", typ: $String, tag: ""}, {prop: "autoclose", name: "autoclose", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowEvents", name: "allowEvents", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowChildren", name: "allowChildren", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowStyles", name: "allowStyles", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowAttributes", name: "allowAttributes", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "eventManager", name: "eventManager", pkg: "github.com/influx6/haiku/trees", typ: ptrType$4, tag: ""}]);
 	Style.init([{prop: "Name", name: "Name", pkg: "", typ: $String, tag: ""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: ""}]);
 	Attribute.init([{prop: "Name", name: "Name", pkg: "", typ: $String, tag: ""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: ""}]);
-	Event.init([{prop: "Meta", name: "Meta", pkg: "", typ: ptrType$6, tag: ""}, {prop: "Fx", name: "Fx", pkg: "", typ: events.NextHandler, tag: ""}]);
+	Event.init([{prop: "Meta", name: "Meta", pkg: "", typ: ptrType$6, tag: ""}, {prop: "Fx", name: "Fx", pkg: "", typ: types.EventHandler, tag: ""}]);
 	Appliable.init([{prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}]);
 	$init = function() {
 		$pkg.$init = function() {};
@@ -33947,7 +33948,8 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		$r = detect.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = flux.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = events.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = strings.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = types.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = strings.$init(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$pkg.ErrNotText = errors.New("Markup is not a *Text type");
 		$pkg.ErrNotElem = errors.New("Markup is not a *Element type");
 		$pkg.ErrNotMarkup = errors.New("Value does not match Markup interface types");
@@ -34147,9 +34149,9 @@ $packages["github.com/influx6/haiku/trees/elems"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/trees/events"] = (function() {
-	var $pkg = {}, $init, events, trees, Click;
-	events = $packages["github.com/influx6/haiku/events"];
+	var $pkg = {}, $init, trees, types, Click;
 	trees = $packages["github.com/influx6/haiku/trees"];
+	types = $packages["github.com/influx6/haiku/types"];
 	Click = function(fx, selectorOverride) {
 		var $ptr, fx, selectorOverride;
 		return trees.NewEvent("click", selectorOverride, fx);
@@ -34158,8 +34160,8 @@ $packages["github.com/influx6/haiku/trees/events"] = (function() {
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = events.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = trees.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = trees.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = types.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
@@ -35263,7 +35265,7 @@ $packages["text/template"] = (function() {
 	return $pkg;
 })();
 $packages["html/template"] = (function() {
-	var $pkg = {}, $init, bytes, json, fmt, html, io, ioutil, filepath, reflect, strings, sync, template, parse, unicode, utf8, ptrType, ptrType$1, ptrType$2, sliceType$2, errorType, fmtStringerType, jsonMarshalType, escapeOK, _r, _r$1, _r$2, _r$3;
+	var $pkg = {}, $init, bytes, json, fmt, html, io, ioutil, filepath, reflect, strings, sync, template, parse, unicode, utf8, HTML, ptrType, ptrType$1, ptrType$2, sliceType$2, errorType, fmtStringerType, jsonMarshalType, escapeOK, _r, _r$1, _r$2, _r$3;
 	bytes = $packages["bytes"];
 	json = $packages["encoding/json"];
 	fmt = $packages["fmt"];
@@ -35278,6 +35280,7 @@ $packages["html/template"] = (function() {
 	parse = $packages["text/template/parse"];
 	unicode = $packages["unicode"];
 	utf8 = $packages["unicode/utf8"];
+	HTML = $pkg.HTML = $newType(8, $kindString, "template.HTML", "HTML", "html/template", null);
 	ptrType = $ptrType($error);
 	ptrType$1 = $ptrType(fmt.Stringer);
 	ptrType$2 = $ptrType(json.Marshaler);
@@ -36401,23 +36404,28 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		_r$1 = v.States.Engine(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$2 = _r$1.All((0 >= m.$length ? $throwRuntimeError("index out of range") : m.$array[m.$offset + 0])); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$2;
-		_r$3 = v.fx(); /* */ $s = 3; case 3: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		dom = _r$3;
-		/* */ if ($interfaceIsEqual(dom, $ifaceNil)) { $s = 4; continue; }
-		/* */ $s = 5; continue;
-		/* if ($interfaceIsEqual(dom, $ifaceNil)) { */ case 4:
-			_r$4 = elems.Div(new sliceType$6([])); /* */ $s = 6; case 6: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		dom = $ifaceNil;
+		/* */ if (!(v.fx === $throwNilPointerError)) { $s = 3; continue; }
+		/* */ $s = 4; continue;
+		/* if (!(v.fx === $throwNilPointerError)) { */ case 3:
+			_r$3 = v.fx(v); /* */ $s = 5; case 5: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+			dom = _r$3;
+		/* } */ case 4:
+		/* */ if ($interfaceIsEqual(dom, $ifaceNil)) { $s = 6; continue; }
+		/* */ $s = 7; continue;
+		/* if ($interfaceIsEqual(dom, $ifaceNil)) { */ case 6:
+			_r$4 = elems.Div(new sliceType$6([])); /* */ $s = 8; case 8: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 			return _r$4;
-		/* } */ case 5:
-		/* */ if (!($interfaceIsEqual(v.liveMarkup, $ifaceNil))) { $s = 7; continue; }
-		/* */ $s = 8; continue;
-		/* if (!($interfaceIsEqual(v.liveMarkup, $ifaceNil))) { */ case 7:
-			_r$5 = dom.Reconcile(v.liveMarkup); /* */ $s = 9; case 9: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		/* } */ case 7:
+		/* */ if (!($interfaceIsEqual(v.liveMarkup, $ifaceNil))) { $s = 9; continue; }
+		/* */ $s = 10; continue;
+		/* if (!($interfaceIsEqual(v.liveMarkup, $ifaceNil))) { */ case 9:
+			_r$5 = dom.Reconcile(v.liveMarkup); /* */ $s = 11; case 11: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 			_r$5;
-		/* } */ case 8:
-		_r$6 = dom.UseEventManager(v.events); /* */ $s = 10; case 10: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		/* } */ case 10:
+		_r$6 = dom.UseEventManager(v.events); /* */ $s = 12; case 12: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 		_r$6;
-		$r = v.events.LoadUpEvents(); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = v.events.LoadUpEvents(); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		v.liveMarkup = dom;
 		return dom;
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: View.ptr.prototype.Render }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f.dom = dom; $f.m = m; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
@@ -36442,7 +36450,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	ptrType$5.methods = [{prop: "AddState", name: "AddState", pkg: "", typ: $funcType([$String], [States], false)}, {prop: "UseState", name: "UseState", pkg: "", typ: $funcType([$String, States], [States], false)}, {prop: "ShallowState", name: "ShallowState", pkg: "", typ: $funcType([], [States], false)}, {prop: "State", name: "State", pkg: "", typ: $funcType([], [States], false)}, {prop: "Partial", name: "Partial", pkg: "", typ: $funcType([$String], [$error], false)}, {prop: "All", name: "All", pkg: "", typ: $funcType([$String], [$error], false)}, {prop: "DeactivateAll", name: "DeactivateAll", pkg: "", typ: $funcType([], [], false)}, {prop: "eachState", name: "eachState", pkg: "github.com/influx6/haiku/views", typ: $funcType([funcType$1], [], false)}, {prop: "getAddr", name: "getAddr", pkg: "github.com/influx6/haiku/views", typ: $funcType([States], [$String], false)}, {prop: "get", name: "get", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String], [States], false)}, {prop: "add", name: "add", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, States], [], false)}, {prop: "trajectory", name: "trajectory", pkg: "github.com/influx6/haiku/views", typ: $funcType([sliceType$1, $Bool], [$error], false)}, {prop: "prepare", name: "prepare", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String], [sliceType$1, $error], false)}, {prop: "diffOnlySubs", name: "diffOnlySubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$5], false)}, {prop: "diffOnlyNotSubs", name: "diffOnlyNotSubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$5], false)}, {prop: "diffSubs", name: "diffSubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$5, sliceType$5], false)}];
 	ptrType$14.methods = [{prop: "Render", name: "Render", pkg: "", typ: $funcType([trees.Markup], [], false)}];
 	ptrType$15.methods = [{prop: "Render", name: "Render", pkg: "", typ: $funcType([trees.Markup], [], false)}];
-	ptrType$8.methods = [{prop: "UseMux", name: "UseMux", pkg: "", typ: $funcType([ViewMux], [], false)}, {prop: "Mount", name: "Mount", pkg: "", typ: $funcType([ptrType$3], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$9], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [$String], true)}];
+	ptrType$8.methods = [{prop: "UseMux", name: "UseMux", pkg: "", typ: $funcType([ViewMux], [], false)}, {prop: "Mount", name: "Mount", pkg: "", typ: $funcType([ptrType$3], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$9], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [template.HTML], true)}];
 	PathSpec.init([{prop: "Hash", name: "Hash", pkg: "", typ: $String, tag: ""}, {prop: "Path", name: "Path", pkg: "", typ: $String, tag: ""}, {prop: "Sequence", name: "Sequence", pkg: "", typ: $String, tag: ""}]);
 	PathObserver.init([{prop: "Reactor", name: "", pkg: "", typ: flux.Reactor, tag: ""}, {prop: "usingHash", name: "usingHash", pkg: "github.com/influx6/haiku/views", typ: $Bool, tag: ""}]);
 	HistoryProvider.init([{prop: "PathObserver", name: "", pkg: "", typ: ptrType$4, tag: ""}]);
@@ -36452,11 +36460,11 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	States.init([{prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}]);
 	State.init([{prop: "active", name: "active", pkg: "github.com/influx6/haiku/views", typ: $Int64, tag: ""}, {prop: "activator", name: "activator", pkg: "github.com/influx6/haiku/views", typ: StateResponse, tag: ""}, {prop: "deactivator", name: "deactivator", pkg: "github.com/influx6/haiku/views", typ: StateResponse, tag: ""}, {prop: "optionalValidator", name: "optionalValidator", pkg: "github.com/influx6/haiku/views", typ: StateValidator, tag: ""}, {prop: "engine", name: "engine", pkg: "github.com/influx6/haiku/views", typ: ptrType$5, tag: ""}, {prop: "vo", name: "vo", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}, {prop: "ro", name: "ro", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}, {prop: "do$7", name: "do", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}]);
 	StateEngine.init([{prop: "rw", name: "rw", pkg: "github.com/influx6/haiku/views", typ: sync.RWMutex, tag: ""}, {prop: "states", name: "states", pkg: "github.com/influx6/haiku/views", typ: mapType, tag: ""}, {prop: "owner", name: "owner", pkg: "github.com/influx6/haiku/views", typ: States, tag: ""}, {prop: "curr", name: "curr", pkg: "github.com/influx6/haiku/views", typ: States, tag: ""}]);
-	Views.init([{prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([flux.Reactor, $Bool], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [$error], false)}, {prop: "CloseNotify", name: "CloseNotify", pkg: "", typ: $funcType([], [chanType], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$9], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Mount", name: "Mount", pkg: "", typ: $funcType([ptrType$3], [], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "React", name: "React", pkg: "", typ: $funcType([flux.SignalMuxHandler, $Bool], [flux.Reactor], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [$String], true)}, {prop: "Reply", name: "Reply", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "ReplyError", name: "ReplyError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Send", name: "Send", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "SendError", name: "SendError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseMux", name: "UseMux", pkg: "", typ: $funcType([ViewMux], [], false)}, {prop: "UseRoot", name: "UseRoot", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}]);
+	Views.init([{prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([flux.Reactor, $Bool], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [$error], false)}, {prop: "CloseNotify", name: "CloseNotify", pkg: "", typ: $funcType([], [chanType], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$9], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Mount", name: "Mount", pkg: "", typ: $funcType([ptrType$3], [], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "React", name: "React", pkg: "", typ: $funcType([flux.SignalMuxHandler, $Bool], [flux.Reactor], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [template.HTML], true)}, {prop: "Reply", name: "Reply", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "ReplyError", name: "ReplyError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Send", name: "Send", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "SendError", name: "SendError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseMux", name: "UseMux", pkg: "", typ: $funcType([ViewMux], [], false)}, {prop: "UseRoot", name: "UseRoot", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}]);
 	ViewStates.init([{prop: "Render", name: "Render", pkg: "", typ: $funcType([trees.Markup], [], false)}]);
 	HideView.init([]);
 	ShowView.init([]);
-	ViewMux.init([], [trees.Markup], false);
+	ViewMux.init([Views], [trees.Markup], false);
 	View.init([{prop: "States", name: "", pkg: "", typ: States, tag: ""}, {prop: "Reactor", name: "", pkg: "", typ: flux.Reactor, tag: ""}, {prop: "HideState", name: "HideState", pkg: "", typ: ViewStates, tag: ""}, {prop: "ShowState", name: "ShowState", pkg: "", typ: ViewStates, tag: ""}, {prop: "activeState", name: "activeState", pkg: "github.com/influx6/haiku/views", typ: ViewStates, tag: ""}, {prop: "encoder", name: "encoder", pkg: "github.com/influx6/haiku/views", typ: trees.MarkupWriter, tag: ""}, {prop: "events", name: "events", pkg: "github.com/influx6/haiku/views", typ: ptrType$9, tag: ""}, {prop: "fx", name: "fx", pkg: "github.com/influx6/haiku/views", typ: ViewMux, tag: ""}, {prop: "dom", name: "dom", pkg: "github.com/influx6/haiku/views", typ: ptrType$3, tag: ""}, {prop: "liveMarkup", name: "liveMarkup", pkg: "github.com/influx6/haiku/views", typ: trees.Markup, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
@@ -36518,9 +36526,9 @@ $packages["main"] = (function() {
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.param = param; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(clickMe, menu, menuItem);
 		menuItem[0] = new sliceType$1(["shops", "janitor", "booky", "drummer"]);
-		_r$1 = views.NewView((function(clickMe, menu, menuItem) { return function $b() {
-			var $ptr, _arg, _arg$1, _arg$2, _arg$3, _arg$4, _arg$5, _arg$6, _arg$7, _arg$8, _i, _r$1, _r$10, _r$11, _r$12, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, div, mi, so, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _arg$4 = $f._arg$4; _arg$5 = $f._arg$5; _arg$6 = $f._arg$6; _arg$7 = $f._arg$7; _arg$8 = $f._arg$8; _i = $f._i; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; div = $f.div; mi = $f.mi; so = $f.so; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r$1 = views.NewView((function(clickMe, menu, menuItem) { return function $b(v) {
+			var $ptr, _arg, _arg$1, _arg$2, _arg$3, _arg$4, _arg$5, _arg$6, _arg$7, _arg$8, _i, _r$1, _r$10, _r$11, _r$12, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, div, mi, so, v, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _arg$4 = $f._arg$4; _arg$5 = $f._arg$5; _arg$6 = $f._arg$6; _arg$7 = $f._arg$7; _arg$8 = $f._arg$8; _i = $f._i; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; div = $f.div; mi = $f.mi; so = $f.so; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 			_r$1 = elems.Text("welcome"); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 			_arg = _r$1;
 			_r$2 = elems.Text("name"); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -36555,7 +36563,7 @@ $packages["main"] = (function() {
 			_r$12 = elems.Paragraph(new sliceType$2([so])); /* */ $s = 16; case 16: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
 			$r = div.Augment(new sliceType$3([_r$12])); /* */ $s = 17; case 17: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			return div;
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._arg$4 = _arg$4; $f._arg$5 = _arg$5; $f._arg$6 = _arg$6; $f._arg$7 = _arg$7; $f._arg$8 = _arg$8; $f._i = _i; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f.div = div; $f.mi = mi; $f.so = so; $f.$s = $s; $f.$r = $r; return $f;
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._arg$4 = _arg$4; $f._arg$5 = _arg$5; $f._arg$6 = _arg$6; $f._arg$7 = _arg$7; $f._arg$8 = _arg$8; $f._i = _i; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f.div = div; $f.mi = mi; $f.so = so; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(clickMe, menu, menuItem)); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		menu[0] = _r$1;
 		_r$2 = page.Mount("body", ".", menu[0]); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }

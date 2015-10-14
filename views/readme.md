@@ -9,7 +9,7 @@
     **Engine Rendering Rules**
         A basic demonstration of the state view engine and state machine operation. Where the (n: m) shows the relation of state view tag and state view state address i.e (books: .books) defines a state view of tag 'books' with a state address of '.books' the 'root->books' order or in url speak, a '/books' path
 
-            *Examples will be laced and demostrated using html symantics and tag rules so that there will be more easy understanding of the innerworkings of the state machine and how it will affect the view system*
+            *Examples will be laced and demostrated using html symantics and tag rules so that there will be more easy understanding of the innerworkings of the state machine and how it will affect the view system, but please not that this examples are to simplify your understanding and not define how views render but how views get activated and deactivated for rendering as they so see fit to do so*
 
 
           State trees define the state of the state machine engine and the hierarchical nature of state views. Using tags (eg 'home') and address points we will demonstrate how the machine works

@@ -2,14 +2,14 @@ package views
 
 import (
 	"html/template"
+	"log"
 	"strings"
 
+	"github.com/gopherjs/gopherjs/js"
 	"github.com/influx6/flux"
 	"github.com/influx6/haiku/events"
 	"github.com/influx6/haiku/trees"
 	"github.com/influx6/haiku/trees/elems"
-	// hodom "honnef.co/go/js/dom"
-	hodom "github.com/influx6/dom"
 )
 
 // Views define a Haiku Component
@@ -21,7 +21,8 @@ type Views interface {
 	Hide()
 	Render(...string) trees.Markup
 	RenderHTML(...string) template.HTML
-	Mount(hodom.Element)
+	Mount(*js.Object)
+	// UseFx(ViewMux)
 }
 
 // ViewStates defines the two possible behavioral state of a view's markup
@@ -68,7 +69,7 @@ type View struct {
 	encoder     trees.MarkupWriter
 	events      *events.EventManager
 	fx          ViewMux
-	dom         hodom.Element
+	dom         *js.Object
 	//liveMarkup represent the current rendered markup
 	liveMarkup trees.Markup
 }
@@ -93,8 +94,10 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 	//set up the reaction chain, if we have node attach then render to it
 	vm.React(func(r flux.Reactor, _ error, _ interface{}) {
 		//if we are not domless then patch
+		// log.Printf("will render")
 		if vm.dom != nil {
 			html := vm.RenderHTML()
+			log.Printf("will render markup: %s \n-------------------", html)
 			// log.Printf("Sending to fragment: -> \n %s", html)
 			Patch(CreateFragment(string(html)), vm.dom)
 		}
@@ -111,9 +114,15 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 	return
 }
 
+// // UseMux lets you switch the markup generator
+// func (v *View) UseMux(fx ViewMux) {
+// 	v.fx=fx
+// }
+
 // Mount is to be called in the browser to loadup this view with a dom
-func (v *View) Mount(dom hodom.Element) {
+func (v *View) Mount(dom *js.Object) {
 	v.dom = dom
+	v.events.OffloadDOM()
 	v.events.LoadDOM(dom)
 	v.Send(true)
 }
@@ -157,6 +166,7 @@ func (v *View) Render(m ...string) trees.Markup {
 		dom.Reconcile(v.liveMarkup)
 	}
 
+	dom.UseEventManager(v.events)
 	v.liveMarkup = dom
 
 	return dom

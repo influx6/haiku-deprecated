@@ -1,9 +1,11 @@
 package trees
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/influx6/flux"
+	"github.com/influx6/haiku/events"
 )
 
 const (
@@ -31,6 +33,7 @@ type Mutation interface {
 // Markup provide a basic specification type of how a element resolves its content
 type Markup interface {
 	Appliable
+	Events
 	Mutation
 	Styles
 	Attributes
@@ -45,6 +48,8 @@ type Markup interface {
 	AutoClosed() bool
 	TextContent() string
 	Empty()
+	UseEventManager(*events.EventManager) bool
+	LoadEvents()
 }
 
 // Mutable is a base implementation of the Mutation interface{}
@@ -112,14 +117,17 @@ func (m *Mutable) swapUID(uid string) {
 type Element struct {
 	Mutation
 	tagname         string
+	events          []*Event
 	styles          []*Style
 	attrs           []*Attribute
 	children        []Markup
 	textContent     string
 	autoclose       bool
+	allowEvents     bool
 	allowChildren   bool
 	allowStyles     bool
 	allowAttributes bool
+	eventManager    *events.EventManager
 }
 
 // NewText returns a new Text instance element
@@ -130,6 +138,7 @@ func NewText(txt string) *Element {
 	em.allowChildren = false
 	em.allowAttributes = false
 	em.allowStyles = false
+	em.allowEvents = false
 	em.textContent = txt
 	return em
 }
@@ -149,7 +158,42 @@ func NewElement(tag string, hasNoEndingTag bool) *Element {
 	}
 }
 
-// Remove sets the markup as removable and adds a 'haikuRemove' attribute to it
+// UseEventManager adds a eventmanager into the markup and if not available before automatically registers
+// the events with it,once an event manager is registered to it,it will and can not be changed
+func (e *Element) UseEventManager(man *events.EventManager) bool {
+	if e.eventManager != nil {
+		// e.eventManager.
+		return false
+	}
+
+	e.eventManager = man
+	e.LoadEvents()
+	return true
+}
+
+// LoadEvents loads up the events registered by this and by its children into each respective
+// available events managers
+func (e *Element) LoadEvents() {
+	if e.eventManager != nil {
+		e.eventManager.DisconnectRemoved()
+
+		for _, ev := range e.events {
+			if es, _ := e.eventManager.NewEventMeta(ev.Meta); es != nil {
+				es.Bind(ev.Fx)
+			}
+		}
+
+	}
+
+	//load up the children events also
+	for _, ech := range e.children {
+		if !ech.UseEventManager(e.eventManager) {
+			ech.LoadEvents()
+		}
+	}
+}
+
+// Remove sets the markup as removable and adds a 'haikuRemoved' attribute to it
 func (e *Element) Remove() {
 	if !e.Removed() {
 		e.attrs = append(e.attrs, &Attribute{"haikuRemoved", ""})
@@ -241,6 +285,8 @@ func (e *Element) Reconcile(em Markup) bool {
 		return false
 	}
 
+	em.CleanRemoved()
+
 	//since the tagname are the same, swap uids
 	// olduid := em.UID()
 	e.swapUID(em.UID())
@@ -266,6 +312,11 @@ func (e *Element) Reconcile(em Markup) bool {
 	maxSize := len(newChildren)
 	oldMaxSize := len(oldChildren)
 
+	ReconcileEvents(e, em)
+	if e.eventManager != nil {
+		e.eventManager.DisconnectRemoved()
+	}
+
 	if maxSize <= 0 {
 		// if the element had no children too, swap hash
 		if oldMaxSize <= 0 {
@@ -284,11 +335,15 @@ func (e *Element) Reconcile(em Markup) bool {
 
 			// log.Printf("checking old (%s) with new(%s)", och.Name(), nch.Name())
 
-			if nch.Reconcile(och) {
-				// log.Printf("old (%s) with new(%s) changed!", och.Name(), nch.Name())
-				childChanged = true
+			if nch.Name() == och.Name() {
+				if nch.Reconcile(och) {
+					// log.Printf("old (%s) with new(%s) changed!", och.Name(), nch.Name())
+					childChanged = true
+				}
+			} else {
+				och.Remove()
+				e.AddChild(och)
 			}
-
 			continue
 		}
 
@@ -324,6 +379,8 @@ type MarkupChildren interface {
 func (e *Element) AddChild(em Markup) {
 	if e.allowChildren {
 		e.children = append(e.children, em)
+		//if this are free elements, then use this event manager
+		em.UseEventManager(e.eventManager)
 	}
 }
 
@@ -364,6 +421,49 @@ func (e *Element) Attributes() []*Attribute {
 	return e.attrs
 }
 
+// Events provide an interface for markup event addition system
+type Events interface {
+	Events() []*Event
+}
+
+// Event provide a meta registry for helps in registering events for dom markups
+// which is translated to the nodes themselves
+type Event struct {
+	Meta *events.EventMeta
+	Fx   events.NextHandler
+}
+
+// NewEvent returns a event object that allows registering events to eventlisteners
+func NewEvent(etype, eselector string, efx events.NextHandler) *Event {
+	return &Event{
+		Meta: &events.EventMeta{Type: etype, Target: eselector},
+		Fx:   efx,
+	}
+}
+
+// StopImmediatePropagation will return itself and set StopPropagation to true
+func (e *Event) StopImmediatePropagation() *Event {
+	e.Meta.StopImmediatePropagation = true
+	return e
+}
+
+// StopPropagation will return itself and set StopPropagation to true
+func (e *Event) StopPropagation() *Event {
+	e.Meta.StopPropagation = true
+	return e
+}
+
+// PreventDefault will return itself and set PreventDefault to true
+func (e *Event) PreventDefault() *Event {
+	e.Meta.PreventDefault = true
+	return e
+}
+
+// Events return the elements events
+func (e *Element) Events() []*Event {
+	return e.events
+}
+
 // Appliable define the interface specification for applying changes to elements elements in tree
 type Appliable interface {
 	Apply(*Element)
@@ -391,9 +491,27 @@ func (s *Style) Apply(e *Element) {
 	}
 }
 
+// Apply adds the event into the elements events lists
+func (e *Event) Apply(em *Element) {
+	if em.allowEvents {
+		if e.Meta.Target == "" {
+			e.Meta.Target = fmt.Sprintf("%s[uid='%s']", strings.ToLower(em.Name()), em.UID())
+		}
+		em.events = append(em.events, e)
+	}
+}
+
 // Clonable defines an interface for objects that can be cloned
 type Clonable interface {
 	Clone() Markup
+}
+
+//Clone replicates the style into a unique instance
+func (e *Event) Clone() *Event {
+	return &Event{
+		Meta: &events.EventMeta{Type: e.Meta.Type, Target: e.Meta.Target},
+		Fx:   e.Fx,
+	}
 }
 
 //Clone replicates the style into a unique instance
@@ -415,7 +533,9 @@ func (e *Element) Clone() Markup {
 
 	//copy over the attribute lockers
 	co.allowChildren = e.allowChildren
+	co.allowEvents = e.allowEvents
 	co.allowAttributes = e.allowAttributes
+	co.eventManager = e.eventManager
 
 	if e.Removed() {
 		co.Removed()
@@ -439,6 +559,10 @@ func (e *Element) Clone() Markup {
 		ch.Clone().Apply(co)
 	}
 
+	for _, ch := range e.events {
+		ch.Clone().Apply(co)
+	}
+
 	return co
 }
 
@@ -449,6 +573,34 @@ func Augment(root Markup, m ...Markup) {
 			mo.Apply(el)
 		}
 	}
+}
+
+// ReconcileEvents checks through two markup events against each other and if it finds any disparity marks
+// event objects as Removed
+func ReconcileEvents(e, em Markup) {
+	oldevents := em.Events()
+	newevents := e.Events()
+
+	//set to equal as the logic will try to assert its falsiness
+
+	for _, ev := range oldevents {
+		var found bool
+
+	innerfind:
+		for _, evs := range newevents {
+			if evs.Meta.Type == ev.Meta.Type && evs.Meta.Target == ev.Meta.Target {
+				found = true
+				break innerfind
+			}
+		}
+
+		if found {
+			continue
+		}
+
+		ev.Meta.Removed = true
+	}
+
 }
 
 // EqualAttributes returns true/false if the elements and the giving markup have equal attribute

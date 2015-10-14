@@ -2014,7 +2014,7 @@ var $internalize = function(v, t, recv) {
 };
 
 $packages["github.com/gopherjs/gopherjs/js"] = (function() {
-	var $pkg = {}, $init, Object, Error, sliceType, sliceType$1, ptrType, ptrType$1, Keys, init;
+	var $pkg = {}, $init, Object, Error, sliceType, ptrType, ptrType$1, init;
 	Object = $pkg.Object = $newType(0, $kindStruct, "js.Object", "Object", "github.com/gopherjs/gopherjs/js", function(object_) {
 		this.$val = this;
 		if (arguments.length === 0) {
@@ -2032,7 +2032,6 @@ $packages["github.com/gopherjs/gopherjs/js"] = (function() {
 		this.Object = Object_;
 	});
 	sliceType = $sliceType($emptyInterface);
-	sliceType$1 = $sliceType($String);
 	ptrType = $ptrType(Object);
 	ptrType$1 = $ptrType(Error);
 	Object.ptr.prototype.Get = function(key) {
@@ -2149,22 +2148,6 @@ $packages["github.com/gopherjs/gopherjs/js"] = (function() {
 		return $internalize(err.Object.stack, $String);
 	};
 	Error.prototype.Stack = function() { return this.$val.Stack(); };
-	Keys = function(o) {
-		var $ptr, a, i, o, s;
-		if (o === null || o === undefined) {
-			return sliceType$1.nil;
-		}
-		a = $global.Object.keys(o);
-		s = $makeSlice(sliceType$1, $parseInt(a.length));
-		i = 0;
-		while (true) {
-			if (!(i < $parseInt(a.length))) { break; }
-			((i < 0 || i >= s.$length) ? $throwRuntimeError("index out of range") : s.$array[s.$offset + i] = $internalize(a[i], $String));
-			i = i + (1) >> 0;
-		}
-		return s;
-	};
-	$pkg.Keys = Keys;
 	init = function() {
 		var $ptr, e;
 		e = new Error.ptr(null);
@@ -19957,6 +19940,909 @@ $packages["fmt"] = (function() {
 	$pkg.$init = $init;
 	return $pkg;
 })();
+$packages["github.com/influx6/haiku/jsutils"] = (function() {
+	var $pkg = {}, $init, js, ptrType, sliceType, DOMObjectToList, ChildNodeList, Attributes, GetWindow, GetDocument, CreateElement, CreateDocumentFragment, AppendChild, RemoveChild, IsEqualNode, ReplaceNode, QuerySelectorAll, QuerySelector, GetTag, GetAttribute, HasAttribute, SetAttribute, SetInnerHTML;
+	js = $packages["github.com/gopherjs/gopherjs/js"];
+	ptrType = $ptrType(js.Object);
+	sliceType = $sliceType(ptrType);
+	DOMObjectToList = function(o) {
+		var $ptr, i, length, o, out;
+		out = sliceType.nil;
+		length = $parseInt(o.length) >> 0;
+		i = 0;
+		while (true) {
+			if (!(i < length)) { break; }
+			out = $append(out, o.item(i));
+			i = i + (1) >> 0;
+		}
+		return out;
+	};
+	$pkg.DOMObjectToList = DOMObjectToList;
+	ChildNodeList = function(o) {
+		var $ptr, o;
+		return DOMObjectToList(o.childNodes);
+	};
+	$pkg.ChildNodeList = ChildNodeList;
+	Attributes = function(co) {
+		var $ptr, _key, attrs, co, i, item, length, o;
+		o = co.attributes;
+		if (o === null || o === undefined) {
+			return false;
+		}
+		attrs = $makeMap($String.keyFor, []);
+		length = $parseInt(o.length) >> 0;
+		i = 0;
+		while (true) {
+			if (!(i < length)) { break; }
+			item = o.item(i);
+			_key = $internalize(item.name, $String); (attrs || $throwRuntimeError("assignment to entry in nil map"))[$String.keyFor(_key)] = { k: _key, v: $internalize(item.value, $String) };
+			i = i + (1) >> 0;
+		}
+		return attrs;
+	};
+	$pkg.Attributes = Attributes;
+	GetWindow = function() {
+		var $ptr;
+		return $global;
+	};
+	$pkg.GetWindow = GetWindow;
+	GetDocument = function() {
+		var $ptr, win;
+		win = GetWindow();
+		if (win === null || win === undefined) {
+			return null;
+		}
+		return win.document;
+	};
+	$pkg.GetDocument = GetDocument;
+	CreateElement = function(tag) {
+		var $ptr, doc, tag;
+		doc = GetDocument();
+		if (doc === null || doc === undefined) {
+			return null;
+		}
+		return doc.createElement($externalize(tag, $String));
+	};
+	$pkg.CreateElement = CreateElement;
+	CreateDocumentFragment = function() {
+		var $ptr, doc;
+		doc = GetDocument();
+		if (doc === null) {
+			return null;
+		}
+		return doc.createDocumentFragment();
+	};
+	$pkg.CreateDocumentFragment = CreateDocumentFragment;
+	AppendChild = function(o, osets) {
+		var $ptr, _i, _ref, o, onode, osets;
+		_ref = osets;
+		_i = 0;
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
+			onode = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+			o.appendChild(onode);
+			_i++;
+		}
+	};
+	$pkg.AppendChild = AppendChild;
+	RemoveChild = function(o, co) {
+		var $ptr, _i, _ref, co, o, onode;
+		_ref = co;
+		_i = 0;
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
+			onode = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+			o.parentNode.removeChild(onode);
+			_i++;
+		}
+	};
+	$pkg.RemoveChild = RemoveChild;
+	IsEqualNode = function(newNode, oldNode) {
+		var $ptr, newNode, oldNode;
+		return !!(oldNode.isEqualNode(newNode));
+	};
+	$pkg.IsEqualNode = IsEqualNode;
+	ReplaceNode = function(target, newNode, oldNode) {
+		var $ptr, newNode, oldNode, target;
+		if (newNode === oldNode) {
+			return;
+		}
+		target.replaceChild(newNode, oldNode);
+	};
+	$pkg.ReplaceNode = ReplaceNode;
+	QuerySelectorAll = function(o, sel) {
+		var $ptr, o, sel;
+		return DOMObjectToList(o.querySelectorAll($externalize(sel, $String)));
+	};
+	$pkg.QuerySelectorAll = QuerySelectorAll;
+	QuerySelector = function(o, sel) {
+		var $ptr, o, sel;
+		return o.querySelector($externalize(sel, $String));
+	};
+	$pkg.QuerySelector = QuerySelector;
+	GetTag = function(o) {
+		var $ptr, o;
+		return $internalize(o.tagName, $String);
+	};
+	$pkg.GetTag = GetTag;
+	GetAttribute = function(o, key) {
+		var $ptr, key, o;
+		return $internalize(o.getAttribute($externalize(key, $String)), $String);
+	};
+	$pkg.GetAttribute = GetAttribute;
+	HasAttribute = function(o, key) {
+		var $ptr, key, o;
+		return !!(o.hasAttribute($externalize(key, $String)));
+	};
+	$pkg.HasAttribute = HasAttribute;
+	SetAttribute = function(o, key, value) {
+		var $ptr, key, o, value;
+		o.setAttribute($externalize(key, $String), $externalize(value, $String));
+	};
+	$pkg.SetAttribute = SetAttribute;
+	SetInnerHTML = function(o, html) {
+		var $ptr, html, o;
+		o.innerHTML = $externalize(html, $String);
+	};
+	$pkg.SetInnerHTML = SetInnerHTML;
+	$init = function() {
+		$pkg.$init = function() {};
+		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.$init = $init;
+	return $pkg;
+})();
+$packages["github.com/influx6/haiku/events"] = (function() {
+	var $pkg = {}, $init, errors, fmt, js, jsutils, strings, sync, NextHandler, FlatHandler, FlatChains, FlatChain, JSEventMux, Event, EventObject, EventMeta, EventSub, EventManager, ptrType, ptrType$1, ptrType$2, sliceType$1, ptrType$3, ptrType$5, ptrType$6, sliceType$2, funcType$1, funcType$2, mapType, mapType$1, FlatChainIdentity, NewFlatChain, NewEventSub, MetaEventSub, NewEventManager, GetEventID, BuildEventID;
+	errors = $packages["errors"];
+	fmt = $packages["fmt"];
+	js = $packages["github.com/gopherjs/gopherjs/js"];
+	jsutils = $packages["github.com/influx6/haiku/jsutils"];
+	strings = $packages["strings"];
+	sync = $packages["sync"];
+	NextHandler = $pkg.NextHandler = $newType(4, $kindFunc, "events.NextHandler", "NextHandler", "github.com/influx6/haiku/events", null);
+	FlatHandler = $pkg.FlatHandler = $newType(4, $kindFunc, "events.FlatHandler", "FlatHandler", "github.com/influx6/haiku/events", null);
+	FlatChains = $pkg.FlatChains = $newType(8, $kindInterface, "events.FlatChains", "FlatChains", "github.com/influx6/haiku/events", null);
+	FlatChain = $pkg.FlatChain = $newType(0, $kindStruct, "events.FlatChain", "FlatChain", "github.com/influx6/haiku/events", function(op_, prev_, next_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.op = $throwNilPointerError;
+			this.prev = $ifaceNil;
+			this.next = $ifaceNil;
+			return;
+		}
+		this.op = op_;
+		this.prev = prev_;
+		this.next = next_;
+	});
+	JSEventMux = $pkg.JSEventMux = $newType(4, $kindFunc, "events.JSEventMux", "JSEventMux", "github.com/influx6/haiku/events", null);
+	Event = $pkg.Event = $newType(8, $kindInterface, "events.Event", "Event", "github.com/influx6/haiku/events", null);
+	EventObject = $pkg.EventObject = $newType(0, $kindStruct, "events.EventObject", "EventObject", "github.com/influx6/haiku/events", function(Object_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.Object = null;
+			return;
+		}
+		this.Object = Object_;
+	});
+	EventMeta = $pkg.EventMeta = $newType(0, $kindStruct, "events.EventMeta", "EventMeta", "github.com/influx6/haiku/events", function(Type_, Target_, StopPropagation_, StopImmediatePropagation_, PreventDefault_, Removed_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.Type = "";
+			this.Target = "";
+			this.StopPropagation = false;
+			this.StopImmediatePropagation = false;
+			this.PreventDefault = false;
+			this.Removed = false;
+			return;
+		}
+		this.Type = Type_;
+		this.Target = Target_;
+		this.StopPropagation = StopPropagation_;
+		this.StopImmediatePropagation = StopImmediatePropagation_;
+		this.PreventDefault = PreventDefault_;
+		this.Removed = Removed_;
+	});
+	EventSub = $pkg.EventSub = $newType(0, $kindStruct, "events.EventSub", "EventSub", "github.com/influx6/haiku/events", function(EventMeta_, FlatChains_, jslink_, dom_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.EventMeta = ptrType.nil;
+			this.FlatChains = $ifaceNil;
+			this.jslink = $throwNilPointerError;
+			this.dom = null;
+			return;
+		}
+		this.EventMeta = EventMeta_;
+		this.FlatChains = FlatChains_;
+		this.jslink = jslink_;
+		this.dom = dom_;
+	});
+	EventManager = $pkg.EventManager = $newType(0, $kindStruct, "events.EventManager", "EventManager", "github.com/influx6/haiku/events", function(events_, attaches_, ro_, wo_, dom_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.events = false;
+			this.attaches = false;
+			this.ro = new sync.RWMutex.ptr(new sync.Mutex.ptr(0, 0), 0, 0, 0, 0);
+			this.wo = new sync.RWMutex.ptr(new sync.Mutex.ptr(0, 0), 0, 0, 0, 0);
+			this.dom = null;
+			return;
+		}
+		this.events = events_;
+		this.attaches = attaches_;
+		this.ro = ro_;
+		this.wo = wo_;
+		this.dom = dom_;
+	});
+	ptrType = $ptrType(EventMeta);
+	ptrType$1 = $ptrType(EventSub);
+	ptrType$2 = $ptrType(EventManager);
+	sliceType$1 = $sliceType($emptyInterface);
+	ptrType$3 = $ptrType(FlatChain);
+	ptrType$5 = $ptrType(js.Object);
+	ptrType$6 = $ptrType(EventObject);
+	sliceType$2 = $sliceType(ptrType$1);
+	funcType$1 = $funcType([ptrType$1], [], false);
+	funcType$2 = $funcType([ptrType$2], [], false);
+	mapType = $mapType($String, ptrType$1);
+	mapType$1 = $mapType(ptrType$2, $Bool);
+	FlatChainIdentity = function() {
+		var $ptr;
+		return NewFlatChain((function $b(c, nx) {
+			var $ptr, c, nx, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; c = $f.c; nx = $f.nx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			$r = nx(c); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.c = c; $f.nx = nx; $f.$s = $s; $f.$r = $r; return $f;
+		}));
+	};
+	$pkg.FlatChainIdentity = FlatChainIdentity;
+	NewFlatChain = function(fx) {
+		var $ptr, fx;
+		return new FlatChain.ptr(fx, $ifaceNil, $ifaceNil);
+	};
+	$pkg.NewFlatChain = NewFlatChain;
+	FlatChain.ptr.prototype.UnChain = function() {
+		var $ptr, next, prev, r, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; next = $f.next; prev = $f.prev; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		r = this;
+		prev = r.prev;
+		next = r.next;
+		/* */ if (!($interfaceIsEqual(prev, $ifaceNil)) && !($interfaceIsEqual(next, $ifaceNil))) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (!($interfaceIsEqual(prev, $ifaceNil)) && !($interfaceIsEqual(next, $ifaceNil))) { */ case 1:
+			$r = prev.useNext(next); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = next.usePrev(prev); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			return;
+		/* } */ case 2:
+		$r = prev.useNext($ifaceNil); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.UnChain }; } $f.$ptr = $ptr; $f.next = next; $f.prev = prev; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatChain.prototype.UnChain = function() { return this.$val.UnChain(); };
+	FlatChain.ptr.prototype.Bind = function(rnx) {
+		var $ptr, _r, r, rnx, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; r = $f.r; rnx = $f.rnx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		rnx = [rnx];
+		r = this;
+		_r = r.Next((function(rnx) { return function $b(ev, nx) {
+			var $ptr, ev, nx, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; ev = $f.ev; nx = $f.nx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			$r = rnx[0](ev); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = nx(ev); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.ev = ev; $f.nx = nx; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(rnx)); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		return _r;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.Bind }; } $f.$ptr = $ptr; $f._r = _r; $f.r = r; $f.rnx = rnx; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatChain.prototype.Bind = function(rnx) { return this.$val.Bind(rnx); };
+	FlatChain.ptr.prototype.Next = function(rnx) {
+		var $ptr, _r, nx, r, rnx, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; nx = $f.nx; r = $f.r; rnx = $f.rnx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		r = this;
+		nx = NewFlatChain(rnx);
+		_r = r.NChain(nx); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		return _r;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.Next }; } $f.$ptr = $ptr; $f._r = _r; $f.nx = nx; $f.r = r; $f.rnx = rnx; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatChain.prototype.Next = function(rnx) { return this.$val.Next(rnx); };
+	FlatChain.ptr.prototype.Chain = function(rx) {
+		var $ptr, _r, r, rx, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; r = $f.r; rx = $f.rx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		r = this;
+		/* */ if ($interfaceIsEqual(r.next, $ifaceNil)) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if ($interfaceIsEqual(r.next, $ifaceNil)) { */ case 1:
+			$r = rx.usePrev(r); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			r.useNext(rx);
+			$s = 3; continue;
+		/* } else { */ case 2:
+			_r = r.next.Chain(rx); /* */ $s = 5; case 5: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_r;
+		/* } */ case 3:
+		return r;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.Chain }; } $f.$ptr = $ptr; $f._r = _r; $f.r = r; $f.rx = rx; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatChain.prototype.Chain = function(rx) { return this.$val.Chain(rx); };
+	FlatChain.ptr.prototype.NChain = function(rx) {
+		var $ptr, _r, r, rx, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; r = $f.r; rx = $f.rx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		r = this;
+		if ($interfaceIsEqual(r.next, $ifaceNil)) {
+			r.useNext(rx);
+			return rx;
+		}
+		_r = r.next.NChain(rx); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		return _r;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.NChain }; } $f.$ptr = $ptr; $f._r = _r; $f.r = r; $f.rx = rx; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatChain.prototype.NChain = function(rx) { return this.$val.NChain(rx); };
+	FlatChain.ptr.prototype.HandleContext = function(c) {
+		var $ptr, c, r, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; c = $f.c; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		r = [r];
+		r[0] = this;
+		$r = r[0].op(c, (function(r) { return function $b(c$1) {
+			var $ptr, c$1, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; c$1 = $f.c$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			/* */ if (!($interfaceIsEqual(r[0].next, $ifaceNil))) { $s = 1; continue; }
+			/* */ $s = 2; continue;
+			/* if (!($interfaceIsEqual(r[0].next, $ifaceNil))) { */ case 1:
+				$r = r[0].next.HandleContext(c$1); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* } */ case 2:
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.c$1 = c$1; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(r)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.HandleContext }; } $f.$ptr = $ptr; $f.c = c; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	FlatChain.prototype.HandleContext = function(c) { return this.$val.HandleContext(c); };
+	FlatChain.ptr.prototype.useNext = function(fl) {
+		var $ptr, fl, r;
+		r = this;
+		r.next = fl;
+	};
+	FlatChain.prototype.useNext = function(fl) { return this.$val.useNext(fl); };
+	FlatChain.ptr.prototype.usePrev = function(fl) {
+		var $ptr, fl, r;
+		r = this;
+		r.prev = fl;
+	};
+	FlatChain.prototype.usePrev = function(fl) { return this.$val.usePrev(fl); };
+	EventObject.ptr.prototype.Core = function() {
+		var $ptr, ev;
+		ev = this;
+		return ev.Object;
+	};
+	EventObject.prototype.Core = function() { return this.$val.Core(); };
+	EventObject.ptr.prototype.Bubbles = function() {
+		var $ptr, ev;
+		ev = this;
+		return !!(ev.Object.bubbles);
+	};
+	EventObject.prototype.Bubbles = function() { return this.$val.Bubbles(); };
+	EventObject.ptr.prototype.Cancelable = function() {
+		var $ptr, ev;
+		ev = this;
+		return !!(ev.Object.cancelable);
+	};
+	EventObject.prototype.Cancelable = function() { return this.$val.Cancelable(); };
+	EventObject.ptr.prototype.CurrentTarget = function() {
+		var $ptr, ev;
+		ev = this;
+		return ev.Object.currentTarget;
+	};
+	EventObject.prototype.CurrentTarget = function() { return this.$val.CurrentTarget(); };
+	EventObject.ptr.prototype.DefaultPrevented = function() {
+		var $ptr, ev;
+		ev = this;
+		return !!(ev.Object.defaultPrevented);
+	};
+	EventObject.prototype.DefaultPrevented = function() { return this.$val.DefaultPrevented(); };
+	EventObject.ptr.prototype.EventPhase = function() {
+		var $ptr, ev;
+		ev = this;
+		return $parseInt(ev.Object.eventPhase) >> 0;
+	};
+	EventObject.prototype.EventPhase = function() { return this.$val.EventPhase(); };
+	EventObject.ptr.prototype.Target = function() {
+		var $ptr, ev;
+		ev = this;
+		return ev.Object.target;
+	};
+	EventObject.prototype.Target = function() { return this.$val.Target(); };
+	EventObject.ptr.prototype.Timestamp = function() {
+		var $ptr, _q, ev, ms, s;
+		ev = this;
+		ms = $parseInt(ev.Object.timeStamp) >> 0;
+		s = (_q = ms / 1000, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero"));
+		return s;
+	};
+	EventObject.prototype.Timestamp = function() { return this.$val.Timestamp(); };
+	EventObject.ptr.prototype.Type = function() {
+		var $ptr, ev;
+		ev = this;
+		return $internalize(ev.Object.type, $String);
+	};
+	EventObject.prototype.Type = function() { return this.$val.Type(); };
+	EventObject.ptr.prototype.PreventDefault = function() {
+		var $ptr, ev;
+		ev = this;
+		ev.Object.preventDefault();
+	};
+	EventObject.prototype.PreventDefault = function() { return this.$val.PreventDefault(); };
+	EventObject.ptr.prototype.StopImmediatePropagation = function() {
+		var $ptr, ev;
+		ev = this;
+		ev.Object.stopImmediatePropagation();
+	};
+	EventObject.prototype.StopImmediatePropagation = function() { return this.$val.StopImmediatePropagation(); };
+	EventObject.ptr.prototype.StopPropagation = function() {
+		var $ptr, ev;
+		ev = this;
+		ev.Object.stopPropagation();
+	};
+	EventObject.prototype.StopPropagation = function() { return this.$val.StopPropagation(); };
+	NewEventSub = function(evtype, evtarget) {
+		var $ptr, evtarget, evtype;
+		return new EventSub.ptr(new EventMeta.ptr(evtype, evtarget, false, false, false, false), FlatChainIdentity(), $throwNilPointerError, null);
+	};
+	$pkg.NewEventSub = NewEventSub;
+	MetaEventSub = function(meta) {
+		var $ptr, meta;
+		return new EventSub.ptr(meta, FlatChainIdentity(), $throwNilPointerError, null);
+	};
+	$pkg.MetaEventSub = MetaEventSub;
+	EventSub.ptr.prototype.DOM = function(dom) {
+		var $ptr, dom, e;
+		e = this;
+		e.Offload();
+		e.dom = dom;
+		e.jslink = (function $b(o) {
+			var $ptr, o, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; o = $f.o; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			$r = e.TriggerMatch(new EventObject.ptr(o)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.o = o; $f.$s = $s; $f.$r = $r; return $f;
+		});
+		e.dom.addEventListener($externalize(e.EventType(), $String), $externalize(e.jslink, JSEventMux), $externalize(true, $Bool));
+	};
+	EventSub.prototype.DOM = function(dom) { return this.$val.DOM(dom); };
+	EventSub.ptr.prototype.Offload = function() {
+		var $ptr, e;
+		e = this;
+		if (e.dom === null) {
+			return;
+		}
+		if (!(e.jslink === $throwNilPointerError)) {
+			e.dom.removeEventListener($externalize(e.EventType(), $String), $externalize(e.jslink, JSEventMux), $externalize(true, $Bool));
+			e.jslink = $throwNilPointerError;
+		}
+	};
+	EventSub.prototype.Offload = function() { return this.$val.Offload(); };
+	EventSub.ptr.prototype.Trigger = function(h) {
+		var $ptr, e, h, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; e = $f.e; h = $f.h; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		e = this;
+		$r = e.FlatChains.HandleContext(h); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventSub.ptr.prototype.Trigger }; } $f.$ptr = $ptr; $f.e = e; $f.h = h; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventSub.prototype.Trigger = function(h) { return this.$val.Trigger(h); };
+	EventSub.ptr.prototype.TriggerMatch = function(h) {
+		var $ptr, _i, _r, _r$1, _r$2, _r$3, _ref, e, h, item, match, parent, parentObjects, posis, target, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; e = $f.e; h = $f.h; item = $f.item; match = $f.match; parent = $f.parent; parentObjects = $f.parentObjects; posis = $f.posis; target = $f.target; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		e = this;
+		_r = h.Type(); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_r$1 = strings.ToLower(_r); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r$2 = strings.ToLower(e.EventType()); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		/* */ if (!(_r$1 === _r$2)) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (!(_r$1 === _r$2)) { */ case 1:
+			return;
+		/* } */ case 2:
+		_r$3 = h.Target(); /* */ $s = 6; case 6: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		target = _r$3;
+		parent = target.ParentElement;
+		match = false;
+		parentObjects = parent.querySelectorAll($externalize(e.EventSelector(), $String));
+		posis = jsutils.DOMObjectToList(parentObjects);
+		_ref = posis;
+		_i = 0;
+		/* while (true) { */ case 7:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 8; continue; }
+			item = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+			if (!(item === target)) {
+				_i++;
+				/* continue; */ $s = 7; continue;
+			}
+			match = true;
+			/* break; */ $s = 8; continue;
+		/* } */ $s = 7; continue; case 8:
+		/* */ if (match) { $s = 9; continue; }
+		/* */ $s = 10; continue;
+		/* if (match) { */ case 9:
+			/* */ if (e.EventMeta.StopImmediatePropagation) { $s = 11; continue; }
+			/* */ $s = 12; continue;
+			/* if (e.EventMeta.StopImmediatePropagation) { */ case 11:
+				$r = h.StopImmediatePropagation(); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$s = 13; continue;
+			/* } else { */ case 12:
+				/* */ if (e.EventMeta.StopPropagation) { $s = 15; continue; }
+				/* */ $s = 16; continue;
+				/* if (e.EventMeta.StopPropagation) { */ case 15:
+					$r = h.StopPropagation(); /* */ $s = 17; case 17: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				/* } */ case 16:
+			/* } */ case 13:
+			/* */ if (e.EventMeta.PreventDefault) { $s = 18; continue; }
+			/* */ $s = 19; continue;
+			/* if (e.EventMeta.PreventDefault) { */ case 18:
+				$r = h.PreventDefault(); /* */ $s = 20; case 20: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* } */ case 19:
+			$r = e.FlatChains.HandleContext(h); /* */ $s = 21; case 21: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* } */ case 10:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventSub.ptr.prototype.TriggerMatch }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f.e = e; $f.h = h; $f.item = item; $f.match = match; $f.parent = parent; $f.parentObjects = parentObjects; $f.posis = posis; $f.target = target; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventSub.prototype.TriggerMatch = function(h) { return this.$val.TriggerMatch(h); };
+	EventSub.ptr.prototype.EventSelector = function() {
+		var $ptr, e;
+		e = this;
+		return e.EventMeta.Target;
+	};
+	EventSub.prototype.EventSelector = function() { return this.$val.EventSelector(); };
+	EventSub.ptr.prototype.ID = function() {
+		var $ptr, _r, e, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		e = this;
+		_r = GetEventID(e); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		return _r;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventSub.ptr.prototype.ID }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventSub.prototype.ID = function() { return this.$val.ID(); };
+	EventSub.ptr.prototype.EventType = function() {
+		var $ptr, e;
+		e = this;
+		return e.EventMeta.Type;
+	};
+	EventSub.prototype.EventType = function() { return this.$val.EventType(); };
+	NewEventManager = function() {
+		var $ptr, em;
+		em = new EventManager.ptr(new $Map(), new $Map(), new sync.RWMutex.ptr(new sync.Mutex.ptr(0, 0), 0, 0, 0, 0), new sync.RWMutex.ptr(new sync.Mutex.ptr(0, 0), 0, 0, 0, 0), null);
+		return em;
+	};
+	$pkg.NewEventManager = NewEventManager;
+	EventManager.ptr.prototype.HasEvent = function(m) {
+		var $ptr, _entry, _tuple, em, m, ok, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _tuple = $f._tuple; em = $f.em; m = $f.m; ok = $f.ok; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		ok = false;
+		$r = em.ro.RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_tuple = (_entry = em.events[$String.keyFor(m)], _entry !== undefined ? [_entry.v, true] : [ptrType$1.nil, false]); ok = _tuple[1];
+		$r = em.ro.RUnlock(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		return ok;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.HasEvent }; } $f.$ptr = $ptr; $f._entry = _entry; $f._tuple = _tuple; $f.em = em; $f.m = m; $f.ok = ok; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.HasEvent = function(m) { return this.$val.HasEvent(m); };
+	EventManager.ptr.prototype.GetEvent = function(event) {
+		var $ptr, _entry, _r, ed, em, event, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _r = $f._r; ed = $f.ed; em = $f.em; event = $f.event; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		_r = em.HasEvent(event); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		/* */ if (!_r) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (!_r) { */ case 1:
+			return [ptrType$1.nil, $pkg.ErrEventNotFound];
+		/* } */ case 2:
+		ed = ptrType$1.nil;
+		$r = em.ro.RLock(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		ed = (_entry = em.events[$String.keyFor(event)], _entry !== undefined ? _entry.v : ptrType$1.nil);
+		$r = em.ro.RUnlock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		return [ed, $ifaceNil];
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.GetEvent }; } $f.$ptr = $ptr; $f._entry = _entry; $f._r = _r; $f.ed = ed; $f.em = em; $f.event = event; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.GetEvent = function(event) { return this.$val.GetEvent(event); };
+	EventManager.ptr.prototype.NewEventMeta = function(meta) {
+		var $ptr, _r, _r$1, _r$2, _r$3, _tuple, ed, em, emo, eo, meta, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _tuple = $f._tuple; ed = $f.ed; em = $f.em; emo = $f.emo; eo = $f.eo; meta = $f.meta; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		if (meta.Removed) {
+			return [ptrType$1.nil, false];
+		}
+		_r = BuildEventID(meta.Type, meta.Target); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		eo = _r;
+		_r$1 = em.HasEvent(eo); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		/* */ if (_r$1) { $s = 2; continue; }
+		/* */ $s = 3; continue;
+		/* if (_r$1) { */ case 2:
+			_r$2 = em.GetEvent(eo); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+			_tuple = _r$2; ed = _tuple[0];
+			return [ed, false];
+		/* } */ case 3:
+		emo = MetaEventSub(meta);
+		_r$3 = em.AddEvent(emo); /* */ $s = 6; case 6: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		_r$3;
+		return [emo, true];
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.NewEventMeta }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f.ed = ed; $f.em = em; $f.emo = emo; $f.eo = eo; $f.meta = meta; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.NewEventMeta = function(meta) { return this.$val.NewEventMeta(meta); };
+	EventManager.ptr.prototype.NewEvent = function(evtype, evselector) {
+		var $ptr, _r, _r$1, _r$2, _r$3, _tuple, ed, em, emo, eo, evselector, evtype, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _tuple = $f._tuple; ed = $f.ed; em = $f.em; emo = $f.emo; eo = $f.eo; evselector = $f.evselector; evtype = $f.evtype; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		_r = BuildEventID(evtype, evselector); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		eo = _r;
+		_r$1 = em.HasEvent(eo); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		/* */ if (_r$1) { $s = 2; continue; }
+		/* */ $s = 3; continue;
+		/* if (_r$1) { */ case 2:
+			_r$2 = em.GetEvent(eo); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+			_tuple = _r$2; ed = _tuple[0];
+			return [ed, false];
+		/* } */ case 3:
+		emo = NewEventSub(evtype, evselector);
+		_r$3 = em.AddEvent(emo); /* */ $s = 6; case 6: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		_r$3;
+		return [emo, true];
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.NewEvent }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f.ed = ed; $f.em = em; $f.emo = emo; $f.eo = eo; $f.evselector = evselector; $f.evtype = evtype; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.NewEvent = function(evtype, evselector) { return this.$val.NewEvent(evtype, evselector); };
+	EventManager.ptr.prototype.AttachManager = function(esm) {
+		var $ptr, _key, _r, _r$1, _r$2, em, esm, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _key = $f._key; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; em = $f.em; esm = $f.esm; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		_r = esm.HasManager(em); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		/* */ if (_r) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (_r) { */ case 1:
+			return;
+		/* } */ case 2:
+		_r$1 = em.HasManager(esm); /* */ $s = 6; case 6: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		/* */ if (_r$1) { $s = 4; continue; }
+		/* */ $s = 5; continue;
+		/* if (_r$1) { */ case 4:
+			return;
+		/* } */ case 5:
+		$r = em.wo.Lock(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_key = esm; (em.attaches || $throwRuntimeError("assignment to entry in nil map"))[ptrType$2.keyFor(_key)] = { k: _key, v: true };
+		$r = em.wo.Unlock(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ if (!(em.dom === null)) { $s = 9; continue; }
+		/* */ $s = 10; continue;
+		/* if (!(em.dom === null)) { */ case 9:
+			_r$2 = esm.LoadDOM(em.dom); /* */ $s = 11; case 11: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+			_r$2;
+		/* } */ case 10:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.AttachManager }; } $f.$ptr = $ptr; $f._key = _key; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.em = em; $f.esm = esm; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.AttachManager = function(esm) { return this.$val.AttachManager(esm); };
+	EventManager.ptr.prototype.DetachManager = function(esm) {
+		var $ptr, _r, em, esm, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; em = $f.em; esm = $f.esm; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		_r = em.HasManager(esm); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		/* */ if (!_r) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (!_r) { */ case 1:
+			return;
+		/* } */ case 2:
+		$r = em.wo.Lock(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		delete em.attaches[ptrType$2.keyFor(esm)];
+		$r = em.wo.Unlock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.DetachManager }; } $f.$ptr = $ptr; $f._r = _r; $f.em = em; $f.esm = esm; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.DetachManager = function(esm) { return this.$val.DetachManager(esm); };
+	EventManager.ptr.prototype.HasManager = function(esm) {
+		var $ptr, _entry, em, esm, ok, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; em = $f.em; esm = $f.esm; ok = $f.ok; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		$r = em.wo.RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		ok = (_entry = em.attaches[ptrType$2.keyFor(esm)], _entry !== undefined ? _entry.v : false);
+		$r = em.wo.RUnlock(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		return ok;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.HasManager }; } $f.$ptr = $ptr; $f._entry = _entry; $f.em = em; $f.esm = esm; $f.ok = ok; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.HasManager = function(esm) { return this.$val.HasManager(esm); };
+	EventManager.ptr.prototype.RemoveEvent = function(event) {
+		var $ptr, _r, _r$1, _tuple, em, ev, event, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _tuple = $f._tuple; em = $f.em; ev = $f.ev; event = $f.event; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		_r = em.HasEvent(event); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		/* */ if (!_r) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (!_r) { */ case 1:
+			return;
+		/* } */ case 2:
+		_r$1 = em.GetEvent(event); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_tuple = _r$1; ev = _tuple[0];
+		ev.Offload();
+		$r = em.wo.Lock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		delete em.events[$String.keyFor(event)];
+		$r = em.wo.Unlock(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.RemoveEvent }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.em = em; $f.ev = ev; $f.event = event; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.RemoveEvent = function(event) { return this.$val.RemoveEvent(event); };
+	EventManager.ptr.prototype.AddEvent = function(eo) {
+		var $ptr, _key, _r, _r$1, em, eo, id, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _key = $f._key; _r = $f._r; _r$1 = $f._r$1; em = $f.em; eo = $f.eo; id = $f.id; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		_r = eo.ID(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		id = _r;
+		_r$1 = em.HasEvent(id); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		/* */ if (_r$1) { $s = 2; continue; }
+		/* */ $s = 3; continue;
+		/* if (_r$1) { */ case 2:
+			return false;
+		/* } */ case 3:
+		$r = em.ro.Lock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_key = id; (em.events || $throwRuntimeError("assignment to entry in nil map"))[$String.keyFor(_key)] = { k: _key, v: eo };
+		$r = em.ro.Unlock(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		return true;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.AddEvent }; } $f.$ptr = $ptr; $f._key = _key; $f._r = _r; $f._r$1 = _r$1; $f.em = em; $f.eo = eo; $f.id = id; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.AddEvent = function(eo) { return this.$val.AddEvent(eo); };
+	EventManager.ptr.prototype.AddEvents = function(ems) {
+		var $ptr, _i, _r, _ref, em, ems, eo, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; em = $f.em; ems = $f.ems; eo = $f.eo; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		_ref = ems;
+		_i = 0;
+		/* while (true) { */ case 1:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 2; continue; }
+			eo = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+			_r = em.AddEvent(eo); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_r;
+			_i++;
+		/* } */ $s = 1; continue; case 2:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.AddEvents }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.em = em; $f.ems = ems; $f.eo = eo; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.AddEvents = function(ems) { return this.$val.AddEvents(ems); };
+	EventManager.ptr.prototype.EachEvent = function(fx) {
+		var $ptr, _entry, _i, _keys, _ref, em, eo, fx, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _i = $f._i; _keys = $f._keys; _ref = $f._ref; em = $f.em; eo = $f.eo; fx = $f.fx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		$r = em.ro.Lock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_ref = em.events;
+		_i = 0;
+		_keys = $keys(_ref);
+		/* while (true) { */ case 2:
+			/* if (!(_i < _keys.length)) { break; } */ if(!(_i < _keys.length)) { $s = 3; continue; }
+			_entry = _ref[_keys[_i]];
+			if (_entry === undefined) {
+				_i++;
+				/* continue; */ $s = 2; continue;
+			}
+			eo = _entry.v;
+			$r = fx(eo); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_i++;
+		/* } */ $s = 2; continue; case 3:
+		$r = em.ro.Unlock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.EachEvent }; } $f.$ptr = $ptr; $f._entry = _entry; $f._i = _i; $f._keys = _keys; $f._ref = _ref; $f.em = em; $f.eo = eo; $f.fx = fx; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.EachEvent = function(fx) { return this.$val.EachEvent(fx); };
+	EventManager.ptr.prototype.EachManager = function(fx) {
+		var $ptr, _entry, _i, _keys, _ref, em, eo, fx, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _i = $f._i; _keys = $f._keys; _ref = $f._ref; em = $f.em; eo = $f.eo; fx = $f.fx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		$r = em.wo.Lock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_ref = em.attaches;
+		_i = 0;
+		_keys = $keys(_ref);
+		/* while (true) { */ case 2:
+			/* if (!(_i < _keys.length)) { break; } */ if(!(_i < _keys.length)) { $s = 3; continue; }
+			_entry = _ref[_keys[_i]];
+			if (_entry === undefined) {
+				_i++;
+				/* continue; */ $s = 2; continue;
+			}
+			eo = _entry.k;
+			$r = fx(eo); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_i++;
+		/* } */ $s = 2; continue; case 3:
+		$r = em.wo.Unlock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.EachManager }; } $f.$ptr = $ptr; $f._entry = _entry; $f._i = _i; $f._keys = _keys; $f._ref = _ref; $f.em = em; $f.eo = eo; $f.fx = fx; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.EachManager = function(fx) { return this.$val.EachManager(fx); };
+	EventManager.ptr.prototype.DisconnectRemoved = function() {
+		var $ptr, em, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; em = $f.em; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = [em];
+		em[0] = this;
+		$r = em[0].EachEvent((function(em) { return function $b(es) {
+			var $ptr, _r, es, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; es = $f.es; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			/* */ if (es.EventMeta.Removed) { $s = 1; continue; }
+			/* */ $s = 2; continue;
+			/* if (es.EventMeta.Removed) { */ case 1:
+				_r = GetEventID(es); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+				$r = em[0].RemoveEvent(_r); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* } */ case 2:
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r = _r; $f.es = es; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(em)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.DisconnectRemoved }; } $f.$ptr = $ptr; $f.em = em; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.DisconnectRemoved = function() { return this.$val.DisconnectRemoved(); };
+	EventManager.ptr.prototype.OffloadDOM = function() {
+		var $ptr, em, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; em = $f.em; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		em = this;
+		if (em.dom === null) {
+			return;
+		}
+		$r = em.EachEvent((function(es) {
+			var $ptr, es;
+			es.Offload();
+		})); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		em.dom = null;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.OffloadDOM }; } $f.$ptr = $ptr; $f.em = em; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.OffloadDOM = function() { return this.$val.OffloadDOM(); };
+	EventManager.ptr.prototype.LoadDOM = function(dom) {
+		var $ptr, dom, em, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; dom = $f.dom; em = $f.em; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		dom = [dom];
+		em = this;
+		if (!(em.dom === null)) {
+			return false;
+		}
+		em.dom = dom[0];
+		$r = em.EachEvent((function(dom) { return function(es) {
+			var $ptr, es;
+			if (!es.EventMeta.Removed) {
+				es.DOM(dom[0]);
+			}
+		}; })(dom)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = em.EachManager((function(dom) { return function $b(ems) {
+			var $ptr, _r, ems, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; ems = $f.ems; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			_r = ems.LoadDOM(dom[0]); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_r;
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r = _r; $f.ems = ems; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(dom)); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		return true;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.LoadDOM }; } $f.$ptr = $ptr; $f.dom = dom; $f.em = em; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	EventManager.prototype.LoadDOM = function(dom) { return this.$val.LoadDOM(dom); };
+	GetEventID = function(m) {
+		var $ptr, _r, _r$1, m, sel, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; m = $f.m; sel = $f.sel; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = strings.TrimSpace(m.EventSelector()); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		sel = _r;
+		_r$1 = BuildEventID(sel, m.EventType()); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		return _r$1;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: GetEventID }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.m = m; $f.sel = sel; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.GetEventID = GetEventID;
+	BuildEventID = function(etype, eselect) {
+		var $ptr, _r, eselect, etype, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; eselect = $f.eselect; etype = $f.etype; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = fmt.Sprintf("%s#%s", new sliceType$1([new $String(eselect), new $String(etype)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		return _r;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BuildEventID }; } $f.$ptr = $ptr; $f._r = _r; $f.eselect = eselect; $f.etype = etype; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.BuildEventID = BuildEventID;
+	ptrType$3.methods = [{prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([NextHandler], [FlatChains], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([Event], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}];
+	ptrType$6.methods = [{prop: "Core", name: "Core", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "Bubbles", name: "Bubbles", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Cancelable", name: "Cancelable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "CurrentTarget", name: "CurrentTarget", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "DefaultPrevented", name: "DefaultPrevented", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "EventPhase", name: "EventPhase", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Target", name: "Target", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "Timestamp", name: "Timestamp", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Type", name: "Type", pkg: "", typ: $funcType([], [$String], false)}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $funcType([], [], false)}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $funcType([], [], false)}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $funcType([], [], false)}];
+	ptrType$1.methods = [{prop: "DOM", name: "DOM", pkg: "", typ: $funcType([ptrType$5], [], false)}, {prop: "Offload", name: "Offload", pkg: "", typ: $funcType([], [], false)}, {prop: "Trigger", name: "Trigger", pkg: "", typ: $funcType([Event], [], false)}, {prop: "TriggerMatch", name: "TriggerMatch", pkg: "", typ: $funcType([Event], [], false)}, {prop: "EventSelector", name: "EventSelector", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "EventType", name: "EventType", pkg: "", typ: $funcType([], [$String], false)}];
+	ptrType$2.methods = [{prop: "HasEvent", name: "HasEvent", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "GetEvent", name: "GetEvent", pkg: "", typ: $funcType([$String], [ptrType$1, $error], false)}, {prop: "NewEventMeta", name: "NewEventMeta", pkg: "", typ: $funcType([ptrType], [ptrType$1, $Bool], false)}, {prop: "NewEvent", name: "NewEvent", pkg: "", typ: $funcType([$String, $String], [ptrType$1, $Bool], false)}, {prop: "AttachManager", name: "AttachManager", pkg: "", typ: $funcType([ptrType$2], [], false)}, {prop: "DetachManager", name: "DetachManager", pkg: "", typ: $funcType([ptrType$2], [], false)}, {prop: "HasManager", name: "HasManager", pkg: "", typ: $funcType([ptrType$2], [$Bool], false)}, {prop: "RemoveEvent", name: "RemoveEvent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "AddEvent", name: "AddEvent", pkg: "", typ: $funcType([ptrType$1], [$Bool], false)}, {prop: "AddEvents", name: "AddEvents", pkg: "", typ: $funcType([sliceType$2], [], true)}, {prop: "EachEvent", name: "EachEvent", pkg: "", typ: $funcType([funcType$1], [], false)}, {prop: "EachManager", name: "EachManager", pkg: "", typ: $funcType([funcType$2], [], false)}, {prop: "DisconnectRemoved", name: "DisconnectRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "OffloadDOM", name: "OffloadDOM", pkg: "", typ: $funcType([], [], false)}, {prop: "LoadDOM", name: "LoadDOM", pkg: "", typ: $funcType([ptrType$5], [$Bool], false)}];
+	NextHandler.init([Event], [], false);
+	FlatHandler.init([Event, NextHandler], [], false);
+	FlatChains.init([{prop: "Bind", name: "Bind", pkg: "", typ: $funcType([NextHandler], [FlatChains], false)}, {prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([Event], [], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}]);
+	FlatChain.init([{prop: "op", name: "op", pkg: "github.com/influx6/haiku/events", typ: FlatHandler, tag: ""}, {prop: "prev", name: "prev", pkg: "github.com/influx6/haiku/events", typ: FlatChains, tag: ""}, {prop: "next", name: "next", pkg: "github.com/influx6/haiku/events", typ: FlatChains, tag: ""}]);
+	JSEventMux.init([ptrType$5], [], false);
+	Event.init([{prop: "Bubbles", name: "Bubbles", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Cancelable", name: "Cancelable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Core", name: "Core", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "CurrentTarget", name: "CurrentTarget", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "DefaultPrevented", name: "DefaultPrevented", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "EventPhase", name: "EventPhase", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $funcType([], [], false)}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $funcType([], [], false)}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $funcType([], [], false)}, {prop: "Target", name: "Target", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "Timestamp", name: "Timestamp", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Type", name: "Type", pkg: "", typ: $funcType([], [$String], false)}]);
+	EventObject.init([{prop: "Object", name: "", pkg: "", typ: ptrType$5, tag: ""}]);
+	EventMeta.init([{prop: "Type", name: "Type", pkg: "", typ: $String, tag: ""}, {prop: "Target", name: "Target", pkg: "", typ: $String, tag: ""}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $Bool, tag: ""}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $Bool, tag: ""}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $Bool, tag: ""}, {prop: "Removed", name: "Removed", pkg: "", typ: $Bool, tag: ""}]);
+	EventSub.init([{prop: "EventMeta", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "FlatChains", name: "", pkg: "", typ: FlatChains, tag: ""}, {prop: "jslink", name: "jslink", pkg: "github.com/influx6/haiku/events", typ: JSEventMux, tag: ""}, {prop: "dom", name: "dom", pkg: "github.com/influx6/haiku/events", typ: ptrType$5, tag: ""}]);
+	EventManager.init([{prop: "events", name: "events", pkg: "github.com/influx6/haiku/events", typ: mapType, tag: ""}, {prop: "attaches", name: "attaches", pkg: "github.com/influx6/haiku/events", typ: mapType$1, tag: ""}, {prop: "ro", name: "ro", pkg: "github.com/influx6/haiku/events", typ: sync.RWMutex, tag: ""}, {prop: "wo", name: "wo", pkg: "github.com/influx6/haiku/events", typ: sync.RWMutex, tag: ""}, {prop: "dom", name: "dom", pkg: "github.com/influx6/haiku/events", typ: ptrType$5, tag: ""}]);
+	$init = function() {
+		$pkg.$init = function() {};
+		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = fmt.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = js.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = jsutils.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = strings.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = sync.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$pkg.ErrEventNotFound = errors.New("Event not found");
+		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.$init = $init;
+	return $pkg;
+})();
 $packages["github.com/go-humble/detect"] = (function() {
 	var $pkg = {}, $init, js, IsBrowser, IsServer, IsJavascript;
 	js = $packages["github.com/gopherjs/gopherjs/js"];
@@ -25440,7 +26326,7 @@ $packages["encoding/json"] = (function() {
 	return $pkg;
 })();
 $packages["log"] = (function() {
-	var $pkg = {}, $init, fmt, nosync, io, os, runtime, time, Logger, sliceType, arrayType, ptrType, sliceType$1, ptrType$1, std, New, itoa;
+	var $pkg = {}, $init, fmt, nosync, io, os, runtime, time, Logger, sliceType, arrayType, ptrType, sliceType$1, ptrType$1, std, New, itoa, Printf;
 	fmt = $packages["fmt"];
 	nosync = $packages["github.com/gopherjs/gopherjs/nosync"];
 	io = $packages["io"];
@@ -25737,6 +26623,16 @@ $packages["log"] = (function() {
 		/* */ } catch(err) { $err = err; } finally { $callDeferred($deferred, $err); }
 	};
 	Logger.prototype.SetPrefix = function(prefix) { return this.$val.SetPrefix(prefix); };
+	Printf = function(format, v) {
+		var $ptr, _arg, _r, _r$1, format, v, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _r = $f._r; _r$1 = $f._r$1; format = $f.format; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = fmt.Sprintf(format, v); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_arg = _r;
+		_r$1 = std.Output(2, _arg); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r$1;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Printf }; } $f.$ptr = $ptr; $f._arg = _arg; $f._r = _r; $f._r$1 = _r$1; $f.format = format; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.Printf = Printf;
 	ptrType$1.methods = [{prop: "SetOutput", name: "SetOutput", pkg: "", typ: $funcType([io.Writer], [], false)}, {prop: "formatHeader", name: "formatHeader", pkg: "log", typ: $funcType([ptrType, time.Time, $String, $Int], [], false)}, {prop: "Output", name: "Output", pkg: "", typ: $funcType([$Int, $String], [$error], false)}, {prop: "Printf", name: "Printf", pkg: "", typ: $funcType([$String, sliceType$1], [], true)}, {prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$1], [], true)}, {prop: "Println", name: "Println", pkg: "", typ: $funcType([sliceType$1], [], true)}, {prop: "Fatal", name: "Fatal", pkg: "", typ: $funcType([sliceType$1], [], true)}, {prop: "Fatalf", name: "Fatalf", pkg: "", typ: $funcType([$String, sliceType$1], [], true)}, {prop: "Fatalln", name: "Fatalln", pkg: "", typ: $funcType([sliceType$1], [], true)}, {prop: "Panic", name: "Panic", pkg: "", typ: $funcType([sliceType$1], [], true)}, {prop: "Panicf", name: "Panicf", pkg: "", typ: $funcType([$String, sliceType$1], [], true)}, {prop: "Panicln", name: "Panicln", pkg: "", typ: $funcType([sliceType$1], [], true)}, {prop: "Flags", name: "Flags", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetFlags", name: "SetFlags", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Prefix", name: "Prefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetPrefix", name: "SetPrefix", pkg: "", typ: $funcType([$String], [], false)}];
 	Logger.init([{prop: "mu", name: "mu", pkg: "log", typ: nosync.Mutex, tag: ""}, {prop: "prefix", name: "prefix", pkg: "log", typ: $String, tag: ""}, {prop: "flag", name: "flag", pkg: "log", typ: $Int, tag: ""}, {prop: "out", name: "out", pkg: "log", typ: io.Writer, tag: ""}, {prop: "buf", name: "buf", pkg: "log", typ: sliceType, tag: ""}]);
 	$init = function() {
@@ -31972,11 +32868,12 @@ $packages["github.com/influx6/flux"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/trees"] = (function() {
-	var $pkg = {}, $init, errors, fmt, detect, flux, strings, AttrPrinter, AttrWriter, StylePrinter, StyleWriter, ElementWriter, MarkupWriter, markupWriter, Mutation, Markup, Mutable, Element, Style, Attribute, Appliable, sliceType, sliceType$1, ptrType, sliceType$2, ptrType$1, ptrType$2, sliceType$3, sliceType$4, ptrType$3, ptrType$4, ptrType$5, ptrType$6, ptrType$7, NewElementWriter, NewMarkupWriter, NewMutable, NewText, NewElement, EqualAttributes, GetStyle, GetAttr;
+	var $pkg = {}, $init, errors, fmt, detect, flux, events, strings, AttrPrinter, AttrWriter, StylePrinter, StyleWriter, ElementWriter, MarkupWriter, markupWriter, Mutation, Markup, Mutable, Element, Style, Attribute, Event, Appliable, sliceType, sliceType$1, ptrType, sliceType$2, ptrType$1, ptrType$2, sliceType$3, ptrType$3, sliceType$4, sliceType$5, ptrType$4, ptrType$5, ptrType$6, ptrType$7, ptrType$8, ptrType$9, ptrType$10, ptrType$11, NewElementWriter, NewMarkupWriter, NewMutable, NewText, NewElement, NewEvent, ReconcileEvents, EqualAttributes, GetStyle, GetAttr;
 	errors = $packages["errors"];
 	fmt = $packages["fmt"];
 	detect = $packages["github.com/go-humble/detect"];
 	flux = $packages["github.com/influx6/flux"];
+	events = $packages["github.com/influx6/haiku/events"];
 	strings = $packages["strings"];
 	AttrPrinter = $pkg.AttrPrinter = $newType(8, $kindInterface, "trees.AttrPrinter", "AttrPrinter", "github.com/influx6/haiku/trees", null);
 	AttrWriter = $pkg.AttrWriter = $newType(0, $kindStruct, "trees.AttrWriter", "AttrWriter", "github.com/influx6/haiku/trees", function() {
@@ -32008,7 +32905,7 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	markupWriter = $pkg.markupWriter = $newType(0, $kindStruct, "trees.markupWriter", "markupWriter", "github.com/influx6/haiku/trees", function(ElementWriter_) {
 		this.$val = this;
 		if (arguments.length === 0) {
-			this.ElementWriter = ptrType$5.nil;
+			this.ElementWriter = ptrType$9.nil;
 			return;
 		}
 		this.ElementWriter = ElementWriter_;
@@ -32027,31 +32924,37 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		this.hash = hash_;
 		this.removed = removed_;
 	});
-	Element = $pkg.Element = $newType(0, $kindStruct, "trees.Element", "Element", "github.com/influx6/haiku/trees", function(Mutation_, tagname_, styles_, attrs_, children_, textContent_, autoclose_, allowChildren_, allowStyles_, allowAttributes_) {
+	Element = $pkg.Element = $newType(0, $kindStruct, "trees.Element", "Element", "github.com/influx6/haiku/trees", function(Mutation_, tagname_, events_, styles_, attrs_, children_, textContent_, autoclose_, allowEvents_, allowChildren_, allowStyles_, allowAttributes_, eventManager_) {
 		this.$val = this;
 		if (arguments.length === 0) {
 			this.Mutation = $ifaceNil;
 			this.tagname = "";
-			this.styles = sliceType$3.nil;
+			this.events = sliceType$3.nil;
+			this.styles = sliceType$4.nil;
 			this.attrs = sliceType$2.nil;
-			this.children = sliceType$4.nil;
+			this.children = sliceType$5.nil;
 			this.textContent = "";
 			this.autoclose = false;
+			this.allowEvents = false;
 			this.allowChildren = false;
 			this.allowStyles = false;
 			this.allowAttributes = false;
+			this.eventManager = ptrType$4.nil;
 			return;
 		}
 		this.Mutation = Mutation_;
 		this.tagname = tagname_;
+		this.events = events_;
 		this.styles = styles_;
 		this.attrs = attrs_;
 		this.children = children_;
 		this.textContent = textContent_;
 		this.autoclose = autoclose_;
+		this.allowEvents = allowEvents_;
 		this.allowChildren = allowChildren_;
 		this.allowStyles = allowStyles_;
 		this.allowAttributes = allowAttributes_;
+		this.eventManager = eventManager_;
 	});
 	Style = $pkg.Style = $newType(0, $kindStruct, "trees.Style", "Style", "github.com/influx6/haiku/trees", function(Name_, Value_) {
 		this.$val = this;
@@ -32073,20 +32976,35 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		this.Name = Name_;
 		this.Value = Value_;
 	});
+	Event = $pkg.Event = $newType(0, $kindStruct, "trees.Event", "Event", "github.com/influx6/haiku/trees", function(Meta_, Fx_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.Meta = ptrType$6.nil;
+			this.Fx = $throwNilPointerError;
+			return;
+		}
+		this.Meta = Meta_;
+		this.Fx = Fx_;
+	});
 	Appliable = $pkg.Appliable = $newType(8, $kindInterface, "trees.Appliable", "Appliable", "github.com/influx6/haiku/trees", null);
 	sliceType = $sliceType($String);
 	sliceType$1 = $sliceType($emptyInterface);
 	ptrType = $ptrType(Attribute);
 	sliceType$2 = $sliceType(ptrType);
 	ptrType$1 = $ptrType(Element);
-	ptrType$2 = $ptrType(Style);
+	ptrType$2 = $ptrType(Event);
 	sliceType$3 = $sliceType(ptrType$2);
-	sliceType$4 = $sliceType(Markup);
-	ptrType$3 = $ptrType(AttrWriter);
-	ptrType$4 = $ptrType(StyleWriter);
-	ptrType$5 = $ptrType(ElementWriter);
-	ptrType$6 = $ptrType(markupWriter);
-	ptrType$7 = $ptrType(Mutable);
+	ptrType$3 = $ptrType(Style);
+	sliceType$4 = $sliceType(ptrType$3);
+	sliceType$5 = $sliceType(Markup);
+	ptrType$4 = $ptrType(events.EventManager);
+	ptrType$5 = $ptrType(events.EventSub);
+	ptrType$6 = $ptrType(events.EventMeta);
+	ptrType$7 = $ptrType(AttrWriter);
+	ptrType$8 = $ptrType(StyleWriter);
+	ptrType$9 = $ptrType(ElementWriter);
+	ptrType$10 = $ptrType(markupWriter);
+	ptrType$11 = $ptrType(Mutable);
 	AttrWriter.ptr.prototype.Print = function(a) {
 		var $ptr, _i, _r, _ref, a, ar, attrs, m, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; a = $f.a; ar = $f.ar; attrs = $f.attrs; m = $f.m; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -32295,6 +33213,7 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		em.allowChildren = false;
 		em.allowAttributes = false;
 		em.allowStyles = false;
+		em.allowEvents = false;
 		em.textContent = txt;
 		return em;
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: NewText }; } $f.$ptr = $ptr; $f._r = _r; $f.em = em; $f.txt = txt; $f.$s = $s; $f.$r = $r; return $f;
@@ -32305,10 +33224,63 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; hasNoEndingTag = $f.hasNoEndingTag; tag = $f.tag; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = NewMutable(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r$1 = strings.TrimSpace(tag); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		return new Element.ptr(_r, _r$1, $makeSlice(sliceType$3, 0), $makeSlice(sliceType$2, 0), $makeSlice(sliceType$4, 0), "", hasNoEndingTag, true, true, true);
+		return new Element.ptr(_r, _r$1, sliceType$3.nil, $makeSlice(sliceType$4, 0), $makeSlice(sliceType$2, 0), $makeSlice(sliceType$5, 0), "", hasNoEndingTag, false, true, true, true, ptrType$4.nil);
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: NewElement }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.hasNoEndingTag = hasNoEndingTag; $f.tag = tag; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.NewElement = NewElement;
+	Element.ptr.prototype.UseEventManager = function(man) {
+		var $ptr, e, man, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; e = $f.e; man = $f.man; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		e = this;
+		if (!(e.eventManager === ptrType$4.nil)) {
+			return false;
+		}
+		e.eventManager = man;
+		$r = e.LoadEvents(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		return true;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Element.ptr.prototype.UseEventManager }; } $f.$ptr = $ptr; $f.e = e; $f.man = man; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	Element.prototype.UseEventManager = function(man) { return this.$val.UseEventManager(man); };
+	Element.ptr.prototype.LoadEvents = function() {
+		var $ptr, _i, _i$1, _r, _r$1, _r$2, _ref, _ref$1, _tuple, e, ech, es, ev, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _i$1 = $f._i$1; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _ref = $f._ref; _ref$1 = $f._ref$1; _tuple = $f._tuple; e = $f.e; ech = $f.ech; es = $f.es; ev = $f.ev; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		e = this;
+		/* */ if (!(e.eventManager === ptrType$4.nil)) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (!(e.eventManager === ptrType$4.nil)) { */ case 1:
+			$r = e.eventManager.DisconnectRemoved(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_ref = e.events;
+			_i = 0;
+			/* while (true) { */ case 4:
+				/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 5; continue; }
+				ev = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+				_r = e.eventManager.NewEventMeta(ev.Meta); /* */ $s = 6; case 6: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+				_tuple = _r; es = _tuple[0];
+				/* */ if (!(es === ptrType$5.nil)) { $s = 7; continue; }
+				/* */ $s = 8; continue;
+				/* if (!(es === ptrType$5.nil)) { */ case 7:
+					_r$1 = es.FlatChains.Bind(ev.Fx); /* */ $s = 9; case 9: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+					_r$1;
+				/* } */ case 8:
+				_i++;
+			/* } */ $s = 4; continue; case 5:
+		/* } */ case 2:
+		_ref$1 = e.children;
+		_i$1 = 0;
+		/* while (true) { */ case 10:
+			/* if (!(_i$1 < _ref$1.$length)) { break; } */ if(!(_i$1 < _ref$1.$length)) { $s = 11; continue; }
+			ech = ((_i$1 < 0 || _i$1 >= _ref$1.$length) ? $throwRuntimeError("index out of range") : _ref$1.$array[_ref$1.$offset + _i$1]);
+			_r$2 = ech.UseEventManager(e.eventManager); /* */ $s = 14; case 14: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+			/* */ if (!_r$2) { $s = 12; continue; }
+			/* */ $s = 13; continue;
+			/* if (!_r$2) { */ case 12:
+				$r = ech.LoadEvents(); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* } */ case 13:
+			_i$1++;
+		/* } */ $s = 10; continue; case 11:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Element.ptr.prototype.LoadEvents }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tuple = _tuple; $f.e = e; $f.ech = ech; $f.es = es; $f.ev = ev; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	Element.prototype.LoadEvents = function() { return this.$val.LoadEvents(); };
 	Element.ptr.prototype.Remove = function() {
 		var $ptr, _r, e, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -32423,8 +33395,8 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	};
 	Style.prototype.Reconcile = function(m) { return this.$val.Reconcile(m); };
 	Element.ptr.prototype.Reconcile = function(em) {
-		var $ptr, _i, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _ref, _v, childChanged, e, em, maxSize, n, nch, newChildren, och, oldChildren, oldHash, oldMaxSize, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _ref = $f._ref; _v = $f._v; childChanged = $f.childChanged; e = $f.e; em = $f.em; maxSize = $f.maxSize; n = $f.n; nch = $f.nch; newChildren = $f.newChildren; och = $f.och; oldChildren = $f.oldChildren; oldHash = $f.oldHash; oldMaxSize = $f.oldMaxSize; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _i, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _ref, _v, childChanged, e, em, maxSize, n, nch, newChildren, och, oldChildren, oldHash, oldMaxSize, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _ref = $f._ref; _v = $f._v; childChanged = $f.childChanged; e = $f.e; em = $f.em; maxSize = $f.maxSize; n = $f.n; nch = $f.nch; newChildren = $f.newChildren; och = $f.och; oldChildren = $f.oldChildren; oldHash = $f.oldHash; oldMaxSize = $f.oldMaxSize; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
 		_r = em.Name(); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		/* */ if (!(e.Name() === _r)) { $s = 1; continue; }
@@ -32432,84 +33404,107 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		/* if (!(e.Name() === _r)) { */ case 1:
 			return false;
 		/* } */ case 2:
-		_r$1 = em.UID(); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		$r = e.Mutation.swapUID(_r$1); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_r$2 = em.Hash(); /* */ $s = 6; case 6: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		$r = em.CleanRemoved(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$1 = em.UID(); /* */ $s = 5; case 5: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		$r = e.Mutation.swapUID(_r$1); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$2 = em.Hash(); /* */ $s = 7; case 7: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		oldHash = _r$2;
-		/* */ if (e.Name() === "text") { $s = 7; continue; }
-		/* */ $s = 8; continue;
-		/* if (e.Name() === "text") { */ case 7:
-			_r$3 = em.TextContent(); /* */ $s = 11; case 11: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-			/* */ if (e.TextContent() === _r$3) { $s = 9; continue; }
-			/* */ $s = 10; continue;
-			/* if (e.TextContent() === _r$3) { */ case 9:
-				$r = e.Mutation.swapHash(oldHash); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ if (e.Name() === "text") { $s = 8; continue; }
+		/* */ $s = 9; continue;
+		/* if (e.Name() === "text") { */ case 8:
+			_r$3 = em.TextContent(); /* */ $s = 12; case 12: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+			/* */ if (e.TextContent() === _r$3) { $s = 10; continue; }
+			/* */ $s = 11; continue;
+			/* if (e.TextContent() === _r$3) { */ case 10:
+				$r = e.Mutation.swapHash(oldHash); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 				return false;
-			/* } */ case 10:
+			/* } */ case 11:
 			return true;
-		/* } */ case 8:
+		/* } */ case 9:
 		newChildren = e.Children();
-		_r$4 = em.Children(); /* */ $s = 13; case 13: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$4 = em.Children(); /* */ $s = 14; case 14: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		oldChildren = _r$4;
 		maxSize = newChildren.$length;
 		oldMaxSize = oldChildren.$length;
-		/* */ if (maxSize <= 0) { $s = 14; continue; }
-		/* */ $s = 15; continue;
-		/* if (maxSize <= 0) { */ case 14:
-			/* */ if (oldMaxSize <= 0) { $s = 16; continue; }
-			/* */ $s = 17; continue;
-			/* if (oldMaxSize <= 0) { */ case 16:
-				$r = e.Mutation.swapHash(oldHash); /* */ $s = 18; case 18: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = ReconcileEvents(e, em); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ if (!(e.eventManager === ptrType$4.nil)) { $s = 16; continue; }
+		/* */ $s = 17; continue;
+		/* if (!(e.eventManager === ptrType$4.nil)) { */ case 16:
+			$r = e.eventManager.DisconnectRemoved(); /* */ $s = 18; case 18: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* } */ case 17:
+		/* */ if (maxSize <= 0) { $s = 19; continue; }
+		/* */ $s = 20; continue;
+		/* if (maxSize <= 0) { */ case 19:
+			/* */ if (oldMaxSize <= 0) { $s = 21; continue; }
+			/* */ $s = 22; continue;
+			/* if (oldMaxSize <= 0) { */ case 21:
+				$r = e.Mutation.swapHash(oldHash); /* */ $s = 23; case 23: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 				return false;
-			/* } */ case 17:
+			/* } */ case 22:
 			return true;
-		/* } */ case 15:
+		/* } */ case 20:
 		childChanged = false;
 		_ref = oldChildren;
 		_i = 0;
-		/* while (true) { */ case 19:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 20; continue; }
+		/* while (true) { */ case 24:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 25; continue; }
 			n = _i;
 			och = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			/* */ if (maxSize > n) { $s = 21; continue; }
-			/* */ $s = 22; continue;
-			/* if (maxSize > n) { */ case 21:
+			/* */ if (maxSize > n) { $s = 26; continue; }
+			/* */ $s = 27; continue;
+			/* if (maxSize > n) { */ case 26:
 				nch = ((n < 0 || n >= newChildren.$length) ? $throwRuntimeError("index out of range") : newChildren.$array[newChildren.$offset + n]);
-				_r$5 = nch.Reconcile(och); /* */ $s = 25; case 25: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-				/* */ if (_r$5) { $s = 23; continue; }
-				/* */ $s = 24; continue;
-				/* if (_r$5) { */ case 23:
-					childChanged = true;
-				/* } */ case 24:
+				_r$5 = nch.Name(); /* */ $s = 31; case 31: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+				_r$6 = och.Name(); /* */ $s = 32; case 32: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+				/* */ if (_r$5 === _r$6) { $s = 28; continue; }
+				/* */ $s = 29; continue;
+				/* if (_r$5 === _r$6) { */ case 28:
+					_r$7 = nch.Reconcile(och); /* */ $s = 35; case 35: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+					/* */ if (_r$7) { $s = 33; continue; }
+					/* */ $s = 34; continue;
+					/* if (_r$7) { */ case 33:
+						childChanged = true;
+					/* } */ case 34:
+					$s = 30; continue;
+				/* } else { */ case 29:
+					$r = och.Remove(); /* */ $s = 36; case 36: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+					$r = e.AddChild(och); /* */ $s = 37; case 37: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				/* } */ case 30:
 				_i++;
-				/* continue; */ $s = 19; continue;
-			/* } */ case 22:
-			$r = och.Remove(); /* */ $s = 26; case 26: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			e.AddChild(och);
+				/* continue; */ $s = 24; continue;
+			/* } */ case 27:
+			$r = och.Remove(); /* */ $s = 38; case 38: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = e.AddChild(och); /* */ $s = 39; case 39: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			_i++;
-		/* } */ $s = 19; continue; case 20:
+		/* } */ $s = 24; continue; case 25:
 		if (maxSize > oldMaxSize) {
 			return true;
 		}
-		if (!(!childChanged)) { _v = false; $s = 29; continue s; }
-		_r$6 = EqualAttributes(e, em); /* */ $s = 30; case 30: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-		_v = _r$6; case 29:
-		/* */ if (_v) { $s = 27; continue; }
-		/* */ $s = 28; continue;
-		/* if (_v) { */ case 27:
-			$r = e.Mutation.swapHash(oldHash); /* */ $s = 31; case 31: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		if (!(!childChanged)) { _v = false; $s = 42; continue s; }
+		_r$8 = EqualAttributes(e, em); /* */ $s = 43; case 43: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+		_v = _r$8; case 42:
+		/* */ if (_v) { $s = 40; continue; }
+		/* */ $s = 41; continue;
+		/* if (_v) { */ case 40:
+			$r = e.Mutation.swapHash(oldHash); /* */ $s = 44; case 44: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			return false;
-		/* } */ case 28:
+		/* } */ case 41:
 		return true;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Element.ptr.prototype.Reconcile }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._v = _v; $f.childChanged = childChanged; $f.e = e; $f.em = em; $f.maxSize = maxSize; $f.n = n; $f.nch = nch; $f.newChildren = newChildren; $f.och = och; $f.oldChildren = oldChildren; $f.oldHash = oldHash; $f.oldMaxSize = oldMaxSize; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Element.ptr.prototype.Reconcile }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._ref = _ref; $f._v = _v; $f.childChanged = childChanged; $f.e = e; $f.em = em; $f.maxSize = maxSize; $f.n = n; $f.nch = nch; $f.newChildren = newChildren; $f.och = och; $f.oldChildren = oldChildren; $f.oldHash = oldHash; $f.oldMaxSize = oldMaxSize; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Element.prototype.Reconcile = function(em) { return this.$val.Reconcile(em); };
 	Element.ptr.prototype.AddChild = function(em) {
-		var $ptr, e, em;
+		var $ptr, _r, e, em, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; e = $f.e; em = $f.em; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
-		if (e.allowChildren) {
+		/* */ if (e.allowChildren) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (e.allowChildren) { */ case 1:
 			e.children = $append(e.children, em);
-		}
+			_r = em.UseEventManager(e.eventManager); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_r;
+		/* } */ case 2:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Element.ptr.prototype.AddChild }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.em = em; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Element.prototype.AddChild = function(em) { return this.$val.AddChild(em); };
 	Element.ptr.prototype.Children = function() {
@@ -32530,12 +33525,48 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		return e.attrs;
 	};
 	Element.prototype.Attributes = function() { return this.$val.Attributes(); };
-	Element.ptr.prototype.Apply = function(em) {
-		var $ptr, e, em;
+	NewEvent = function(etype, eselector, efx) {
+		var $ptr, efx, eselector, etype;
+		return new Event.ptr(new events.EventMeta.ptr(etype, eselector, false, false, false, false), efx);
+	};
+	$pkg.NewEvent = NewEvent;
+	Event.ptr.prototype.StopImmediatePropagation = function() {
+		var $ptr, e;
 		e = this;
-		if (em.allowChildren) {
-			em.AddChild(e);
-		}
+		e.Meta.StopImmediatePropagation = true;
+		return e;
+	};
+	Event.prototype.StopImmediatePropagation = function() { return this.$val.StopImmediatePropagation(); };
+	Event.ptr.prototype.StopPropagation = function() {
+		var $ptr, e;
+		e = this;
+		e.Meta.StopPropagation = true;
+		return e;
+	};
+	Event.prototype.StopPropagation = function() { return this.$val.StopPropagation(); };
+	Event.ptr.prototype.PreventDefault = function() {
+		var $ptr, e;
+		e = this;
+		e.Meta.PreventDefault = true;
+		return e;
+	};
+	Event.prototype.PreventDefault = function() { return this.$val.PreventDefault(); };
+	Element.ptr.prototype.Events = function() {
+		var $ptr, e;
+		e = this;
+		return e.events;
+	};
+	Element.prototype.Events = function() { return this.$val.Events(); };
+	Element.ptr.prototype.Apply = function(em) {
+		var $ptr, e, em, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; e = $f.e; em = $f.em; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		e = this;
+		/* */ if (em.allowChildren) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (em.allowChildren) { */ case 1:
+			$r = em.AddChild(e); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* } */ case 2:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Element.ptr.prototype.Apply }; } $f.$ptr = $ptr; $f.e = e; $f.em = em; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Element.prototype.Apply = function(em) { return this.$val.Apply(em); };
 	Attribute.ptr.prototype.Apply = function(e) {
@@ -32554,6 +33585,34 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		}
 	};
 	Style.prototype.Apply = function(e) { return this.$val.Apply(e); };
+	Event.ptr.prototype.Apply = function(em) {
+		var $ptr, _arg, _arg$1, _r, _r$1, _r$2, e, em, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; e = $f.e; em = $f.em; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		e = this;
+		/* */ if (em.allowEvents) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (em.allowEvents) { */ case 1:
+			/* */ if (e.Meta.Target === "") { $s = 3; continue; }
+			/* */ $s = 4; continue;
+			/* if (e.Meta.Target === "") { */ case 3:
+				_r = strings.ToLower(em.Name()); /* */ $s = 5; case 5: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+				_arg = new $String(_r);
+				_r$1 = em.Mutation.UID(); /* */ $s = 6; case 6: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+				_arg$1 = new $String(_r$1);
+				_r$2 = fmt.Sprintf("%s[uid='%s']", new sliceType$1([_arg, _arg$1])); /* */ $s = 7; case 7: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+				e.Meta.Target = _r$2;
+			/* } */ case 4:
+			em.events = $append(em.events, e);
+		/* } */ case 2:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Event.ptr.prototype.Apply }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.e = e; $f.em = em; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	Event.prototype.Apply = function(em) { return this.$val.Apply(em); };
+	Event.ptr.prototype.Clone = function() {
+		var $ptr, e;
+		e = this;
+		return new Event.ptr(new events.EventMeta.ptr(e.Meta.Type, e.Meta.Target, false, false, false, false), e.Fx);
+	};
+	Event.prototype.Clone = function() { return this.$val.Clone(); };
 	Style.ptr.prototype.Clone = function() {
 		var $ptr, s;
 		s = this;
@@ -32567,14 +33626,16 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	};
 	Attribute.prototype.Clone = function() { return this.$val.Clone(); };
 	Element.ptr.prototype.Clone = function() {
-		var $ptr, _i, _i$1, _i$2, _r, _r$1, _r$2, _r$3, _ref, _ref$1, _ref$2, ao, ch, co, e, so, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _i$1 = $f._i$1; _i$2 = $f._i$2; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; ao = $f.ao; ch = $f.ch; co = $f.co; e = $f.e; so = $f.so; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _i, _i$1, _i$2, _i$3, _r, _r$1, _r$2, _r$3, _ref, _ref$1, _ref$2, _ref$3, ao, ch, ch$1, co, e, so, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _i$1 = $f._i$1; _i$2 = $f._i$2; _i$3 = $f._i$3; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; _ref$3 = $f._ref$3; ao = $f.ao; ch = $f.ch; ch$1 = $f.ch$1; co = $f.co; e = $f.e; so = $f.so; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
 		_r = NewElement(e.Name(), e.AutoClosed()); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		co = _r;
 		co.textContent = e.textContent;
 		co.allowChildren = e.allowChildren;
+		co.allowEvents = e.allowEvents;
 		co.allowAttributes = e.allowAttributes;
+		co.eventManager = e.eventManager;
 		_r$1 = e.Mutation.Removed(); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		/* */ if (_r$1) { $s = 2; continue; }
 		/* */ $s = 3; continue;
@@ -32608,10 +33669,53 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 			$r = _r$3.Apply(co); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			_i$2++;
 		/* } */ $s = 6; continue; case 7:
+		_ref$3 = e.events;
+		_i$3 = 0;
+		/* while (true) { */ case 10:
+			/* if (!(_i$3 < _ref$3.$length)) { break; } */ if(!(_i$3 < _ref$3.$length)) { $s = 11; continue; }
+			ch$1 = ((_i$3 < 0 || _i$3 >= _ref$3.$length) ? $throwRuntimeError("index out of range") : _ref$3.$array[_ref$3.$offset + _i$3]);
+			$r = ch$1.Clone().Apply(co); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_i$3++;
+		/* } */ $s = 10; continue; case 11:
 		return co;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Element.ptr.prototype.Clone }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._i$2 = _i$2; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f.ao = ao; $f.ch = ch; $f.co = co; $f.e = e; $f.so = so; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Element.ptr.prototype.Clone }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._i$2 = _i$2; $f._i$3 = _i$3; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f.ao = ao; $f.ch = ch; $f.ch$1 = ch$1; $f.co = co; $f.e = e; $f.so = so; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Element.prototype.Clone = function() { return this.$val.Clone(); };
+	ReconcileEvents = function(e, em) {
+		var $ptr, _i, _i$1, _r, _r$1, _ref, _ref$1, e, em, ev, evs, found, newevents, oldevents, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _i$1 = $f._i$1; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; _ref$1 = $f._ref$1; e = $f.e; em = $f.em; ev = $f.ev; evs = $f.evs; found = $f.found; newevents = $f.newevents; oldevents = $f.oldevents; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = em.Events(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		oldevents = _r;
+		_r$1 = e.Events(); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		newevents = _r$1;
+		_ref = oldevents;
+		_i = 0;
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
+			ev = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+			found = false;
+			_ref$1 = newevents;
+			_i$1 = 0;
+			innerfind:
+			while (true) {
+				if (!(_i$1 < _ref$1.$length)) { break; }
+				evs = ((_i$1 < 0 || _i$1 >= _ref$1.$length) ? $throwRuntimeError("index out of range") : _ref$1.$array[_ref$1.$offset + _i$1]);
+				if (evs.Meta.Type === ev.Meta.Type && evs.Meta.Target === ev.Meta.Target) {
+					found = true;
+					break innerfind;
+				}
+				_i$1++;
+			}
+			if (found) {
+				_i++;
+				continue;
+			}
+			ev.Meta.Removed = true;
+			_i++;
+		}
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ReconcileEvents }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._ref$1 = _ref$1; $f.e = e; $f.em = em; $f.ev = ev; $f.evs = evs; $f.found = found; $f.newevents = newevents; $f.oldevents = oldevents; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.ReconcileEvents = ReconcileEvents;
 	EqualAttributes = function(e, em) {
 		var $ptr, _i, _r, _r$1, _r$2, _ref, _tuple, e, em, equal, err, oa, oldAttrs, ta, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _ref = $f._ref; _tuple = $f._tuple; e = $f.e; em = $f.em; equal = $f.equal; err = $f.err; oa = $f.oa; oldAttrs = $f.oldAttrs; ta = $f.ta; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -32671,7 +33775,7 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 			}
 			_i++;
 		}
-		return [ptrType$2.nil, $pkg.ErrNotFound];
+		return [ptrType$3.nil, $pkg.ErrNotFound];
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: GetStyle }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.as = as; $f.e = e; $f.f = f; $f.styles = styles; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.GetStyle = GetStyle;
@@ -32693,27 +33797,29 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: GetAttr }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.as = as; $f.e = e; $f.f = f; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.GetAttr = GetAttr;
-	ptrType$3.methods = [{prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$2], [$String], false)}];
-	ptrType$4.methods = [{prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$3], [$String], false)}];
-	ptrType$5.methods = [{prop: "DisallowRemoved", name: "DisallowRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "AllowRemoved", name: "AllowRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "Print", name: "Print", pkg: "", typ: $funcType([ptrType$1], [$String], false)}];
-	ptrType$6.methods = [{prop: "Write", name: "Write", pkg: "", typ: $funcType([Markup], [$String, $error], false)}];
-	ptrType$7.methods = [{prop: "UpdateHash", name: "UpdateHash", pkg: "", typ: $funcType([], [], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Removed", name: "Removed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Hash", name: "Hash", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UID", name: "UID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "swapHash", name: "swapHash", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}, {prop: "swapUID", name: "swapUID", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}];
-	ptrType$1.methods = [{prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Empty", name: "Empty", pkg: "", typ: $funcType([], [], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "CleanRemoved", name: "CleanRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "Augment", name: "Augment", pkg: "", typ: $funcType([sliceType$4], [], true)}, {prop: "AutoClosed", name: "AutoClosed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([Markup], [$Bool], false)}, {prop: "AddChild", name: "AddChild", pkg: "", typ: $funcType([Markup], [], false)}, {prop: "Children", name: "Children", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "Styles", name: "Styles", pkg: "", typ: $funcType([], [sliceType$3], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [Markup], false)}];
-	ptrType$2.methods = [{prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([ptrType$2], [$Bool], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [ptrType$2], false)}];
+	ptrType$7.methods = [{prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$2], [$String], false)}];
+	ptrType$8.methods = [{prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$4], [$String], false)}];
+	ptrType$9.methods = [{prop: "DisallowRemoved", name: "DisallowRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "AllowRemoved", name: "AllowRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "Print", name: "Print", pkg: "", typ: $funcType([ptrType$1], [$String], false)}];
+	ptrType$10.methods = [{prop: "Write", name: "Write", pkg: "", typ: $funcType([Markup], [$String, $error], false)}];
+	ptrType$11.methods = [{prop: "UpdateHash", name: "UpdateHash", pkg: "", typ: $funcType([], [], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Removed", name: "Removed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Hash", name: "Hash", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UID", name: "UID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "swapHash", name: "swapHash", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}, {prop: "swapUID", name: "swapUID", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}];
+	ptrType$1.methods = [{prop: "UseEventManager", name: "UseEventManager", pkg: "", typ: $funcType([ptrType$4], [$Bool], false)}, {prop: "LoadEvents", name: "LoadEvents", pkg: "", typ: $funcType([], [], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Empty", name: "Empty", pkg: "", typ: $funcType([], [], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "CleanRemoved", name: "CleanRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "Augment", name: "Augment", pkg: "", typ: $funcType([sliceType$5], [], true)}, {prop: "AutoClosed", name: "AutoClosed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([Markup], [$Bool], false)}, {prop: "AddChild", name: "AddChild", pkg: "", typ: $funcType([Markup], [], false)}, {prop: "Children", name: "Children", pkg: "", typ: $funcType([], [sliceType$5], false)}, {prop: "Styles", name: "Styles", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [sliceType$3], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [Markup], false)}];
+	ptrType$3.methods = [{prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([ptrType$3], [$Bool], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [ptrType$3], false)}];
 	ptrType.methods = [{prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([ptrType], [$Bool], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [ptrType], false)}];
+	ptrType$2.methods = [{prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $funcType([], [ptrType$2], false)}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $funcType([], [ptrType$2], false)}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $funcType([], [ptrType$2], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [ptrType$2], false)}];
 	AttrPrinter.init([{prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$2], [$String], false)}]);
 	AttrWriter.init([]);
-	StylePrinter.init([{prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$3], [$String], false)}]);
+	StylePrinter.init([{prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$4], [$String], false)}]);
 	StyleWriter.init([]);
 	ElementWriter.init([{prop: "attrWriter", name: "attrWriter", pkg: "github.com/influx6/haiku/trees", typ: AttrPrinter, tag: ""}, {prop: "styleWriter", name: "styleWriter", pkg: "github.com/influx6/haiku/trees", typ: StylePrinter, tag: ""}, {prop: "allowRemoved", name: "allowRemoved", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}]);
 	MarkupWriter.init([{prop: "Write", name: "Write", pkg: "", typ: $funcType([Markup], [$String, $error], false)}]);
-	markupWriter.init([{prop: "ElementWriter", name: "", pkg: "", typ: ptrType$5, tag: ""}]);
+	markupWriter.init([{prop: "ElementWriter", name: "", pkg: "", typ: ptrType$9, tag: ""}]);
 	Mutation.init([{prop: "Hash", name: "Hash", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Removed", name: "Removed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "UID", name: "UID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UpdateHash", name: "UpdateHash", pkg: "", typ: $funcType([], [], false)}, {prop: "swapHash", name: "swapHash", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}, {prop: "swapUID", name: "swapUID", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}]);
-	Markup.init([{prop: "AddChild", name: "AddChild", pkg: "", typ: $funcType([Markup], [], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "Augment", name: "Augment", pkg: "", typ: $funcType([sliceType$4], [], true)}, {prop: "AutoClosed", name: "AutoClosed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Children", name: "Children", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "CleanRemoved", name: "CleanRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [Markup], false)}, {prop: "Empty", name: "Empty", pkg: "", typ: $funcType([], [], false)}, {prop: "Hash", name: "Hash", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([Markup], [$Bool], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Removed", name: "Removed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Styles", name: "Styles", pkg: "", typ: $funcType([], [sliceType$3], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UID", name: "UID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UpdateHash", name: "UpdateHash", pkg: "", typ: $funcType([], [], false)}, {prop: "swapHash", name: "swapHash", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}, {prop: "swapUID", name: "swapUID", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}]);
+	Markup.init([{prop: "AddChild", name: "AddChild", pkg: "", typ: $funcType([Markup], [], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "Augment", name: "Augment", pkg: "", typ: $funcType([sliceType$5], [], true)}, {prop: "AutoClosed", name: "AutoClosed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Children", name: "Children", pkg: "", typ: $funcType([], [sliceType$5], false)}, {prop: "CleanRemoved", name: "CleanRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [Markup], false)}, {prop: "Empty", name: "Empty", pkg: "", typ: $funcType([], [], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [sliceType$3], false)}, {prop: "Hash", name: "Hash", pkg: "", typ: $funcType([], [$String], false)}, {prop: "LoadEvents", name: "LoadEvents", pkg: "", typ: $funcType([], [], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([Markup], [$Bool], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Removed", name: "Removed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Styles", name: "Styles", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UID", name: "UID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UpdateHash", name: "UpdateHash", pkg: "", typ: $funcType([], [], false)}, {prop: "UseEventManager", name: "UseEventManager", pkg: "", typ: $funcType([ptrType$4], [$Bool], false)}, {prop: "swapHash", name: "swapHash", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}, {prop: "swapUID", name: "swapUID", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}]);
 	Mutable.init([{prop: "uid", name: "uid", pkg: "github.com/influx6/haiku/trees", typ: $String, tag: ""}, {prop: "hash", name: "hash", pkg: "github.com/influx6/haiku/trees", typ: $String, tag: ""}, {prop: "removed", name: "removed", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}]);
-	Element.init([{prop: "Mutation", name: "", pkg: "", typ: Mutation, tag: ""}, {prop: "tagname", name: "tagname", pkg: "github.com/influx6/haiku/trees", typ: $String, tag: ""}, {prop: "styles", name: "styles", pkg: "github.com/influx6/haiku/trees", typ: sliceType$3, tag: ""}, {prop: "attrs", name: "attrs", pkg: "github.com/influx6/haiku/trees", typ: sliceType$2, tag: ""}, {prop: "children", name: "children", pkg: "github.com/influx6/haiku/trees", typ: sliceType$4, tag: ""}, {prop: "textContent", name: "textContent", pkg: "github.com/influx6/haiku/trees", typ: $String, tag: ""}, {prop: "autoclose", name: "autoclose", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowChildren", name: "allowChildren", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowStyles", name: "allowStyles", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowAttributes", name: "allowAttributes", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}]);
+	Element.init([{prop: "Mutation", name: "", pkg: "", typ: Mutation, tag: ""}, {prop: "tagname", name: "tagname", pkg: "github.com/influx6/haiku/trees", typ: $String, tag: ""}, {prop: "events", name: "events", pkg: "github.com/influx6/haiku/trees", typ: sliceType$3, tag: ""}, {prop: "styles", name: "styles", pkg: "github.com/influx6/haiku/trees", typ: sliceType$4, tag: ""}, {prop: "attrs", name: "attrs", pkg: "github.com/influx6/haiku/trees", typ: sliceType$2, tag: ""}, {prop: "children", name: "children", pkg: "github.com/influx6/haiku/trees", typ: sliceType$5, tag: ""}, {prop: "textContent", name: "textContent", pkg: "github.com/influx6/haiku/trees", typ: $String, tag: ""}, {prop: "autoclose", name: "autoclose", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowEvents", name: "allowEvents", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowChildren", name: "allowChildren", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowStyles", name: "allowStyles", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "allowAttributes", name: "allowAttributes", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}, {prop: "eventManager", name: "eventManager", pkg: "github.com/influx6/haiku/trees", typ: ptrType$4, tag: ""}]);
 	Style.init([{prop: "Name", name: "Name", pkg: "", typ: $String, tag: ""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: ""}]);
 	Attribute.init([{prop: "Name", name: "Name", pkg: "", typ: $String, tag: ""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: ""}]);
+	Event.init([{prop: "Meta", name: "Meta", pkg: "", typ: ptrType$6, tag: ""}, {prop: "Fx", name: "Fx", pkg: "", typ: events.NextHandler, tag: ""}]);
 	Appliable.init([{prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}]);
 	$init = function() {
 		$pkg.$init = function() {};
@@ -32722,7 +33828,8 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		$r = fmt.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = detect.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = flux.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = strings.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = events.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = strings.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$pkg.ErrNotText = errors.New("Markup is not a *Text type");
 		$pkg.ErrNotElem = errors.New("Markup is not a *Element type");
 		$pkg.ErrNotMarkup = errors.New("Value does not match Markup interface types");
@@ -32739,13 +33846,18 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/trees/attrs"] = (function() {
-	var $pkg = {}, $init, trees, Name, Type;
+	var $pkg = {}, $init, trees, Name, Href, Type;
 	trees = $packages["github.com/influx6/haiku/trees"];
 	Name = function(val) {
 		var $ptr, val;
 		return new trees.Attribute.ptr("name", val);
 	};
 	$pkg.Name = Name;
+	Href = function(val) {
+		var $ptr, val;
+		return new trees.Attribute.ptr("href", val);
+	};
+	$pkg.Href = Href;
 	Type = function(val) {
 		var $ptr, val;
 		return new trees.Attribute.ptr("type", val);
@@ -32761,7 +33873,7 @@ $packages["github.com/influx6/haiku/trees/attrs"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/trees/elems"] = (function() {
-	var $pkg = {}, $init, trees, Text, Div, Form, Input, Label, Option, Paragraph, Select;
+	var $pkg = {}, $init, trees, Text, Anchor, Div, Form, Input, Label, Option, Paragraph, Select;
 	trees = $packages["github.com/influx6/haiku/trees"];
 	Text = function(txt) {
 		var $ptr, _r, txt, $s, $r;
@@ -32771,6 +33883,23 @@ $packages["github.com/influx6/haiku/trees/elems"] = (function() {
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Text }; } $f.$ptr = $ptr; $f._r = _r; $f.txt = txt; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.Text = Text;
+	Anchor = function(markup) {
+		var $ptr, _i, _r, _ref, e, m, markup, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; e = $f.e; m = $f.m; markup = $f.markup; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = trees.NewElement("a", false); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		e = _r;
+		_ref = markup;
+		_i = 0;
+		/* while (true) { */ case 2:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 3; continue; }
+			m = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+			$r = m.Apply(e); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_i++;
+		/* } */ $s = 2; continue; case 3:
+		return e;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Anchor }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.e = e; $f.m = m; $f.markup = markup; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.Anchor = Anchor;
 	Div = function(markup) {
 		var $ptr, _i, _r, _ref, e, m, markup, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; e = $f.e; m = $f.m; markup = $f.markup; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -32899,5297 +34028,20 @@ $packages["github.com/influx6/haiku/trees/elems"] = (function() {
 	$pkg.$init = $init;
 	return $pkg;
 })();
-$packages["github.com/influx6/dom"] = (function() {
-	var $pkg = {}, $init, js, strings, time, TokenList, Document, DocumentFragment, documentFragment, document, htmlDocument, URLUtils, Location, HTMLElement, Window, window, Selection, Screen, Navigator, Geolocation, PositionError, PositionOptions, Position, Coordinates, History, Console, DocumentType, DOMImplementation, StyleSheet, Node, BasicNode, Element, ClientRect, BasicHTMLElement, BasicElement, HTMLAnchorElement, HTMLAppletElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, ValidityState, HTMLButtonElement, HTMLCanvasElement, CanvasRenderingContext2D, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDirectoryElement, HTMLDivElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, File, HTMLKeygenElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableColElement, HTMLTableDataCellElement, HTMLTableElement, HTMLTableHeaderCellElement, HTMLTableRowElement, HTMLTableSectionElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, TextTrack, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, CSSStyleDeclaration, Text, Event, BasicEvent, AnimationEvent, AudioProcessingEvent, BeforeInputEvent, BeforeUnloadEvent, BlobEvent, ClipboardEvent, CloseEvent, CompositionEvent, CSSFontFaceLoadEvent, CustomEvent, DeviceLightEvent, DeviceMotionEvent, DeviceOrientationEvent, DeviceProximityEvent, DOMTransactionEvent, DragEvent, EditingBeforeInputEvent, ErrorEvent, FocusEvent, GamepadEvent, HashChangeEvent, IDBVersionChangeEvent, KeyboardEvent, MediaStreamEvent, MessageEvent, MouseEvent, MutationEvent, OfflineAudioCompletionEvent, PageTransitionEvent, PointerEvent, PopStateEvent, ProgressEvent, RelatedEvent, RTCPeerConnectionIceEvent, SensorEvent, StorageEvent, SVGEvent, SVGZoomEvent, TimeEvent, TouchEvent, TrackEvent, TransitionEvent, UIEvent, UserProximityEvent, WheelEvent, sliceType, sliceType$1, sliceType$2, sliceType$3, ptrType, ptrType$1, ptrType$2, ptrType$3, ptrType$4, ptrType$5, sliceType$4, ptrType$6, sliceType$5, sliceType$6, sliceType$7, ptrType$7, ptrType$8, sliceType$8, ptrType$9, sliceType$9, ptrType$10, sliceType$10, sliceType$11, ptrType$11, funcType, ptrType$12, funcType$1, ptrType$13, sliceType$12, ptrType$14, ptrType$15, sliceType$13, ptrType$16, sliceType$14, ptrType$17, sliceType$15, ptrType$18, ptrType$19, ptrType$20, funcType$2, ptrType$21, ptrType$22, ptrType$23, ptrType$24, mapType, ptrType$25, ptrType$26, funcType$3, ptrType$27, ptrType$28, funcType$4, funcType$5, ptrType$29, ptrType$30, ptrType$31, ptrType$32, ptrType$33, ptrType$34, ptrType$35, ptrType$36, ptrType$37, ptrType$38, ptrType$39, ptrType$40, ptrType$41, ptrType$42, ptrType$43, ptrType$44, ptrType$45, ptrType$46, ptrType$47, ptrType$48, ptrType$49, ptrType$50, ptrType$51, ptrType$52, ptrType$53, ptrType$54, callRecover, nodeListToNodes, nodeListToElements, nodeListToHTMLElements, attrSetToMap, dataSetToMap, wrapDocument, wrapDocumentFragment, wrapNode, wrapElement, wrapHTMLElement, getForm, getLabels, getOptions, GetWindow, wrapDOMHighResTimeStamp, wrapEvent;
-	js = $packages["github.com/gopherjs/gopherjs/js"];
-	strings = $packages["strings"];
-	time = $packages["time"];
-	TokenList = $pkg.TokenList = $newType(0, $kindStruct, "dom.TokenList", "TokenList", "github.com/influx6/dom", function(dtl_, o_, sa_, Length_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.dtl = null;
-			this.o = null;
-			this.sa = "";
-			this.Length = 0;
-			return;
-		}
-		this.dtl = dtl_;
-		this.o = o_;
-		this.sa = sa_;
-		this.Length = Length_;
-	});
-	Document = $pkg.Document = $newType(8, $kindInterface, "dom.Document", "Document", "github.com/influx6/dom", null);
-	DocumentFragment = $pkg.DocumentFragment = $newType(8, $kindInterface, "dom.DocumentFragment", "DocumentFragment", "github.com/influx6/dom", null);
-	documentFragment = $pkg.documentFragment = $newType(0, $kindStruct, "dom.documentFragment", "documentFragment", "github.com/influx6/dom", function(BasicNode_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicNode = ptrType$22.nil;
-			return;
-		}
-		this.BasicNode = BasicNode_;
-	});
-	document = $pkg.document = $newType(0, $kindStruct, "dom.document", "document", "github.com/influx6/dom", function(BasicNode_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicNode = ptrType$22.nil;
-			return;
-		}
-		this.BasicNode = BasicNode_;
-	});
-	htmlDocument = $pkg.htmlDocument = $newType(0, $kindStruct, "dom.htmlDocument", "htmlDocument", "github.com/influx6/dom", function(document_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.document = ptrType$23.nil;
-			return;
-		}
-		this.document = document_;
-	});
-	URLUtils = $pkg.URLUtils = $newType(0, $kindStruct, "dom.URLUtils", "URLUtils", "github.com/influx6/dom", function(Object_, Href_, Protocol_, Host_, Hostname_, Port_, Pathname_, Search_, Hash_, Username_, Password_, Origin_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			this.Href = "";
-			this.Protocol = "";
-			this.Host = "";
-			this.Hostname = "";
-			this.Port = "";
-			this.Pathname = "";
-			this.Search = "";
-			this.Hash = "";
-			this.Username = "";
-			this.Password = "";
-			this.Origin = "";
-			return;
-		}
-		this.Object = Object_;
-		this.Href = Href_;
-		this.Protocol = Protocol_;
-		this.Host = Host_;
-		this.Hostname = Hostname_;
-		this.Port = Port_;
-		this.Pathname = Pathname_;
-		this.Search = Search_;
-		this.Hash = Hash_;
-		this.Username = Username_;
-		this.Password = Password_;
-		this.Origin = Origin_;
-	});
-	Location = $pkg.Location = $newType(0, $kindStruct, "dom.Location", "Location", "github.com/influx6/dom", function(Object_, URLUtils_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			this.URLUtils = ptrType$1.nil;
-			return;
-		}
-		this.Object = Object_;
-		this.URLUtils = URLUtils_;
-	});
-	HTMLElement = $pkg.HTMLElement = $newType(8, $kindInterface, "dom.HTMLElement", "HTMLElement", "github.com/influx6/dom", null);
-	Window = $pkg.Window = $newType(8, $kindInterface, "dom.Window", "Window", "github.com/influx6/dom", null);
-	window = $pkg.window = $newType(0, $kindStruct, "dom.window", "window", "github.com/influx6/dom", function(Object_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			return;
-		}
-		this.Object = Object_;
-	});
-	Selection = $pkg.Selection = $newType(8, $kindInterface, "dom.Selection", "Selection", "github.com/influx6/dom", null);
-	Screen = $pkg.Screen = $newType(0, $kindStruct, "dom.Screen", "Screen", "github.com/influx6/dom", function(Object_, AvailTop_, AvailLeft_, AvailHeight_, AvailWidth_, ColorDepth_, Height_, Left_, PixelDepth_, Top_, Width_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			this.AvailTop = 0;
-			this.AvailLeft = 0;
-			this.AvailHeight = 0;
-			this.AvailWidth = 0;
-			this.ColorDepth = 0;
-			this.Height = 0;
-			this.Left = 0;
-			this.PixelDepth = 0;
-			this.Top = 0;
-			this.Width = 0;
-			return;
-		}
-		this.Object = Object_;
-		this.AvailTop = AvailTop_;
-		this.AvailLeft = AvailLeft_;
-		this.AvailHeight = AvailHeight_;
-		this.AvailWidth = AvailWidth_;
-		this.ColorDepth = ColorDepth_;
-		this.Height = Height_;
-		this.Left = Left_;
-		this.PixelDepth = PixelDepth_;
-		this.Top = Top_;
-		this.Width = Width_;
-	});
-	Navigator = $pkg.Navigator = $newType(8, $kindInterface, "dom.Navigator", "Navigator", "github.com/influx6/dom", null);
-	Geolocation = $pkg.Geolocation = $newType(8, $kindInterface, "dom.Geolocation", "Geolocation", "github.com/influx6/dom", null);
-	PositionError = $pkg.PositionError = $newType(0, $kindStruct, "dom.PositionError", "PositionError", "github.com/influx6/dom", function(Object_, Code_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			this.Code = 0;
-			return;
-		}
-		this.Object = Object_;
-		this.Code = Code_;
-	});
-	PositionOptions = $pkg.PositionOptions = $newType(0, $kindStruct, "dom.PositionOptions", "PositionOptions", "github.com/influx6/dom", function(EnableHighAccuracy_, Timeout_, MaximumAge_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.EnableHighAccuracy = false;
-			this.Timeout = new time.Duration(0, 0);
-			this.MaximumAge = new time.Duration(0, 0);
-			return;
-		}
-		this.EnableHighAccuracy = EnableHighAccuracy_;
-		this.Timeout = Timeout_;
-		this.MaximumAge = MaximumAge_;
-	});
-	Position = $pkg.Position = $newType(0, $kindStruct, "dom.Position", "Position", "github.com/influx6/dom", function(Coords_, Timestamp_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Coords = ptrType$30.nil;
-			this.Timestamp = new time.Time.ptr(new $Int64(0, 0), 0, ptrType$3.nil);
-			return;
-		}
-		this.Coords = Coords_;
-		this.Timestamp = Timestamp_;
-	});
-	Coordinates = $pkg.Coordinates = $newType(0, $kindStruct, "dom.Coordinates", "Coordinates", "github.com/influx6/dom", function(Object_, Latitude_, Longitude_, Altitude_, Accuracy_, AltitudeAccuracy_, Heading_, Speed_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			this.Latitude = 0;
-			this.Longitude = 0;
-			this.Altitude = 0;
-			this.Accuracy = 0;
-			this.AltitudeAccuracy = 0;
-			this.Heading = 0;
-			this.Speed = 0;
-			return;
-		}
-		this.Object = Object_;
-		this.Latitude = Latitude_;
-		this.Longitude = Longitude_;
-		this.Altitude = Altitude_;
-		this.Accuracy = Accuracy_;
-		this.AltitudeAccuracy = AltitudeAccuracy_;
-		this.Heading = Heading_;
-		this.Speed = Speed_;
-	});
-	History = $pkg.History = $newType(8, $kindInterface, "dom.History", "History", "github.com/influx6/dom", null);
-	Console = $pkg.Console = $newType(0, $kindStruct, "dom.Console", "Console", "github.com/influx6/dom", function(Object_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			return;
-		}
-		this.Object = Object_;
-	});
-	DocumentType = $pkg.DocumentType = $newType(8, $kindInterface, "dom.DocumentType", "DocumentType", "github.com/influx6/dom", null);
-	DOMImplementation = $pkg.DOMImplementation = $newType(8, $kindInterface, "dom.DOMImplementation", "DOMImplementation", "github.com/influx6/dom", null);
-	StyleSheet = $pkg.StyleSheet = $newType(8, $kindInterface, "dom.StyleSheet", "StyleSheet", "github.com/influx6/dom", null);
-	Node = $pkg.Node = $newType(8, $kindInterface, "dom.Node", "Node", "github.com/influx6/dom", null);
-	BasicNode = $pkg.BasicNode = $newType(0, $kindStruct, "dom.BasicNode", "BasicNode", "github.com/influx6/dom", function(Object_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			return;
-		}
-		this.Object = Object_;
-	});
-	Element = $pkg.Element = $newType(8, $kindInterface, "dom.Element", "Element", "github.com/influx6/dom", null);
-	ClientRect = $pkg.ClientRect = $newType(0, $kindStruct, "dom.ClientRect", "ClientRect", "github.com/influx6/dom", function(Object_, Height_, Width_, Left_, Right_, Top_, Bottom_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			this.Height = 0;
-			this.Width = 0;
-			this.Left = 0;
-			this.Right = 0;
-			this.Top = 0;
-			this.Bottom = 0;
-			return;
-		}
-		this.Object = Object_;
-		this.Height = Height_;
-		this.Width = Width_;
-		this.Left = Left_;
-		this.Right = Right_;
-		this.Top = Top_;
-		this.Bottom = Bottom_;
-	});
-	BasicHTMLElement = $pkg.BasicHTMLElement = $newType(0, $kindStruct, "dom.BasicHTMLElement", "BasicHTMLElement", "github.com/influx6/dom", function(BasicElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicElement = ptrType$31.nil;
-			return;
-		}
-		this.BasicElement = BasicElement_;
-	});
-	BasicElement = $pkg.BasicElement = $newType(0, $kindStruct, "dom.BasicElement", "BasicElement", "github.com/influx6/dom", function(BasicNode_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicNode = ptrType$22.nil;
-			return;
-		}
-		this.BasicNode = BasicNode_;
-	});
-	HTMLAnchorElement = $pkg.HTMLAnchorElement = $newType(0, $kindStruct, "dom.HTMLAnchorElement", "HTMLAnchorElement", "github.com/influx6/dom", function(BasicHTMLElement_, URLUtils_, HrefLang_, Media_, TabIndex_, Target_, Text_, Type_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.URLUtils = ptrType$1.nil;
-			this.HrefLang = "";
-			this.Media = "";
-			this.TabIndex = 0;
-			this.Target = "";
-			this.Text = "";
-			this.Type = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.URLUtils = URLUtils_;
-		this.HrefLang = HrefLang_;
-		this.Media = Media_;
-		this.TabIndex = TabIndex_;
-		this.Target = Target_;
-		this.Text = Text_;
-		this.Type = Type_;
-	});
-	HTMLAppletElement = $pkg.HTMLAppletElement = $newType(0, $kindStruct, "dom.HTMLAppletElement", "HTMLAppletElement", "github.com/influx6/dom", function(BasicHTMLElement_, Alt_, Coords_, HrefLang_, Media_, Search_, Shape_, TabIndex_, Target_, Type_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Alt = "";
-			this.Coords = "";
-			this.HrefLang = "";
-			this.Media = "";
-			this.Search = "";
-			this.Shape = "";
-			this.TabIndex = 0;
-			this.Target = "";
-			this.Type = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Alt = Alt_;
-		this.Coords = Coords_;
-		this.HrefLang = HrefLang_;
-		this.Media = Media_;
-		this.Search = Search_;
-		this.Shape = Shape_;
-		this.TabIndex = TabIndex_;
-		this.Target = Target_;
-		this.Type = Type_;
-	});
-	HTMLAreaElement = $pkg.HTMLAreaElement = $newType(0, $kindStruct, "dom.HTMLAreaElement", "HTMLAreaElement", "github.com/influx6/dom", function(BasicHTMLElement_, URLUtils_, Alt_, Coords_, HrefLang_, Media_, Search_, Shape_, TabIndex_, Target_, Type_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.URLUtils = ptrType$1.nil;
-			this.Alt = "";
-			this.Coords = "";
-			this.HrefLang = "";
-			this.Media = "";
-			this.Search = "";
-			this.Shape = "";
-			this.TabIndex = 0;
-			this.Target = "";
-			this.Type = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.URLUtils = URLUtils_;
-		this.Alt = Alt_;
-		this.Coords = Coords_;
-		this.HrefLang = HrefLang_;
-		this.Media = Media_;
-		this.Search = Search_;
-		this.Shape = Shape_;
-		this.TabIndex = TabIndex_;
-		this.Target = Target_;
-		this.Type = Type_;
-	});
-	HTMLAudioElement = $pkg.HTMLAudioElement = $newType(0, $kindStruct, "dom.HTMLAudioElement", "HTMLAudioElement", "github.com/influx6/dom", function(HTMLMediaElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.HTMLMediaElement = ptrType$2.nil;
-			return;
-		}
-		this.HTMLMediaElement = HTMLMediaElement_;
-	});
-	HTMLBRElement = $pkg.HTMLBRElement = $newType(0, $kindStruct, "dom.HTMLBRElement", "HTMLBRElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLBaseElement = $pkg.HTMLBaseElement = $newType(0, $kindStruct, "dom.HTMLBaseElement", "HTMLBaseElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLBodyElement = $pkg.HTMLBodyElement = $newType(0, $kindStruct, "dom.HTMLBodyElement", "HTMLBodyElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	ValidityState = $pkg.ValidityState = $newType(0, $kindStruct, "dom.ValidityState", "ValidityState", "github.com/influx6/dom", function(Object_, CustomError_, PatternMismatch_, RangeOverflow_, RangeUnderflow_, StepMismatch_, TooLong_, TypeMismatch_, Valid_, ValueMissing_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			this.CustomError = false;
-			this.PatternMismatch = false;
-			this.RangeOverflow = false;
-			this.RangeUnderflow = false;
-			this.StepMismatch = false;
-			this.TooLong = false;
-			this.TypeMismatch = false;
-			this.Valid = false;
-			this.ValueMissing = false;
-			return;
-		}
-		this.Object = Object_;
-		this.CustomError = CustomError_;
-		this.PatternMismatch = PatternMismatch_;
-		this.RangeOverflow = RangeOverflow_;
-		this.RangeUnderflow = RangeUnderflow_;
-		this.StepMismatch = StepMismatch_;
-		this.TooLong = TooLong_;
-		this.TypeMismatch = TypeMismatch_;
-		this.Valid = Valid_;
-		this.ValueMissing = ValueMissing_;
-	});
-	HTMLButtonElement = $pkg.HTMLButtonElement = $newType(0, $kindStruct, "dom.HTMLButtonElement", "HTMLButtonElement", "github.com/influx6/dom", function(BasicHTMLElement_, AutoFocus_, Disabled_, FormAction_, FormEncType_, FormMethod_, FormNoValidate_, FormTarget_, Name_, TabIndex_, Type_, ValidationMessage_, Value_, WillValidate_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.AutoFocus = false;
-			this.Disabled = false;
-			this.FormAction = "";
-			this.FormEncType = "";
-			this.FormMethod = "";
-			this.FormNoValidate = false;
-			this.FormTarget = "";
-			this.Name = "";
-			this.TabIndex = 0;
-			this.Type = "";
-			this.ValidationMessage = "";
-			this.Value = "";
-			this.WillValidate = false;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.AutoFocus = AutoFocus_;
-		this.Disabled = Disabled_;
-		this.FormAction = FormAction_;
-		this.FormEncType = FormEncType_;
-		this.FormMethod = FormMethod_;
-		this.FormNoValidate = FormNoValidate_;
-		this.FormTarget = FormTarget_;
-		this.Name = Name_;
-		this.TabIndex = TabIndex_;
-		this.Type = Type_;
-		this.ValidationMessage = ValidationMessage_;
-		this.Value = Value_;
-		this.WillValidate = WillValidate_;
-	});
-	HTMLCanvasElement = $pkg.HTMLCanvasElement = $newType(0, $kindStruct, "dom.HTMLCanvasElement", "HTMLCanvasElement", "github.com/influx6/dom", function(BasicHTMLElement_, Height_, Width_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Height = 0;
-			this.Width = 0;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Height = Height_;
-		this.Width = Width_;
-	});
-	CanvasRenderingContext2D = $pkg.CanvasRenderingContext2D = $newType(0, $kindStruct, "dom.CanvasRenderingContext2D", "CanvasRenderingContext2D", "github.com/influx6/dom", function(Object_, FillStyle_, StrokeStyle_, ShadowColor_, ShadowBlur_, ShadowOffsetX_, ShadowOffsetY_, LineCap_, LineJoin_, LineWidth_, MiterLimit_, Font_, TextAlign_, TextBaseline_, GlobalAlpha_, GlobalCompositeOperation_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			this.FillStyle = "";
-			this.StrokeStyle = "";
-			this.ShadowColor = "";
-			this.ShadowBlur = 0;
-			this.ShadowOffsetX = 0;
-			this.ShadowOffsetY = 0;
-			this.LineCap = "";
-			this.LineJoin = "";
-			this.LineWidth = 0;
-			this.MiterLimit = 0;
-			this.Font = "";
-			this.TextAlign = "";
-			this.TextBaseline = "";
-			this.GlobalAlpha = 0;
-			this.GlobalCompositeOperation = "";
-			return;
-		}
-		this.Object = Object_;
-		this.FillStyle = FillStyle_;
-		this.StrokeStyle = StrokeStyle_;
-		this.ShadowColor = ShadowColor_;
-		this.ShadowBlur = ShadowBlur_;
-		this.ShadowOffsetX = ShadowOffsetX_;
-		this.ShadowOffsetY = ShadowOffsetY_;
-		this.LineCap = LineCap_;
-		this.LineJoin = LineJoin_;
-		this.LineWidth = LineWidth_;
-		this.MiterLimit = MiterLimit_;
-		this.Font = Font_;
-		this.TextAlign = TextAlign_;
-		this.TextBaseline = TextBaseline_;
-		this.GlobalAlpha = GlobalAlpha_;
-		this.GlobalCompositeOperation = GlobalCompositeOperation_;
-	});
-	HTMLDListElement = $pkg.HTMLDListElement = $newType(0, $kindStruct, "dom.HTMLDListElement", "HTMLDListElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLDataElement = $pkg.HTMLDataElement = $newType(0, $kindStruct, "dom.HTMLDataElement", "HTMLDataElement", "github.com/influx6/dom", function(BasicHTMLElement_, Value_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Value = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Value = Value_;
-	});
-	HTMLDataListElement = $pkg.HTMLDataListElement = $newType(0, $kindStruct, "dom.HTMLDataListElement", "HTMLDataListElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLDirectoryElement = $pkg.HTMLDirectoryElement = $newType(0, $kindStruct, "dom.HTMLDirectoryElement", "HTMLDirectoryElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLDivElement = $pkg.HTMLDivElement = $newType(0, $kindStruct, "dom.HTMLDivElement", "HTMLDivElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLEmbedElement = $pkg.HTMLEmbedElement = $newType(0, $kindStruct, "dom.HTMLEmbedElement", "HTMLEmbedElement", "github.com/influx6/dom", function(BasicHTMLElement_, Src_, Type_, Width_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Src = "";
-			this.Type = "";
-			this.Width = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Src = Src_;
-		this.Type = Type_;
-		this.Width = Width_;
-	});
-	HTMLFieldSetElement = $pkg.HTMLFieldSetElement = $newType(0, $kindStruct, "dom.HTMLFieldSetElement", "HTMLFieldSetElement", "github.com/influx6/dom", function(BasicHTMLElement_, Disabled_, Name_, Type_, ValidationMessage_, WillValidate_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Disabled = false;
-			this.Name = "";
-			this.Type = "";
-			this.ValidationMessage = "";
-			this.WillValidate = false;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Disabled = Disabled_;
-		this.Name = Name_;
-		this.Type = Type_;
-		this.ValidationMessage = ValidationMessage_;
-		this.WillValidate = WillValidate_;
-	});
-	HTMLFontElement = $pkg.HTMLFontElement = $newType(0, $kindStruct, "dom.HTMLFontElement", "HTMLFontElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLFormElement = $pkg.HTMLFormElement = $newType(0, $kindStruct, "dom.HTMLFormElement", "HTMLFormElement", "github.com/influx6/dom", function(BasicHTMLElement_, AcceptCharset_, Action_, Autocomplete_, Encoding_, Enctype_, Length_, Method_, Name_, NoValidate_, Target_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.AcceptCharset = "";
-			this.Action = "";
-			this.Autocomplete = "";
-			this.Encoding = "";
-			this.Enctype = "";
-			this.Length = 0;
-			this.Method = "";
-			this.Name = "";
-			this.NoValidate = false;
-			this.Target = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.AcceptCharset = AcceptCharset_;
-		this.Action = Action_;
-		this.Autocomplete = Autocomplete_;
-		this.Encoding = Encoding_;
-		this.Enctype = Enctype_;
-		this.Length = Length_;
-		this.Method = Method_;
-		this.Name = Name_;
-		this.NoValidate = NoValidate_;
-		this.Target = Target_;
-	});
-	HTMLFrameElement = $pkg.HTMLFrameElement = $newType(0, $kindStruct, "dom.HTMLFrameElement", "HTMLFrameElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLFrameSetElement = $pkg.HTMLFrameSetElement = $newType(0, $kindStruct, "dom.HTMLFrameSetElement", "HTMLFrameSetElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLHRElement = $pkg.HTMLHRElement = $newType(0, $kindStruct, "dom.HTMLHRElement", "HTMLHRElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLHeadElement = $pkg.HTMLHeadElement = $newType(0, $kindStruct, "dom.HTMLHeadElement", "HTMLHeadElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLHeadingElement = $pkg.HTMLHeadingElement = $newType(0, $kindStruct, "dom.HTMLHeadingElement", "HTMLHeadingElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLHtmlElement = $pkg.HTMLHtmlElement = $newType(0, $kindStruct, "dom.HTMLHtmlElement", "HTMLHtmlElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLIFrameElement = $pkg.HTMLIFrameElement = $newType(0, $kindStruct, "dom.HTMLIFrameElement", "HTMLIFrameElement", "github.com/influx6/dom", function(BasicHTMLElement_, Width_, Height_, Name_, Src_, SrcDoc_, Seamless_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Width = "";
-			this.Height = "";
-			this.Name = "";
-			this.Src = "";
-			this.SrcDoc = "";
-			this.Seamless = false;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Width = Width_;
-		this.Height = Height_;
-		this.Name = Name_;
-		this.Src = Src_;
-		this.SrcDoc = SrcDoc_;
-		this.Seamless = Seamless_;
-	});
-	HTMLImageElement = $pkg.HTMLImageElement = $newType(0, $kindStruct, "dom.HTMLImageElement", "HTMLImageElement", "github.com/influx6/dom", function(BasicHTMLElement_, Complete_, CrossOrigin_, Height_, IsMap_, NaturalHeight_, NaturalWidth_, Src_, UseMap_, Width_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Complete = false;
-			this.CrossOrigin = "";
-			this.Height = 0;
-			this.IsMap = false;
-			this.NaturalHeight = 0;
-			this.NaturalWidth = 0;
-			this.Src = "";
-			this.UseMap = "";
-			this.Width = 0;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Complete = Complete_;
-		this.CrossOrigin = CrossOrigin_;
-		this.Height = Height_;
-		this.IsMap = IsMap_;
-		this.NaturalHeight = NaturalHeight_;
-		this.NaturalWidth = NaturalWidth_;
-		this.Src = Src_;
-		this.UseMap = UseMap_;
-		this.Width = Width_;
-	});
-	HTMLInputElement = $pkg.HTMLInputElement = $newType(0, $kindStruct, "dom.HTMLInputElement", "HTMLInputElement", "github.com/influx6/dom", function(BasicHTMLElement_, Accept_, Alt_, Autocomplete_, Autofocus_, Checked_, DefaultChecked_, DefaultValue_, DirName_, Disabled_, FormAction_, FormEncType_, FormMethod_, FormNoValidate_, FormTarget_, Height_, Indeterminate_, Max_, MaxLength_, Min_, Multiple_, Name_, Pattern_, Placeholder_, ReadOnly_, Required_, SelectionDirection_, SelectionEnd_, SelectionStart_, Size_, Src_, Step_, TabIndex_, Type_, ValidationMessage_, Value_, ValueAsDate_, ValueAsNumber_, Width_, WillValidate_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Accept = "";
-			this.Alt = "";
-			this.Autocomplete = "";
-			this.Autofocus = false;
-			this.Checked = false;
-			this.DefaultChecked = false;
-			this.DefaultValue = "";
-			this.DirName = "";
-			this.Disabled = false;
-			this.FormAction = "";
-			this.FormEncType = "";
-			this.FormMethod = "";
-			this.FormNoValidate = false;
-			this.FormTarget = "";
-			this.Height = "";
-			this.Indeterminate = false;
-			this.Max = "";
-			this.MaxLength = 0;
-			this.Min = "";
-			this.Multiple = false;
-			this.Name = "";
-			this.Pattern = "";
-			this.Placeholder = "";
-			this.ReadOnly = false;
-			this.Required = false;
-			this.SelectionDirection = "";
-			this.SelectionEnd = 0;
-			this.SelectionStart = 0;
-			this.Size = 0;
-			this.Src = "";
-			this.Step = "";
-			this.TabIndex = 0;
-			this.Type = "";
-			this.ValidationMessage = "";
-			this.Value = "";
-			this.ValueAsDate = new time.Time.ptr(new $Int64(0, 0), 0, ptrType$3.nil);
-			this.ValueAsNumber = 0;
-			this.Width = "";
-			this.WillValidate = false;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Accept = Accept_;
-		this.Alt = Alt_;
-		this.Autocomplete = Autocomplete_;
-		this.Autofocus = Autofocus_;
-		this.Checked = Checked_;
-		this.DefaultChecked = DefaultChecked_;
-		this.DefaultValue = DefaultValue_;
-		this.DirName = DirName_;
-		this.Disabled = Disabled_;
-		this.FormAction = FormAction_;
-		this.FormEncType = FormEncType_;
-		this.FormMethod = FormMethod_;
-		this.FormNoValidate = FormNoValidate_;
-		this.FormTarget = FormTarget_;
-		this.Height = Height_;
-		this.Indeterminate = Indeterminate_;
-		this.Max = Max_;
-		this.MaxLength = MaxLength_;
-		this.Min = Min_;
-		this.Multiple = Multiple_;
-		this.Name = Name_;
-		this.Pattern = Pattern_;
-		this.Placeholder = Placeholder_;
-		this.ReadOnly = ReadOnly_;
-		this.Required = Required_;
-		this.SelectionDirection = SelectionDirection_;
-		this.SelectionEnd = SelectionEnd_;
-		this.SelectionStart = SelectionStart_;
-		this.Size = Size_;
-		this.Src = Src_;
-		this.Step = Step_;
-		this.TabIndex = TabIndex_;
-		this.Type = Type_;
-		this.ValidationMessage = ValidationMessage_;
-		this.Value = Value_;
-		this.ValueAsDate = ValueAsDate_;
-		this.ValueAsNumber = ValueAsNumber_;
-		this.Width = Width_;
-		this.WillValidate = WillValidate_;
-	});
-	File = $pkg.File = $newType(0, $kindStruct, "dom.File", "File", "github.com/influx6/dom", function(Object_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			return;
-		}
-		this.Object = Object_;
-	});
-	HTMLKeygenElement = $pkg.HTMLKeygenElement = $newType(0, $kindStruct, "dom.HTMLKeygenElement", "HTMLKeygenElement", "github.com/influx6/dom", function(BasicHTMLElement_, Autofocus_, Challenge_, Disabled_, Keytype_, Name_, Type_, ValidationMessage_, WillValidate_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Autofocus = false;
-			this.Challenge = "";
-			this.Disabled = false;
-			this.Keytype = "";
-			this.Name = "";
-			this.Type = "";
-			this.ValidationMessage = "";
-			this.WillValidate = false;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Autofocus = Autofocus_;
-		this.Challenge = Challenge_;
-		this.Disabled = Disabled_;
-		this.Keytype = Keytype_;
-		this.Name = Name_;
-		this.Type = Type_;
-		this.ValidationMessage = ValidationMessage_;
-		this.WillValidate = WillValidate_;
-	});
-	HTMLLIElement = $pkg.HTMLLIElement = $newType(0, $kindStruct, "dom.HTMLLIElement", "HTMLLIElement", "github.com/influx6/dom", function(BasicHTMLElement_, Value_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Value = 0;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Value = Value_;
-	});
-	HTMLLabelElement = $pkg.HTMLLabelElement = $newType(0, $kindStruct, "dom.HTMLLabelElement", "HTMLLabelElement", "github.com/influx6/dom", function(BasicHTMLElement_, For_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.For = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.For = For_;
-	});
-	HTMLLegendElement = $pkg.HTMLLegendElement = $newType(0, $kindStruct, "dom.HTMLLegendElement", "HTMLLegendElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLLinkElement = $pkg.HTMLLinkElement = $newType(0, $kindStruct, "dom.HTMLLinkElement", "HTMLLinkElement", "github.com/influx6/dom", function(BasicHTMLElement_, Disabled_, Href_, HrefLang_, Media_, Type_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Disabled = false;
-			this.Href = "";
-			this.HrefLang = "";
-			this.Media = "";
-			this.Type = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Disabled = Disabled_;
-		this.Href = Href_;
-		this.HrefLang = HrefLang_;
-		this.Media = Media_;
-		this.Type = Type_;
-	});
-	HTMLMapElement = $pkg.HTMLMapElement = $newType(0, $kindStruct, "dom.HTMLMapElement", "HTMLMapElement", "github.com/influx6/dom", function(BasicHTMLElement_, Name_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Name = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Name = Name_;
-	});
-	HTMLMediaElement = $pkg.HTMLMediaElement = $newType(0, $kindStruct, "dom.HTMLMediaElement", "HTMLMediaElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLMenuElement = $pkg.HTMLMenuElement = $newType(0, $kindStruct, "dom.HTMLMenuElement", "HTMLMenuElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLMetaElement = $pkg.HTMLMetaElement = $newType(0, $kindStruct, "dom.HTMLMetaElement", "HTMLMetaElement", "github.com/influx6/dom", function(BasicHTMLElement_, Content_, HTTPEquiv_, Name_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Content = "";
-			this.HTTPEquiv = "";
-			this.Name = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Content = Content_;
-		this.HTTPEquiv = HTTPEquiv_;
-		this.Name = Name_;
-	});
-	HTMLMeterElement = $pkg.HTMLMeterElement = $newType(0, $kindStruct, "dom.HTMLMeterElement", "HTMLMeterElement", "github.com/influx6/dom", function(BasicHTMLElement_, High_, Low_, Max_, Min_, Optimum_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.High = 0;
-			this.Low = 0;
-			this.Max = 0;
-			this.Min = 0;
-			this.Optimum = 0;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.High = High_;
-		this.Low = Low_;
-		this.Max = Max_;
-		this.Min = Min_;
-		this.Optimum = Optimum_;
-	});
-	HTMLModElement = $pkg.HTMLModElement = $newType(0, $kindStruct, "dom.HTMLModElement", "HTMLModElement", "github.com/influx6/dom", function(BasicHTMLElement_, Cite_, DateTime_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Cite = "";
-			this.DateTime = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Cite = Cite_;
-		this.DateTime = DateTime_;
-	});
-	HTMLOListElement = $pkg.HTMLOListElement = $newType(0, $kindStruct, "dom.HTMLOListElement", "HTMLOListElement", "github.com/influx6/dom", function(BasicHTMLElement_, Reversed_, Start_, Type_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Reversed = false;
-			this.Start = 0;
-			this.Type = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Reversed = Reversed_;
-		this.Start = Start_;
-		this.Type = Type_;
-	});
-	HTMLObjectElement = $pkg.HTMLObjectElement = $newType(0, $kindStruct, "dom.HTMLObjectElement", "HTMLObjectElement", "github.com/influx6/dom", function(BasicHTMLElement_, Data_, Height_, Name_, TabIndex_, Type_, TypeMustMatch_, UseMap_, ValidationMessage_, With_, WillValidate_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Data = "";
-			this.Height = "";
-			this.Name = "";
-			this.TabIndex = 0;
-			this.Type = "";
-			this.TypeMustMatch = false;
-			this.UseMap = "";
-			this.ValidationMessage = "";
-			this.With = "";
-			this.WillValidate = false;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Data = Data_;
-		this.Height = Height_;
-		this.Name = Name_;
-		this.TabIndex = TabIndex_;
-		this.Type = Type_;
-		this.TypeMustMatch = TypeMustMatch_;
-		this.UseMap = UseMap_;
-		this.ValidationMessage = ValidationMessage_;
-		this.With = With_;
-		this.WillValidate = WillValidate_;
-	});
-	HTMLOptGroupElement = $pkg.HTMLOptGroupElement = $newType(0, $kindStruct, "dom.HTMLOptGroupElement", "HTMLOptGroupElement", "github.com/influx6/dom", function(BasicHTMLElement_, Disabled_, Label_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Disabled = false;
-			this.Label = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Disabled = Disabled_;
-		this.Label = Label_;
-	});
-	HTMLOptionElement = $pkg.HTMLOptionElement = $newType(0, $kindStruct, "dom.HTMLOptionElement", "HTMLOptionElement", "github.com/influx6/dom", function(BasicHTMLElement_, DefaultSelected_, Disabled_, Index_, Label_, Selected_, Text_, Value_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.DefaultSelected = false;
-			this.Disabled = false;
-			this.Index = 0;
-			this.Label = "";
-			this.Selected = false;
-			this.Text = "";
-			this.Value = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.DefaultSelected = DefaultSelected_;
-		this.Disabled = Disabled_;
-		this.Index = Index_;
-		this.Label = Label_;
-		this.Selected = Selected_;
-		this.Text = Text_;
-		this.Value = Value_;
-	});
-	HTMLOutputElement = $pkg.HTMLOutputElement = $newType(0, $kindStruct, "dom.HTMLOutputElement", "HTMLOutputElement", "github.com/influx6/dom", function(BasicHTMLElement_, DefaultValue_, Name_, Type_, ValidationMessage_, Value_, WillValidate_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.DefaultValue = "";
-			this.Name = "";
-			this.Type = "";
-			this.ValidationMessage = "";
-			this.Value = "";
-			this.WillValidate = false;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.DefaultValue = DefaultValue_;
-		this.Name = Name_;
-		this.Type = Type_;
-		this.ValidationMessage = ValidationMessage_;
-		this.Value = Value_;
-		this.WillValidate = WillValidate_;
-	});
-	HTMLParagraphElement = $pkg.HTMLParagraphElement = $newType(0, $kindStruct, "dom.HTMLParagraphElement", "HTMLParagraphElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLParamElement = $pkg.HTMLParamElement = $newType(0, $kindStruct, "dom.HTMLParamElement", "HTMLParamElement", "github.com/influx6/dom", function(BasicHTMLElement_, Name_, Value_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Name = "";
-			this.Value = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Name = Name_;
-		this.Value = Value_;
-	});
-	HTMLPreElement = $pkg.HTMLPreElement = $newType(0, $kindStruct, "dom.HTMLPreElement", "HTMLPreElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLProgressElement = $pkg.HTMLProgressElement = $newType(0, $kindStruct, "dom.HTMLProgressElement", "HTMLProgressElement", "github.com/influx6/dom", function(BasicHTMLElement_, Max_, Position_, Value_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Max = 0;
-			this.Position = 0;
-			this.Value = 0;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Max = Max_;
-		this.Position = Position_;
-		this.Value = Value_;
-	});
-	HTMLQuoteElement = $pkg.HTMLQuoteElement = $newType(0, $kindStruct, "dom.HTMLQuoteElement", "HTMLQuoteElement", "github.com/influx6/dom", function(BasicHTMLElement_, Cite_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Cite = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Cite = Cite_;
-	});
-	HTMLScriptElement = $pkg.HTMLScriptElement = $newType(0, $kindStruct, "dom.HTMLScriptElement", "HTMLScriptElement", "github.com/influx6/dom", function(BasicHTMLElement_, Type_, Src_, Charset_, Async_, Defer_, Text_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Type = "";
-			this.Src = "";
-			this.Charset = "";
-			this.Async = false;
-			this.Defer = false;
-			this.Text = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Type = Type_;
-		this.Src = Src_;
-		this.Charset = Charset_;
-		this.Async = Async_;
-		this.Defer = Defer_;
-		this.Text = Text_;
-	});
-	HTMLSelectElement = $pkg.HTMLSelectElement = $newType(0, $kindStruct, "dom.HTMLSelectElement", "HTMLSelectElement", "github.com/influx6/dom", function(BasicHTMLElement_, Autofocus_, Disabled_, Length_, Multiple_, Name_, Required_, SelectedIndex_, Size_, Type_, ValidationMessage_, Value_, WillValidate_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Autofocus = false;
-			this.Disabled = false;
-			this.Length = 0;
-			this.Multiple = false;
-			this.Name = "";
-			this.Required = false;
-			this.SelectedIndex = 0;
-			this.Size = 0;
-			this.Type = "";
-			this.ValidationMessage = "";
-			this.Value = "";
-			this.WillValidate = false;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Autofocus = Autofocus_;
-		this.Disabled = Disabled_;
-		this.Length = Length_;
-		this.Multiple = Multiple_;
-		this.Name = Name_;
-		this.Required = Required_;
-		this.SelectedIndex = SelectedIndex_;
-		this.Size = Size_;
-		this.Type = Type_;
-		this.ValidationMessage = ValidationMessage_;
-		this.Value = Value_;
-		this.WillValidate = WillValidate_;
-	});
-	HTMLSourceElement = $pkg.HTMLSourceElement = $newType(0, $kindStruct, "dom.HTMLSourceElement", "HTMLSourceElement", "github.com/influx6/dom", function(BasicHTMLElement_, Media_, Src_, Type_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Media = "";
-			this.Src = "";
-			this.Type = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Media = Media_;
-		this.Src = Src_;
-		this.Type = Type_;
-	});
-	HTMLSpanElement = $pkg.HTMLSpanElement = $newType(0, $kindStruct, "dom.HTMLSpanElement", "HTMLSpanElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLStyleElement = $pkg.HTMLStyleElement = $newType(0, $kindStruct, "dom.HTMLStyleElement", "HTMLStyleElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLTableCaptionElement = $pkg.HTMLTableCaptionElement = $newType(0, $kindStruct, "dom.HTMLTableCaptionElement", "HTMLTableCaptionElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLTableCellElement = $pkg.HTMLTableCellElement = $newType(0, $kindStruct, "dom.HTMLTableCellElement", "HTMLTableCellElement", "github.com/influx6/dom", function(BasicHTMLElement_, ColSpan_, RowSpan_, CellIndex_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.ColSpan = 0;
-			this.RowSpan = 0;
-			this.CellIndex = 0;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.ColSpan = ColSpan_;
-		this.RowSpan = RowSpan_;
-		this.CellIndex = CellIndex_;
-	});
-	HTMLTableColElement = $pkg.HTMLTableColElement = $newType(0, $kindStruct, "dom.HTMLTableColElement", "HTMLTableColElement", "github.com/influx6/dom", function(BasicHTMLElement_, Span_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Span = 0;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Span = Span_;
-	});
-	HTMLTableDataCellElement = $pkg.HTMLTableDataCellElement = $newType(0, $kindStruct, "dom.HTMLTableDataCellElement", "HTMLTableDataCellElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLTableElement = $pkg.HTMLTableElement = $newType(0, $kindStruct, "dom.HTMLTableElement", "HTMLTableElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLTableHeaderCellElement = $pkg.HTMLTableHeaderCellElement = $newType(0, $kindStruct, "dom.HTMLTableHeaderCellElement", "HTMLTableHeaderCellElement", "github.com/influx6/dom", function(BasicHTMLElement_, Abbr_, Scope_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Abbr = "";
-			this.Scope = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Abbr = Abbr_;
-		this.Scope = Scope_;
-	});
-	HTMLTableRowElement = $pkg.HTMLTableRowElement = $newType(0, $kindStruct, "dom.HTMLTableRowElement", "HTMLTableRowElement", "github.com/influx6/dom", function(BasicHTMLElement_, RowIndex_, SectionRowIndex_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.RowIndex = 0;
-			this.SectionRowIndex = 0;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.RowIndex = RowIndex_;
-		this.SectionRowIndex = SectionRowIndex_;
-	});
-	HTMLTableSectionElement = $pkg.HTMLTableSectionElement = $newType(0, $kindStruct, "dom.HTMLTableSectionElement", "HTMLTableSectionElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLTextAreaElement = $pkg.HTMLTextAreaElement = $newType(0, $kindStruct, "dom.HTMLTextAreaElement", "HTMLTextAreaElement", "github.com/influx6/dom", function(BasicHTMLElement_, Autocomplete_, Autofocus_, Cols_, DefaultValue_, DirName_, Disabled_, MaxLength_, Name_, Placeholder_, ReadOnly_, Required_, Rows_, SelectionDirection_, SelectionStart_, SelectionEnd_, TabIndex_, TextLength_, Type_, ValidationMessage_, Value_, WillValidate_, Wrap_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Autocomplete = "";
-			this.Autofocus = false;
-			this.Cols = 0;
-			this.DefaultValue = "";
-			this.DirName = "";
-			this.Disabled = false;
-			this.MaxLength = 0;
-			this.Name = "";
-			this.Placeholder = "";
-			this.ReadOnly = false;
-			this.Required = false;
-			this.Rows = 0;
-			this.SelectionDirection = "";
-			this.SelectionStart = 0;
-			this.SelectionEnd = 0;
-			this.TabIndex = 0;
-			this.TextLength = 0;
-			this.Type = "";
-			this.ValidationMessage = "";
-			this.Value = "";
-			this.WillValidate = false;
-			this.Wrap = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Autocomplete = Autocomplete_;
-		this.Autofocus = Autofocus_;
-		this.Cols = Cols_;
-		this.DefaultValue = DefaultValue_;
-		this.DirName = DirName_;
-		this.Disabled = Disabled_;
-		this.MaxLength = MaxLength_;
-		this.Name = Name_;
-		this.Placeholder = Placeholder_;
-		this.ReadOnly = ReadOnly_;
-		this.Required = Required_;
-		this.Rows = Rows_;
-		this.SelectionDirection = SelectionDirection_;
-		this.SelectionStart = SelectionStart_;
-		this.SelectionEnd = SelectionEnd_;
-		this.TabIndex = TabIndex_;
-		this.TextLength = TextLength_;
-		this.Type = Type_;
-		this.ValidationMessage = ValidationMessage_;
-		this.Value = Value_;
-		this.WillValidate = WillValidate_;
-		this.Wrap = Wrap_;
-	});
-	HTMLTimeElement = $pkg.HTMLTimeElement = $newType(0, $kindStruct, "dom.HTMLTimeElement", "HTMLTimeElement", "github.com/influx6/dom", function(BasicHTMLElement_, DateTime_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.DateTime = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.DateTime = DateTime_;
-	});
-	HTMLTitleElement = $pkg.HTMLTitleElement = $newType(0, $kindStruct, "dom.HTMLTitleElement", "HTMLTitleElement", "github.com/influx6/dom", function(BasicHTMLElement_, Text_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Text = "";
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Text = Text_;
-	});
-	TextTrack = $pkg.TextTrack = $newType(0, $kindStruct, "dom.TextTrack", "TextTrack", "github.com/influx6/dom", function(Object_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			return;
-		}
-		this.Object = Object_;
-	});
-	HTMLTrackElement = $pkg.HTMLTrackElement = $newType(0, $kindStruct, "dom.HTMLTrackElement", "HTMLTrackElement", "github.com/influx6/dom", function(BasicHTMLElement_, Kind_, Src_, Srclang_, Label_, Default_, ReadyState_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			this.Kind = "";
-			this.Src = "";
-			this.Srclang = "";
-			this.Label = "";
-			this.Default = false;
-			this.ReadyState = 0;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-		this.Kind = Kind_;
-		this.Src = Src_;
-		this.Srclang = Srclang_;
-		this.Label = Label_;
-		this.Default = Default_;
-		this.ReadyState = ReadyState_;
-	});
-	HTMLUListElement = $pkg.HTMLUListElement = $newType(0, $kindStruct, "dom.HTMLUListElement", "HTMLUListElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLUnknownElement = $pkg.HTMLUnknownElement = $newType(0, $kindStruct, "dom.HTMLUnknownElement", "HTMLUnknownElement", "github.com/influx6/dom", function(BasicHTMLElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicHTMLElement = ptrType.nil;
-			return;
-		}
-		this.BasicHTMLElement = BasicHTMLElement_;
-	});
-	HTMLVideoElement = $pkg.HTMLVideoElement = $newType(0, $kindStruct, "dom.HTMLVideoElement", "HTMLVideoElement", "github.com/influx6/dom", function(HTMLMediaElement_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.HTMLMediaElement = ptrType$2.nil;
-			return;
-		}
-		this.HTMLMediaElement = HTMLMediaElement_;
-	});
-	CSSStyleDeclaration = $pkg.CSSStyleDeclaration = $newType(0, $kindStruct, "dom.CSSStyleDeclaration", "CSSStyleDeclaration", "github.com/influx6/dom", function(Object_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			return;
-		}
-		this.Object = Object_;
-	});
-	Text = $pkg.Text = $newType(0, $kindStruct, "dom.Text", "Text", "github.com/influx6/dom", function(BasicNode_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicNode = ptrType$22.nil;
-			return;
-		}
-		this.BasicNode = BasicNode_;
-	});
-	Event = $pkg.Event = $newType(8, $kindInterface, "dom.Event", "Event", "github.com/influx6/dom", null);
-	BasicEvent = $pkg.BasicEvent = $newType(0, $kindStruct, "dom.BasicEvent", "BasicEvent", "github.com/influx6/dom", function(Object_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Object = null;
-			return;
-		}
-		this.Object = Object_;
-	});
-	AnimationEvent = $pkg.AnimationEvent = $newType(0, $kindStruct, "dom.AnimationEvent", "AnimationEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	AudioProcessingEvent = $pkg.AudioProcessingEvent = $newType(0, $kindStruct, "dom.AudioProcessingEvent", "AudioProcessingEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	BeforeInputEvent = $pkg.BeforeInputEvent = $newType(0, $kindStruct, "dom.BeforeInputEvent", "BeforeInputEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	BeforeUnloadEvent = $pkg.BeforeUnloadEvent = $newType(0, $kindStruct, "dom.BeforeUnloadEvent", "BeforeUnloadEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	BlobEvent = $pkg.BlobEvent = $newType(0, $kindStruct, "dom.BlobEvent", "BlobEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	ClipboardEvent = $pkg.ClipboardEvent = $newType(0, $kindStruct, "dom.ClipboardEvent", "ClipboardEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	CloseEvent = $pkg.CloseEvent = $newType(0, $kindStruct, "dom.CloseEvent", "CloseEvent", "github.com/influx6/dom", function(BasicEvent_, Code_, Reason_, WasClean_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			this.Code = 0;
-			this.Reason = "";
-			this.WasClean = false;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-		this.Code = Code_;
-		this.Reason = Reason_;
-		this.WasClean = WasClean_;
-	});
-	CompositionEvent = $pkg.CompositionEvent = $newType(0, $kindStruct, "dom.CompositionEvent", "CompositionEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	CSSFontFaceLoadEvent = $pkg.CSSFontFaceLoadEvent = $newType(0, $kindStruct, "dom.CSSFontFaceLoadEvent", "CSSFontFaceLoadEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	CustomEvent = $pkg.CustomEvent = $newType(0, $kindStruct, "dom.CustomEvent", "CustomEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	DeviceLightEvent = $pkg.DeviceLightEvent = $newType(0, $kindStruct, "dom.DeviceLightEvent", "DeviceLightEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	DeviceMotionEvent = $pkg.DeviceMotionEvent = $newType(0, $kindStruct, "dom.DeviceMotionEvent", "DeviceMotionEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	DeviceOrientationEvent = $pkg.DeviceOrientationEvent = $newType(0, $kindStruct, "dom.DeviceOrientationEvent", "DeviceOrientationEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	DeviceProximityEvent = $pkg.DeviceProximityEvent = $newType(0, $kindStruct, "dom.DeviceProximityEvent", "DeviceProximityEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	DOMTransactionEvent = $pkg.DOMTransactionEvent = $newType(0, $kindStruct, "dom.DOMTransactionEvent", "DOMTransactionEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	DragEvent = $pkg.DragEvent = $newType(0, $kindStruct, "dom.DragEvent", "DragEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	EditingBeforeInputEvent = $pkg.EditingBeforeInputEvent = $newType(0, $kindStruct, "dom.EditingBeforeInputEvent", "EditingBeforeInputEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	ErrorEvent = $pkg.ErrorEvent = $newType(0, $kindStruct, "dom.ErrorEvent", "ErrorEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	FocusEvent = $pkg.FocusEvent = $newType(0, $kindStruct, "dom.FocusEvent", "FocusEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	GamepadEvent = $pkg.GamepadEvent = $newType(0, $kindStruct, "dom.GamepadEvent", "GamepadEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	HashChangeEvent = $pkg.HashChangeEvent = $newType(0, $kindStruct, "dom.HashChangeEvent", "HashChangeEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	IDBVersionChangeEvent = $pkg.IDBVersionChangeEvent = $newType(0, $kindStruct, "dom.IDBVersionChangeEvent", "IDBVersionChangeEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	KeyboardEvent = $pkg.KeyboardEvent = $newType(0, $kindStruct, "dom.KeyboardEvent", "KeyboardEvent", "github.com/influx6/dom", function(BasicEvent_, AltKey_, CharCode_, CtrlKey_, Key_, KeyIdentifier_, KeyCode_, Locale_, Location_, KeyLocation_, MetaKey_, Repeat_, ShiftKey_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			this.AltKey = false;
-			this.CharCode = 0;
-			this.CtrlKey = false;
-			this.Key = "";
-			this.KeyIdentifier = "";
-			this.KeyCode = 0;
-			this.Locale = "";
-			this.Location = 0;
-			this.KeyLocation = 0;
-			this.MetaKey = false;
-			this.Repeat = false;
-			this.ShiftKey = false;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-		this.AltKey = AltKey_;
-		this.CharCode = CharCode_;
-		this.CtrlKey = CtrlKey_;
-		this.Key = Key_;
-		this.KeyIdentifier = KeyIdentifier_;
-		this.KeyCode = KeyCode_;
-		this.Locale = Locale_;
-		this.Location = Location_;
-		this.KeyLocation = KeyLocation_;
-		this.MetaKey = MetaKey_;
-		this.Repeat = Repeat_;
-		this.ShiftKey = ShiftKey_;
-	});
-	MediaStreamEvent = $pkg.MediaStreamEvent = $newType(0, $kindStruct, "dom.MediaStreamEvent", "MediaStreamEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	MessageEvent = $pkg.MessageEvent = $newType(0, $kindStruct, "dom.MessageEvent", "MessageEvent", "github.com/influx6/dom", function(BasicEvent_, Data_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			this.Data = null;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-		this.Data = Data_;
-	});
-	MouseEvent = $pkg.MouseEvent = $newType(0, $kindStruct, "dom.MouseEvent", "MouseEvent", "github.com/influx6/dom", function(UIEvent_, AltKey_, Button_, ClientX_, ClientY_, CtrlKey_, MetaKey_, MovementX_, MovementY_, ScreenX_, ScreenY_, ShiftKey_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.UIEvent = ptrType$19.nil;
-			this.AltKey = false;
-			this.Button = 0;
-			this.ClientX = 0;
-			this.ClientY = 0;
-			this.CtrlKey = false;
-			this.MetaKey = false;
-			this.MovementX = 0;
-			this.MovementY = 0;
-			this.ScreenX = 0;
-			this.ScreenY = 0;
-			this.ShiftKey = false;
-			return;
-		}
-		this.UIEvent = UIEvent_;
-		this.AltKey = AltKey_;
-		this.Button = Button_;
-		this.ClientX = ClientX_;
-		this.ClientY = ClientY_;
-		this.CtrlKey = CtrlKey_;
-		this.MetaKey = MetaKey_;
-		this.MovementX = MovementX_;
-		this.MovementY = MovementY_;
-		this.ScreenX = ScreenX_;
-		this.ScreenY = ScreenY_;
-		this.ShiftKey = ShiftKey_;
-	});
-	MutationEvent = $pkg.MutationEvent = $newType(0, $kindStruct, "dom.MutationEvent", "MutationEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	OfflineAudioCompletionEvent = $pkg.OfflineAudioCompletionEvent = $newType(0, $kindStruct, "dom.OfflineAudioCompletionEvent", "OfflineAudioCompletionEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	PageTransitionEvent = $pkg.PageTransitionEvent = $newType(0, $kindStruct, "dom.PageTransitionEvent", "PageTransitionEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	PointerEvent = $pkg.PointerEvent = $newType(0, $kindStruct, "dom.PointerEvent", "PointerEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	PopStateEvent = $pkg.PopStateEvent = $newType(0, $kindStruct, "dom.PopStateEvent", "PopStateEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	ProgressEvent = $pkg.ProgressEvent = $newType(0, $kindStruct, "dom.ProgressEvent", "ProgressEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	RelatedEvent = $pkg.RelatedEvent = $newType(0, $kindStruct, "dom.RelatedEvent", "RelatedEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	RTCPeerConnectionIceEvent = $pkg.RTCPeerConnectionIceEvent = $newType(0, $kindStruct, "dom.RTCPeerConnectionIceEvent", "RTCPeerConnectionIceEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	SensorEvent = $pkg.SensorEvent = $newType(0, $kindStruct, "dom.SensorEvent", "SensorEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	StorageEvent = $pkg.StorageEvent = $newType(0, $kindStruct, "dom.StorageEvent", "StorageEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	SVGEvent = $pkg.SVGEvent = $newType(0, $kindStruct, "dom.SVGEvent", "SVGEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	SVGZoomEvent = $pkg.SVGZoomEvent = $newType(0, $kindStruct, "dom.SVGZoomEvent", "SVGZoomEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	TimeEvent = $pkg.TimeEvent = $newType(0, $kindStruct, "dom.TimeEvent", "TimeEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	TouchEvent = $pkg.TouchEvent = $newType(0, $kindStruct, "dom.TouchEvent", "TouchEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	TrackEvent = $pkg.TrackEvent = $newType(0, $kindStruct, "dom.TrackEvent", "TrackEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	TransitionEvent = $pkg.TransitionEvent = $newType(0, $kindStruct, "dom.TransitionEvent", "TransitionEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	UIEvent = $pkg.UIEvent = $newType(0, $kindStruct, "dom.UIEvent", "UIEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	UserProximityEvent = $pkg.UserProximityEvent = $newType(0, $kindStruct, "dom.UserProximityEvent", "UserProximityEvent", "github.com/influx6/dom", function(BasicEvent_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-	});
-	WheelEvent = $pkg.WheelEvent = $newType(0, $kindStruct, "dom.WheelEvent", "WheelEvent", "github.com/influx6/dom", function(BasicEvent_, DeltaX_, DeltaY_, DeltaZ_, DeltaMode_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.BasicEvent = ptrType$18.nil;
-			this.DeltaX = 0;
-			this.DeltaY = 0;
-			this.DeltaZ = 0;
-			this.DeltaMode = 0;
-			return;
-		}
-		this.BasicEvent = BasicEvent_;
-		this.DeltaX = DeltaX_;
-		this.DeltaY = DeltaY_;
-		this.DeltaZ = DeltaZ_;
-		this.DeltaMode = DeltaMode_;
-	});
-	sliceType = $sliceType($emptyInterface);
-	sliceType$1 = $sliceType(Node);
-	sliceType$2 = $sliceType(Element);
-	sliceType$3 = $sliceType(HTMLElement);
-	ptrType = $ptrType(BasicHTMLElement);
-	ptrType$1 = $ptrType(URLUtils);
-	ptrType$2 = $ptrType(HTMLMediaElement);
-	ptrType$3 = $ptrType(time.Location);
-	ptrType$4 = $ptrType(HTMLFormElement);
-	ptrType$5 = $ptrType(HTMLLabelElement);
-	sliceType$4 = $sliceType(ptrType$5);
-	ptrType$6 = $ptrType(HTMLOptionElement);
-	sliceType$5 = $sliceType(ptrType$6);
-	sliceType$6 = $sliceType($String);
-	sliceType$7 = $sliceType(ptrType$4);
-	ptrType$7 = $ptrType(HTMLHeadElement);
-	ptrType$8 = $ptrType(HTMLImageElement);
-	sliceType$8 = $sliceType(ptrType$8);
-	ptrType$9 = $ptrType(HTMLEmbedElement);
-	sliceType$9 = $sliceType(ptrType$9);
-	ptrType$10 = $ptrType(HTMLScriptElement);
-	sliceType$10 = $sliceType(ptrType$10);
-	sliceType$11 = $sliceType(StyleSheet);
-	ptrType$11 = $ptrType(Text);
-	funcType = $funcType([], [], false);
-	ptrType$12 = $ptrType(js.Object);
-	funcType$1 = $funcType([ptrType$12], [], false);
-	ptrType$13 = $ptrType(File);
-	sliceType$12 = $sliceType(ptrType$13);
-	ptrType$14 = $ptrType(HTMLDataListElement);
-	ptrType$15 = $ptrType(HTMLAreaElement);
-	sliceType$13 = $sliceType(ptrType$15);
-	ptrType$16 = $ptrType(HTMLTableCellElement);
-	sliceType$14 = $sliceType(ptrType$16);
-	ptrType$17 = $ptrType(HTMLTableRowElement);
-	sliceType$15 = $sliceType(ptrType$17);
-	ptrType$18 = $ptrType(BasicEvent);
-	ptrType$19 = $ptrType(UIEvent);
-	ptrType$20 = $ptrType(TokenList);
-	funcType$2 = $funcType([Event], [], false);
-	ptrType$21 = $ptrType(Location);
-	ptrType$22 = $ptrType(BasicNode);
-	ptrType$23 = $ptrType(document);
-	ptrType$24 = $ptrType(htmlDocument);
-	mapType = $mapType($String, $String);
-	ptrType$25 = $ptrType(CSSStyleDeclaration);
-	ptrType$26 = $ptrType(Console);
-	funcType$3 = $funcType([time.Duration], [], false);
-	ptrType$27 = $ptrType(Screen);
-	ptrType$28 = $ptrType(window);
-	funcType$4 = $funcType([Position], [], false);
-	funcType$5 = $funcType([PositionError], [], false);
-	ptrType$29 = $ptrType(PositionError);
-	ptrType$30 = $ptrType(Coordinates);
-	ptrType$31 = $ptrType(BasicElement);
-	ptrType$32 = $ptrType(HTMLAnchorElement);
-	ptrType$33 = $ptrType(HTMLAppletElement);
-	ptrType$34 = $ptrType(HTMLBaseElement);
-	ptrType$35 = $ptrType(ValidityState);
-	ptrType$36 = $ptrType(HTMLButtonElement);
-	ptrType$37 = $ptrType(CanvasRenderingContext2D);
-	ptrType$38 = $ptrType(HTMLCanvasElement);
-	ptrType$39 = $ptrType(HTMLFieldSetElement);
-	ptrType$40 = $ptrType(HTMLIFrameElement);
-	ptrType$41 = $ptrType(HTMLInputElement);
-	ptrType$42 = $ptrType(HTMLKeygenElement);
-	ptrType$43 = $ptrType(HTMLLegendElement);
-	ptrType$44 = $ptrType(HTMLLinkElement);
-	ptrType$45 = $ptrType(HTMLMapElement);
-	ptrType$46 = $ptrType(HTMLObjectElement);
-	ptrType$47 = $ptrType(HTMLOutputElement);
-	ptrType$48 = $ptrType(HTMLSelectElement);
-	ptrType$49 = $ptrType(HTMLTableSectionElement);
-	ptrType$50 = $ptrType(HTMLTextAreaElement);
-	ptrType$51 = $ptrType(TextTrack);
-	ptrType$52 = $ptrType(HTMLTrackElement);
-	ptrType$53 = $ptrType(KeyboardEvent);
-	ptrType$54 = $ptrType(MouseEvent);
-	callRecover = function(o, fn, args) {
-		var $ptr, args, err, fn, o, obj, $deferred;
-		/* */ var $err = null; try { $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
-		err = $ifaceNil;
-		$deferred.push([(function() {
-			var $ptr, _tuple, e, ok, panicErr;
-			e = $recover();
-			if ($interfaceIsEqual(e, $ifaceNil)) {
-				return;
-			}
-			_tuple = $assertType(e, $error, true); panicErr = _tuple[0]; ok = _tuple[1];
-			if (ok && !($interfaceIsEqual(panicErr, $ifaceNil))) {
-				err = panicErr;
-			} else {
-				$panic(e);
-			}
-		}), []]);
-		(obj = o, obj[$externalize(fn, $String)].apply(obj, $externalize(args, sliceType)));
-		err = $ifaceNil;
-		return err;
-		/* */ } catch(err) { $err = err; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  err; } }
-	};
-	nodeListToNodes = function(o) {
-		var $ptr, i, length, o, out;
-		out = sliceType$1.nil;
-		length = $parseInt(o.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < length)) { break; }
-			out = $append(out, wrapNode(o.item(i)));
-			i = i + (1) >> 0;
-		}
-		return out;
-	};
-	nodeListToElements = function(o) {
-		var $ptr, i, length, o, out;
-		out = sliceType$2.nil;
-		length = $parseInt(o.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < length)) { break; }
-			out = $append(out, wrapElement(o.item(i)));
-			i = i + (1) >> 0;
-		}
-		return out;
-	};
-	nodeListToHTMLElements = function(o) {
-		var $ptr, i, length, o, out;
-		out = sliceType$3.nil;
-		length = $parseInt(o.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < length)) { break; }
-			out = $append(out, wrapHTMLElement(o.item(i)));
-			i = i + (1) >> 0;
-		}
-		return out;
-	};
-	attrSetToMap = function(o) {
-		var $ptr, _key, attrs, i, item, length, o;
-		attrs = $makeMap($String.keyFor, []);
-		length = $parseInt(o.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < length)) { break; }
-			item = o.item(i);
-			_key = $internalize(item.name, $String); (attrs || $throwRuntimeError("assignment to entry in nil map"))[$String.keyFor(_key)] = { k: _key, v: $internalize(item.value, $String) };
-			i = i + (1) >> 0;
-		}
-		return attrs;
-	};
-	dataSetToMap = function(o) {
-		var $ptr, _i, _key, _ref, data, key, keys, o;
-		data = $makeMap($String.keyFor, []);
-		keys = js.Keys(o);
-		_ref = keys;
-		_i = 0;
-		while (true) {
-			if (!(_i < _ref.$length)) { break; }
-			key = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			_key = key; (data || $throwRuntimeError("assignment to entry in nil map"))[$String.keyFor(_key)] = { k: _key, v: $internalize(o[$externalize(key, $String)], $String) };
-			_i++;
-		}
-		return data;
-	};
-	wrapDocument = function(o) {
-		var $ptr, _ref, o;
-		_ref = o.constructor;
-		if (_ref === $global.HTMLDocument) {
-			return new htmlDocument.ptr(new document.ptr(new BasicNode.ptr(o)));
-		} else {
-			return new document.ptr(new BasicNode.ptr(o));
-		}
-	};
-	wrapDocumentFragment = function(o) {
-		var $ptr, _ref, o;
-		_ref = o.constructor;
-		return new documentFragment.ptr(new BasicNode.ptr(o));
-	};
-	wrapNode = function(o) {
-		var $ptr, _ref, o;
-		if (o === null || o === undefined) {
-			return $ifaceNil;
-		}
-		_ref = o.constructor;
-		if (_ref === $global.Text) {
-			return new Text.ptr(new BasicNode.ptr(o));
-		} else {
-			return wrapElement(o);
-		}
-	};
-	wrapElement = function(o) {
-		var $ptr, _ref, o;
-		if (o === null || o === undefined) {
-			return $ifaceNil;
-		}
-		_ref = o.constructor;
-		return wrapHTMLElement(o);
-	};
-	wrapHTMLElement = function(o) {
-		var $ptr, _ref, c, el, o;
-		if (o === null || o === undefined) {
-			return $ifaceNil;
-		}
-		el = new BasicHTMLElement.ptr(new BasicElement.ptr(new BasicNode.ptr(o)));
-		c = o.constructor;
-		_ref = c;
-		if (_ref === $global.HTMLAnchorElement) {
-			return new HTMLAnchorElement.ptr(el, new URLUtils.ptr(o, "", "", "", "", "", "", "", "", "", "", ""), "", "", 0, "", "", "");
-		} else if (_ref === $global.HTMLAppletElement) {
-			return new HTMLAppletElement.ptr(el, "", "", "", "", "", "", 0, "", "");
-		} else if (_ref === $global.HTMLAreaElement) {
-			return new HTMLAreaElement.ptr(el, new URLUtils.ptr(o, "", "", "", "", "", "", "", "", "", "", ""), "", "", "", "", "", "", 0, "", "");
-		} else if (_ref === $global.HTMLAudioElement) {
-			return new HTMLAudioElement.ptr(new HTMLMediaElement.ptr(el));
-		} else if (_ref === $global.HTMLBaseElement) {
-			return new HTMLBaseElement.ptr(el);
-		} else if (_ref === $global.HTMLBodyElement) {
-			return new HTMLBodyElement.ptr(el);
-		} else if (_ref === $global.HTMLBRElement) {
-			return new HTMLBRElement.ptr(el);
-		} else if (_ref === $global.HTMLButtonElement) {
-			return new HTMLButtonElement.ptr(el, false, false, "", "", "", false, "", "", 0, "", "", "", false);
-		} else if (_ref === $global.HTMLCanvasElement) {
-			return new HTMLCanvasElement.ptr(el, 0, 0);
-		} else if (_ref === $global.HTMLDataElement) {
-			return new HTMLDataElement.ptr(el, "");
-		} else if (_ref === $global.HTMLDataListElement) {
-			return new HTMLDataListElement.ptr(el);
-		} else if (_ref === $global.HTMLDirectoryElement) {
-			return new HTMLDirectoryElement.ptr(el);
-		} else if (_ref === $global.HTMLDivElement) {
-			return new HTMLDivElement.ptr(el);
-		} else if (_ref === $global.HTMLDListElement) {
-			return new HTMLDListElement.ptr(el);
-		} else if (_ref === $global.HTMLEmbedElement) {
-			return new HTMLEmbedElement.ptr(el, "", "", "");
-		} else if (_ref === $global.HTMLFieldSetElement) {
-			return new HTMLFieldSetElement.ptr(el, false, "", "", "", false);
-		} else if (_ref === $global.HTMLFontElement) {
-			return new HTMLFontElement.ptr(el);
-		} else if (_ref === $global.HTMLFormElement) {
-			return new HTMLFormElement.ptr(el, "", "", "", "", "", 0, "", "", false, "");
-		} else if (_ref === $global.HTMLFrameElement) {
-			return new HTMLFrameElement.ptr(el);
-		} else if (_ref === $global.HTMLFrameSetElement) {
-			return new HTMLFrameSetElement.ptr(el);
-		} else if (_ref === $global.HTMLHeadElement) {
-			return new HTMLHeadElement.ptr(el);
-		} else if (_ref === $global.HTMLHeadingElement) {
-			return new HTMLHeadingElement.ptr(el);
-		} else if (_ref === $global.HTMLHtmlElement) {
-			return new HTMLHtmlElement.ptr(el);
-		} else if (_ref === $global.HTMLHRElement) {
-			return new HTMLHRElement.ptr(el);
-		} else if (_ref === $global.HTMLIFrameElement) {
-			return new HTMLIFrameElement.ptr(el, "", "", "", "", "", false);
-		} else if (_ref === $global.HTMLImageElement) {
-			return new HTMLImageElement.ptr(el, false, "", 0, false, 0, 0, "", "", 0);
-		} else if (_ref === $global.HTMLInputElement) {
-			return new HTMLInputElement.ptr(el, "", "", "", false, false, false, "", "", false, "", "", "", false, "", "", false, "", 0, "", false, "", "", "", false, false, "", 0, 0, 0, "", "", 0, "", "", "", new time.Time.ptr(new $Int64(0, 0), 0, ptrType$3.nil), 0, "", false);
-		} else if (_ref === $global.HTMLKeygenElement) {
-			return new HTMLKeygenElement.ptr(el, false, "", false, "", "", "", "", false);
-		} else if (_ref === $global.HTMLLabelElement) {
-			return new HTMLLabelElement.ptr(el, "");
-		} else if (_ref === $global.HTMLLegendElement) {
-			return new HTMLLegendElement.ptr(el);
-		} else if (_ref === $global.HTMLLIElement) {
-			return new HTMLLIElement.ptr(el, 0);
-		} else if (_ref === $global.HTMLLinkElement) {
-			return new HTMLLinkElement.ptr(el, false, "", "", "", "");
-		} else if (_ref === $global.HTMLMapElement) {
-			return new HTMLMapElement.ptr(el, "");
-		} else if (_ref === $global.HTMLMediaElement) {
-			return new HTMLMediaElement.ptr(el);
-		} else if (_ref === $global.HTMLMenuElement) {
-			return new HTMLMenuElement.ptr(el);
-		} else if (_ref === $global.HTMLMetaElement) {
-			return new HTMLMetaElement.ptr(el, "", "", "");
-		} else if (_ref === $global.HTMLMeterElement) {
-			return new HTMLMeterElement.ptr(el, 0, 0, 0, 0, 0);
-		} else if (_ref === $global.HTMLModElement) {
-			return new HTMLModElement.ptr(el, "", "");
-		} else if (_ref === $global.HTMLObjectElement) {
-			return new HTMLObjectElement.ptr(el, "", "", "", 0, "", false, "", "", "", false);
-		} else if (_ref === $global.HTMLOListElement) {
-			return new HTMLOListElement.ptr(el, false, 0, "");
-		} else if (_ref === $global.HTMLOptGroupElement) {
-			return new HTMLOptGroupElement.ptr(el, false, "");
-		} else if (_ref === $global.HTMLOptionElement) {
-			return new HTMLOptionElement.ptr(el, false, false, 0, "", false, "", "");
-		} else if (_ref === $global.HTMLOutputElement) {
-			return new HTMLOutputElement.ptr(el, "", "", "", "", "", false);
-		} else if (_ref === $global.HTMLParagraphElement) {
-			return new HTMLParagraphElement.ptr(el);
-		} else if (_ref === $global.HTMLParamElement) {
-			return new HTMLParamElement.ptr(el, "", "");
-		} else if (_ref === $global.HTMLPreElement) {
-			return new HTMLPreElement.ptr(el);
-		} else if (_ref === $global.HTMLProgressElement) {
-			return new HTMLProgressElement.ptr(el, 0, 0, 0);
-		} else if (_ref === $global.HTMLQuoteElement) {
-			return new HTMLQuoteElement.ptr(el, "");
-		} else if (_ref === $global.HTMLScriptElement) {
-			return new HTMLScriptElement.ptr(el, "", "", "", false, false, "");
-		} else if (_ref === $global.HTMLSelectElement) {
-			return new HTMLSelectElement.ptr(el, false, false, 0, false, "", false, 0, 0, "", "", "", false);
-		} else if (_ref === $global.HTMLSourceElement) {
-			return new HTMLSourceElement.ptr(el, "", "", "");
-		} else if (_ref === $global.HTMLSpanElement) {
-			return new HTMLSpanElement.ptr(el);
-		} else if (_ref === $global.HTMLStyleElement) {
-			return new HTMLStyleElement.ptr(el);
-		} else if (_ref === $global.HTMLTableElement) {
-			return new HTMLTableElement.ptr(el);
-		} else if (_ref === $global.HTMLTableCaptionElement) {
-			return new HTMLTableCaptionElement.ptr(el);
-		} else if (_ref === $global.HTMLTableCellElement) {
-			return new HTMLTableCellElement.ptr(el, 0, 0, 0);
-		} else if (_ref === $global.HTMLTableDataCellElement) {
-			return new HTMLTableDataCellElement.ptr(el);
-		} else if (_ref === $global.HTMLTableHeaderCellElement) {
-			return new HTMLTableHeaderCellElement.ptr(el, "", "");
-		} else if (_ref === $global.HTMLTableColElement) {
-			return new HTMLTableColElement.ptr(el, 0);
-		} else if (_ref === $global.HTMLTableRowElement) {
-			return new HTMLTableRowElement.ptr(el, 0, 0);
-		} else if (_ref === $global.HTMLTableSectionElement) {
-			return new HTMLTableSectionElement.ptr(el);
-		} else if (_ref === $global.HTMLTextAreaElement) {
-			return new HTMLTextAreaElement.ptr(el, "", false, 0, "", "", false, 0, "", "", false, false, 0, "", 0, 0, 0, 0, "", "", "", false, "");
-		} else if (_ref === $global.HTMLTimeElement) {
-			return new HTMLTimeElement.ptr(el, "");
-		} else if (_ref === $global.HTMLTitleElement) {
-			return new HTMLTitleElement.ptr(el, "");
-		} else if (_ref === $global.HTMLTrackElement) {
-			return new HTMLTrackElement.ptr(el, "", "", "", "", false, 0);
-		} else if (_ref === $global.HTMLUListElement) {
-			return new HTMLUListElement.ptr(el);
-		} else if (_ref === $global.HTMLUnknownElement) {
-			return new HTMLUnknownElement.ptr(el);
-		} else if (_ref === $global.HTMLVideoElement) {
-			return new HTMLVideoElement.ptr(new HTMLMediaElement.ptr(el));
-		} else if (_ref === $global.HTMLElement) {
-			return el;
-		} else {
-			return el;
-		}
-	};
-	getForm = function(o) {
-		var $ptr, form, o;
-		form = wrapHTMLElement(o.form);
-		if ($interfaceIsEqual(form, $ifaceNil)) {
-			return ptrType$4.nil;
-		}
-		return $assertType(form, ptrType$4);
-	};
-	getLabels = function(o) {
-		var $ptr, _i, _ref, i, label, labels, o, out;
-		labels = nodeListToElements(o.labels);
-		out = $makeSlice(sliceType$4, labels.$length);
-		_ref = labels;
-		_i = 0;
-		while (true) {
-			if (!(_i < _ref.$length)) { break; }
-			i = _i;
-			label = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			((i < 0 || i >= out.$length) ? $throwRuntimeError("index out of range") : out.$array[out.$offset + i] = $assertType(label, ptrType$5));
-			_i++;
-		}
-		return out;
-	};
-	getOptions = function(o, attr) {
-		var $ptr, _i, _ref, attr, i, o, option, options, out;
-		options = nodeListToElements(o[$externalize(attr, $String)]);
-		out = $makeSlice(sliceType$5, options.$length);
-		_ref = options;
-		_i = 0;
-		while (true) {
-			if (!(_i < _ref.$length)) { break; }
-			i = _i;
-			option = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			((i < 0 || i >= out.$length) ? $throwRuntimeError("index out of range") : out.$array[out.$offset + i] = $assertType(option, ptrType$6));
-			_i++;
-		}
-		return out;
-	};
-	GetWindow = function() {
-		var $ptr;
-		return new window.ptr($global);
-	};
-	$pkg.GetWindow = GetWindow;
-	TokenList.ptr.prototype.Item = function(idx) {
-		var $ptr, idx, o, tl;
-		tl = this;
-		o = tl.dtl.item(idx);
-		if (o === null || o === undefined) {
-			return "";
-		}
-		return $internalize(o, $String);
-	};
-	TokenList.prototype.Item = function(idx) { return this.$val.Item(idx); };
-	TokenList.ptr.prototype.Contains = function(token) {
-		var $ptr, tl, token;
-		tl = this;
-		return !!(tl.dtl.contains($externalize(token, $String)));
-	};
-	TokenList.prototype.Contains = function(token) { return this.$val.Contains(token); };
-	TokenList.ptr.prototype.Add = function(token) {
-		var $ptr, tl, token;
-		tl = this;
-		tl.dtl.add($externalize(token, $String));
-	};
-	TokenList.prototype.Add = function(token) { return this.$val.Add(token); };
-	TokenList.ptr.prototype.Remove = function(token) {
-		var $ptr, tl, token;
-		tl = this;
-		tl.dtl.remove($externalize(token, $String));
-	};
-	TokenList.prototype.Remove = function(token) { return this.$val.Remove(token); };
-	TokenList.ptr.prototype.Toggle = function(token) {
-		var $ptr, tl, token;
-		tl = this;
-		tl.dtl.toggle($externalize(token, $String));
-	};
-	TokenList.prototype.Toggle = function(token) { return this.$val.Toggle(token); };
-	TokenList.ptr.prototype.String = function() {
-		var $ptr, tl;
-		tl = this;
-		if (!(tl.sa === "")) {
-			return $internalize(tl.o[$externalize(tl.sa, $String)], $String);
-		}
-		if (tl.dtl.constructor === $global.DOMSettableTokenList) {
-			return $internalize(tl.dtl.value, $String);
-		}
-		return "";
-	};
-	TokenList.prototype.String = function() { return this.$val.String(); };
-	TokenList.ptr.prototype.Slice = function() {
-		var $ptr, i, length, out, tl;
-		tl = this;
-		out = sliceType$6.nil;
-		length = $parseInt(tl.dtl.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < length)) { break; }
-			out = $append(out, $internalize(tl.dtl.item(i), $String));
-			i = i + (1) >> 0;
-		}
-		return out;
-	};
-	TokenList.prototype.Slice = function() { return this.$val.Slice(); };
-	TokenList.ptr.prototype.SetString = function(s) {
-		var $ptr, s, tl;
-		tl = this;
-		if (!(tl.sa === "")) {
-			tl.o[$externalize(tl.sa, $String)] = $externalize(s, $String);
-			return;
-		}
-		if (tl.dtl.constructor === $global.DOMSettableTokenList) {
-			tl.dtl.value = $externalize(s, $String);
-			return;
-		}
-		$panic(new $String("no way to SetString on this TokenList"));
-	};
-	TokenList.prototype.SetString = function(s) { return this.$val.SetString(s); };
-	TokenList.ptr.prototype.Set = function(s) {
-		var $ptr, s, tl;
-		tl = this;
-		tl.SetString(strings.Join(s, " "));
-	};
-	TokenList.prototype.Set = function(s) { return this.$val.Set(s); };
-	documentFragment.ptr.prototype.GetElementByID = function(id) {
-		var $ptr, d, id;
-		d = $clone(this, documentFragment);
-		return wrapElement(d.BasicNode.Object.getElementById($externalize(id, $String)));
-	};
-	documentFragment.prototype.GetElementByID = function(id) { return this.$val.GetElementByID(id); };
-	documentFragment.ptr.prototype.QuerySelector = function(sel) {
-		var $ptr, d, sel;
-		d = $clone(this, documentFragment);
-		return (new BasicElement.ptr(new BasicNode.ptr(d.BasicNode.Object))).QuerySelector(sel);
-	};
-	documentFragment.prototype.QuerySelector = function(sel) { return this.$val.QuerySelector(sel); };
-	documentFragment.ptr.prototype.QuerySelectorAll = function(sel) {
-		var $ptr, d, sel;
-		d = $clone(this, documentFragment);
-		return (new BasicElement.ptr(new BasicNode.ptr(d.BasicNode.Object))).QuerySelectorAll(sel);
-	};
-	documentFragment.prototype.QuerySelectorAll = function(sel) { return this.$val.QuerySelectorAll(sel); };
-	htmlDocument.ptr.prototype.ActiveElement = function() {
-		var $ptr, d;
-		d = this;
-		return wrapHTMLElement(d.document.BasicNode.Object.activeElement);
-	};
-	htmlDocument.prototype.ActiveElement = function() { return this.$val.ActiveElement(); };
-	htmlDocument.ptr.prototype.Body = function() {
-		var $ptr, d;
-		d = this;
-		return wrapHTMLElement(d.document.BasicNode.Object.body);
-	};
-	htmlDocument.prototype.Body = function() { return this.$val.Body(); };
-	htmlDocument.ptr.prototype.Cookie = function() {
-		var $ptr, d;
-		d = this;
-		return $internalize(d.document.BasicNode.Object.cookie, $String);
-	};
-	htmlDocument.prototype.Cookie = function() { return this.$val.Cookie(); };
-	htmlDocument.ptr.prototype.SetCookie = function(s) {
-		var $ptr, d, s;
-		d = this;
-		d.document.BasicNode.Object.cookie = $externalize(s, $String);
-	};
-	htmlDocument.prototype.SetCookie = function(s) { return this.$val.SetCookie(s); };
-	htmlDocument.ptr.prototype.DefaultView = function() {
-		var $ptr, d;
-		d = this;
-		return new window.ptr(d.document.BasicNode.Object.defaultView);
-	};
-	htmlDocument.prototype.DefaultView = function() { return this.$val.DefaultView(); };
-	htmlDocument.ptr.prototype.DesignMode = function() {
-		var $ptr, d, s;
-		d = this;
-		s = $internalize(d.document.BasicNode.Object.designMode, $String);
-		if (s === "off") {
-			return false;
-		}
-		return true;
-	};
-	htmlDocument.prototype.DesignMode = function() { return this.$val.DesignMode(); };
-	htmlDocument.ptr.prototype.SetDesignMode = function(b) {
-		var $ptr, b, d, s;
-		d = this;
-		s = "off";
-		if (b) {
-			s = "on";
-		}
-		d.document.BasicNode.Object.designMode = $externalize(s, $String);
-	};
-	htmlDocument.prototype.SetDesignMode = function(b) { return this.$val.SetDesignMode(b); };
-	htmlDocument.ptr.prototype.Domain = function() {
-		var $ptr, d;
-		d = this;
-		return $internalize(d.document.BasicNode.Object.domain, $String);
-	};
-	htmlDocument.prototype.Domain = function() { return this.$val.Domain(); };
-	htmlDocument.ptr.prototype.SetDomain = function(s) {
-		var $ptr, d, s;
-		d = this;
-		d.document.BasicNode.Object.domain = $externalize(s, $String);
-	};
-	htmlDocument.prototype.SetDomain = function(s) { return this.$val.SetDomain(s); };
-	htmlDocument.ptr.prototype.Forms = function() {
-		var $ptr, d, els, forms, i, length;
-		d = this;
-		els = sliceType$7.nil;
-		forms = d.document.BasicNode.Object.forms;
-		length = $parseInt(forms.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < length)) { break; }
-			els = $append(els, $assertType(wrapHTMLElement(forms.item(i)), ptrType$4));
-			i = i + (1) >> 0;
-		}
-		return els;
-	};
-	htmlDocument.prototype.Forms = function() { return this.$val.Forms(); };
-	htmlDocument.ptr.prototype.Head = function() {
-		var $ptr, d, head;
-		d = this;
-		head = wrapElement(d.document.BasicNode.Object.head);
-		if ($interfaceIsEqual(head, $ifaceNil)) {
-			return ptrType$7.nil;
-		}
-		return $assertType(head, ptrType$7);
-	};
-	htmlDocument.prototype.Head = function() { return this.$val.Head(); };
-	htmlDocument.ptr.prototype.Images = function() {
-		var $ptr, d, els, i, images, length;
-		d = this;
-		els = sliceType$8.nil;
-		images = d.document.BasicNode.Object.images;
-		length = $parseInt(images.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < length)) { break; }
-			els = $append(els, $assertType(wrapHTMLElement(images.item(i)), ptrType$8));
-			i = i + (1) >> 0;
-		}
-		return els;
-	};
-	htmlDocument.prototype.Images = function() { return this.$val.Images(); };
-	htmlDocument.ptr.prototype.LastModified = function() {
-		var $ptr, d;
-		d = this;
-		return $assertType($internalize(d.document.BasicNode.Object.lastModified, $emptyInterface), time.Time);
-	};
-	htmlDocument.prototype.LastModified = function() { return this.$val.LastModified(); };
-	htmlDocument.ptr.prototype.Links = function() {
-		var $ptr, d, els, i, length, links;
-		d = this;
-		els = sliceType$3.nil;
-		links = d.document.BasicNode.Object.links;
-		length = $parseInt(links.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < length)) { break; }
-			els = $append(els, wrapHTMLElement(links.item(i)));
-			i = i + (1) >> 0;
-		}
-		return els;
-	};
-	htmlDocument.prototype.Links = function() { return this.$val.Links(); };
-	htmlDocument.ptr.prototype.Location = function() {
-		var $ptr, d, o;
-		d = this;
-		o = d.document.BasicNode.Object.location;
-		return new Location.ptr(o, new URLUtils.ptr(o, "", "", "", "", "", "", "", "", "", "", ""));
-	};
-	htmlDocument.prototype.Location = function() { return this.$val.Location(); };
-	htmlDocument.ptr.prototype.Plugins = function() {
-		var $ptr, d, els, forms, i, length;
-		d = this;
-		els = sliceType$9.nil;
-		forms = d.document.BasicNode.Object.plugins;
-		length = $parseInt(forms.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < length)) { break; }
-			els = $append(els, $assertType(wrapHTMLElement(forms.item(i)), ptrType$9));
-			i = i + (1) >> 0;
-		}
-		return els;
-	};
-	htmlDocument.prototype.Plugins = function() { return this.$val.Plugins(); };
-	htmlDocument.ptr.prototype.ReadyState = function() {
-		var $ptr, d;
-		d = this;
-		return $internalize(d.document.BasicNode.Object.readyState, $String);
-	};
-	htmlDocument.prototype.ReadyState = function() { return this.$val.ReadyState(); };
-	htmlDocument.ptr.prototype.Referrer = function() {
-		var $ptr, d;
-		d = this;
-		return $internalize(d.document.BasicNode.Object.referrer, $String);
-	};
-	htmlDocument.prototype.Referrer = function() { return this.$val.Referrer(); };
-	htmlDocument.ptr.prototype.Scripts = function() {
-		var $ptr, d, els, forms, i, length;
-		d = this;
-		els = sliceType$10.nil;
-		forms = d.document.BasicNode.Object.scripts;
-		length = $parseInt(forms.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < length)) { break; }
-			els = $append(els, $assertType(wrapHTMLElement(forms.item(i)), ptrType$10));
-			i = i + (1) >> 0;
-		}
-		return els;
-	};
-	htmlDocument.prototype.Scripts = function() { return this.$val.Scripts(); };
-	htmlDocument.ptr.prototype.Title = function() {
-		var $ptr, d;
-		d = this;
-		return $internalize(d.document.BasicNode.Object.title, $String);
-	};
-	htmlDocument.prototype.Title = function() { return this.$val.Title(); };
-	htmlDocument.ptr.prototype.SetTitle = function(s) {
-		var $ptr, d, s;
-		d = this;
-		d.document.BasicNode.Object.title = $externalize(s, $String);
-	};
-	htmlDocument.prototype.SetTitle = function(s) { return this.$val.SetTitle(s); };
-	htmlDocument.ptr.prototype.URL = function() {
-		var $ptr, d;
-		d = this;
-		return $internalize(d.document.BasicNode.Object.url, $String);
-	};
-	htmlDocument.prototype.URL = function() { return this.$val.URL(); };
-	document.ptr.prototype.Async = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return !!(d.BasicNode.Object.async);
-	};
-	document.prototype.Async = function() { return this.$val.Async(); };
-	document.ptr.prototype.SetAsync = function(b) {
-		var $ptr, b, d;
-		d = $clone(this, document);
-		d.BasicNode.Object.async = $externalize(b, $Bool);
-	};
-	document.prototype.SetAsync = function(b) { return this.$val.SetAsync(b); };
-	document.ptr.prototype.Doctype = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return $ifaceNil;
-	};
-	document.prototype.Doctype = function() { return this.$val.Doctype(); };
-	document.ptr.prototype.DocumentElement = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return wrapElement(d.BasicNode.Object.documentElement);
-	};
-	document.prototype.DocumentElement = function() { return this.$val.DocumentElement(); };
-	document.ptr.prototype.DocumentURI = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return $internalize(d.BasicNode.Object.documentURI, $String);
-	};
-	document.prototype.DocumentURI = function() { return this.$val.DocumentURI(); };
-	document.ptr.prototype.Implementation = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return $ifaceNil;
-	};
-	document.prototype.Implementation = function() { return this.$val.Implementation(); };
-	document.ptr.prototype.LastStyleSheetSet = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return $internalize(d.BasicNode.Object.lastStyleSheetSet, $String);
-	};
-	document.prototype.LastStyleSheetSet = function() { return this.$val.LastStyleSheetSet(); };
-	document.ptr.prototype.PreferredStyleSheetSet = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return $internalize(d.BasicNode.Object.preferredStyleSheetSet, $String);
-	};
-	document.prototype.PreferredStyleSheetSet = function() { return this.$val.PreferredStyleSheetSet(); };
-	document.ptr.prototype.SelectedStyleSheetSet = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return $internalize(d.BasicNode.Object.selectedStyleSheetSet, $String);
-	};
-	document.prototype.SelectedStyleSheetSet = function() { return this.$val.SelectedStyleSheetSet(); };
-	document.ptr.prototype.StyleSheets = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return sliceType$11.nil;
-	};
-	document.prototype.StyleSheets = function() { return this.$val.StyleSheets(); };
-	document.ptr.prototype.StyleSheetSets = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return sliceType$11.nil;
-	};
-	document.prototype.StyleSheetSets = function() { return this.$val.StyleSheetSets(); };
-	document.ptr.prototype.AdoptNode = function(node) {
-		var $ptr, _r, _r$1, d, node, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; d = $f.d; node = $f.node; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		d = $clone(this, document);
-		_r = node.Underlying(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_r$1 = wrapNode(d.BasicNode.Object.adoptNode(_r)); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: document.ptr.prototype.AdoptNode }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.d = d; $f.node = node; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	document.prototype.AdoptNode = function(node) { return this.$val.AdoptNode(node); };
-	document.ptr.prototype.ImportNode = function(node, deep) {
-		var $ptr, _r, _r$1, d, deep, node, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; d = $f.d; deep = $f.deep; node = $f.node; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		d = $clone(this, document);
-		_r = node.Underlying(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_r$1 = wrapNode(d.BasicNode.Object.importNode(_r, $externalize(deep, $Bool))); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: document.ptr.prototype.ImportNode }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.d = d; $f.deep = deep; $f.node = node; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	document.prototype.ImportNode = function(node, deep) { return this.$val.ImportNode(node, deep); };
-	document.ptr.prototype.CreateDocumentFragment = function() {
-		var $ptr, d;
-		d = $clone(this, document);
-		return wrapDocumentFragment(d.BasicNode.Object.createDocumentFragment());
-	};
-	document.prototype.CreateDocumentFragment = function() { return this.$val.CreateDocumentFragment(); };
-	document.ptr.prototype.CreateElement = function(name) {
-		var $ptr, d, name;
-		d = $clone(this, document);
-		return wrapElement(d.BasicNode.Object.createElement($externalize(name, $String)));
-	};
-	document.prototype.CreateElement = function(name) { return this.$val.CreateElement(name); };
-	document.ptr.prototype.CreateElementNS = function(ns, name) {
-		var $ptr, d, name, ns;
-		d = $clone(this, document);
-		return wrapElement(d.BasicNode.Object.createElement($externalize(ns, $String), $externalize(name, $String)));
-	};
-	document.prototype.CreateElementNS = function(ns, name) { return this.$val.CreateElementNS(ns, name); };
-	document.ptr.prototype.CreateTextNode = function(s) {
-		var $ptr, d, s;
-		d = $clone(this, document);
-		return $assertType(wrapNode(d.BasicNode.Object.createTextNode($externalize(s, $String))), ptrType$11);
-	};
-	document.prototype.CreateTextNode = function(s) { return this.$val.CreateTextNode(s); };
-	document.ptr.prototype.ElementFromPoint = function(x, y) {
-		var $ptr, d, x, y;
-		d = $clone(this, document);
-		return wrapElement(d.BasicNode.Object.elementFromPoint(x, y));
-	};
-	document.prototype.ElementFromPoint = function(x, y) { return this.$val.ElementFromPoint(x, y); };
-	document.ptr.prototype.EnableStyleSheetsForSet = function(name) {
-		var $ptr, d, name;
-		d = $clone(this, document);
-		d.BasicNode.Object.enableStyleSheetsForSet($externalize(name, $String));
-	};
-	document.prototype.EnableStyleSheetsForSet = function(name) { return this.$val.EnableStyleSheetsForSet(name); };
-	document.ptr.prototype.GetElementsByClassName = function(name) {
-		var $ptr, d, name;
-		d = $clone(this, document);
-		return (new BasicElement.ptr(new BasicNode.ptr(d.BasicNode.Object))).GetElementsByClassName(name);
-	};
-	document.prototype.GetElementsByClassName = function(name) { return this.$val.GetElementsByClassName(name); };
-	document.ptr.prototype.GetElementsByTagName = function(name) {
-		var $ptr, d, name;
-		d = $clone(this, document);
-		return (new BasicElement.ptr(new BasicNode.ptr(d.BasicNode.Object))).GetElementsByTagName(name);
-	};
-	document.prototype.GetElementsByTagName = function(name) { return this.$val.GetElementsByTagName(name); };
-	document.ptr.prototype.GetElementsByTagNameNS = function(ns, name) {
-		var $ptr, d, name, ns;
-		d = $clone(this, document);
-		return (new BasicElement.ptr(new BasicNode.ptr(d.BasicNode.Object))).GetElementsByTagNameNS(ns, name);
-	};
-	document.prototype.GetElementsByTagNameNS = function(ns, name) { return this.$val.GetElementsByTagNameNS(ns, name); };
-	document.ptr.prototype.GetElementByID = function(id) {
-		var $ptr, d, id;
-		d = $clone(this, document);
-		return wrapElement(d.BasicNode.Object.getElementById($externalize(id, $String)));
-	};
-	document.prototype.GetElementByID = function(id) { return this.$val.GetElementByID(id); };
-	document.ptr.prototype.QuerySelector = function(sel) {
-		var $ptr, d, sel;
-		d = $clone(this, document);
-		return (new BasicElement.ptr(new BasicNode.ptr(d.BasicNode.Object))).QuerySelector(sel);
-	};
-	document.prototype.QuerySelector = function(sel) { return this.$val.QuerySelector(sel); };
-	document.ptr.prototype.QuerySelectorAll = function(sel) {
-		var $ptr, d, sel;
-		d = $clone(this, document);
-		return (new BasicElement.ptr(new BasicNode.ptr(d.BasicNode.Object))).QuerySelectorAll(sel);
-	};
-	document.prototype.QuerySelectorAll = function(sel) { return this.$val.QuerySelectorAll(sel); };
-	window.ptr.prototype.Console = function() {
-		var $ptr, w;
-		w = this;
-		return new Console.ptr(w.Object.console);
-	};
-	window.prototype.Console = function() { return this.$val.Console(); };
-	window.ptr.prototype.Document = function() {
-		var $ptr, w;
-		w = this;
-		return wrapDocument(w.Object.document);
-	};
-	window.prototype.Document = function() { return this.$val.Document(); };
-	window.ptr.prototype.FrameElement = function() {
-		var $ptr, w;
-		w = this;
-		return wrapElement(w.Object.frameElement);
-	};
-	window.prototype.FrameElement = function() { return this.$val.FrameElement(); };
-	window.ptr.prototype.Location = function() {
-		var $ptr, o, w;
-		w = this;
-		o = w.Object.location;
-		return new Location.ptr(o, new URLUtils.ptr(o, "", "", "", "", "", "", "", "", "", "", ""));
-	};
-	window.prototype.Location = function() { return this.$val.Location(); };
-	window.ptr.prototype.Name = function() {
-		var $ptr, w;
-		w = this;
-		return $internalize(w.Object.name, $String);
-	};
-	window.prototype.Name = function() { return this.$val.Name(); };
-	window.ptr.prototype.SetName = function(s) {
-		var $ptr, s, w;
-		w = this;
-		w.Object.name = $externalize(s, $String);
-	};
-	window.prototype.SetName = function(s) { return this.$val.SetName(s); };
-	window.ptr.prototype.InnerHeight = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.innerHeight) >> 0;
-	};
-	window.prototype.InnerHeight = function() { return this.$val.InnerHeight(); };
-	window.ptr.prototype.InnerWidth = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.innerWidth) >> 0;
-	};
-	window.prototype.InnerWidth = function() { return this.$val.InnerWidth(); };
-	window.ptr.prototype.Length = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.length) >> 0;
-	};
-	window.prototype.Length = function() { return this.$val.Length(); };
-	window.ptr.prototype.Opener = function() {
-		var $ptr, w;
-		w = this;
-		return new window.ptr(w.Object.opener);
-	};
-	window.prototype.Opener = function() { return this.$val.Opener(); };
-	window.ptr.prototype.OuterHeight = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.outerHeight) >> 0;
-	};
-	window.prototype.OuterHeight = function() { return this.$val.OuterHeight(); };
-	window.ptr.prototype.OuterWidth = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.outerWidth) >> 0;
-	};
-	window.prototype.OuterWidth = function() { return this.$val.OuterWidth(); };
-	window.ptr.prototype.ScrollX = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.scrollX) >> 0;
-	};
-	window.prototype.ScrollX = function() { return this.$val.ScrollX(); };
-	window.ptr.prototype.ScrollY = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.scrollY) >> 0;
-	};
-	window.prototype.ScrollY = function() { return this.$val.ScrollY(); };
-	window.ptr.prototype.Parent = function() {
-		var $ptr, w;
-		w = this;
-		return new window.ptr(w.Object.parent);
-	};
-	window.prototype.Parent = function() { return this.$val.Parent(); };
-	window.ptr.prototype.ScreenX = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.screenX) >> 0;
-	};
-	window.prototype.ScreenX = function() { return this.$val.ScreenX(); };
-	window.ptr.prototype.ScreenY = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.screenY) >> 0;
-	};
-	window.prototype.ScreenY = function() { return this.$val.ScreenY(); };
-	window.ptr.prototype.ScrollMaxX = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.scrollMaxX) >> 0;
-	};
-	window.prototype.ScrollMaxX = function() { return this.$val.ScrollMaxX(); };
-	window.ptr.prototype.ScrollMaxY = function() {
-		var $ptr, w;
-		w = this;
-		return $parseInt(w.Object.scrollMaxY) >> 0;
-	};
-	window.prototype.ScrollMaxY = function() { return this.$val.ScrollMaxY(); };
-	window.ptr.prototype.Top = function() {
-		var $ptr, w;
-		w = this;
-		return new window.ptr(w.Object.top);
-	};
-	window.prototype.Top = function() { return this.$val.Top(); };
-	window.ptr.prototype.History = function() {
-		var $ptr, w;
-		w = this;
-		return $ifaceNil;
-	};
-	window.prototype.History = function() { return this.$val.History(); };
-	window.ptr.prototype.Navigator = function() {
-		var $ptr, w;
-		w = this;
-		return $ifaceNil;
-	};
-	window.prototype.Navigator = function() { return this.$val.Navigator(); };
-	window.ptr.prototype.Screen = function() {
-		var $ptr, w;
-		w = this;
-		return new Screen.ptr(w.Object.screen, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	};
-	window.prototype.Screen = function() { return this.$val.Screen(); };
-	window.ptr.prototype.Alert = function(msg) {
-		var $ptr, msg, w;
-		w = this;
-		w.Object.alert($externalize(msg, $String));
-	};
-	window.prototype.Alert = function(msg) { return this.$val.Alert(msg); };
-	window.ptr.prototype.Back = function() {
-		var $ptr, w;
-		w = this;
-		w.Object.back();
-	};
-	window.prototype.Back = function() { return this.$val.Back(); };
-	window.ptr.prototype.Blur = function() {
-		var $ptr, w;
-		w = this;
-		w.Object.blur();
-	};
-	window.prototype.Blur = function() { return this.$val.Blur(); };
-	window.ptr.prototype.ClearInterval = function(id) {
-		var $ptr, id, w;
-		w = this;
-		w.Object.clearInterval(id);
-	};
-	window.prototype.ClearInterval = function(id) { return this.$val.ClearInterval(id); };
-	window.ptr.prototype.ClearTimeout = function(id) {
-		var $ptr, id, w;
-		w = this;
-		w.Object.clearTimeout(id);
-	};
-	window.prototype.ClearTimeout = function(id) { return this.$val.ClearTimeout(id); };
-	window.ptr.prototype.Close = function() {
-		var $ptr, w;
-		w = this;
-		w.Object.close();
-	};
-	window.prototype.Close = function() { return this.$val.Close(); };
-	window.ptr.prototype.Confirm = function(prompt) {
-		var $ptr, prompt, w;
-		w = this;
-		return !!(w.Object.confirm($externalize(prompt, $String)));
-	};
-	window.prototype.Confirm = function(prompt) { return this.$val.Confirm(prompt); };
-	window.ptr.prototype.Focus = function() {
-		var $ptr, w;
-		w = this;
-		w.Object.focus();
-	};
-	window.prototype.Focus = function() { return this.$val.Focus(); };
-	window.ptr.prototype.Forward = function() {
-		var $ptr, w;
-		w = this;
-		w.Object.forward();
-	};
-	window.prototype.Forward = function() { return this.$val.Forward(); };
-	window.ptr.prototype.GetComputedStyle = function(el, pseudoElt) {
-		var $ptr, _r, el, optArg, pseudoElt, w, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; el = $f.el; optArg = $f.optArg; pseudoElt = $f.pseudoElt; w = $f.w; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		w = this;
-		optArg = $ifaceNil;
-		if (!(pseudoElt === "")) {
-			optArg = new $String(pseudoElt);
-		}
-		_r = el.Underlying(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		return new CSSStyleDeclaration.ptr(w.Object.getComputedStyle(_r, $externalize(optArg, $emptyInterface)));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: window.ptr.prototype.GetComputedStyle }; } $f.$ptr = $ptr; $f._r = _r; $f.el = el; $f.optArg = optArg; $f.pseudoElt = pseudoElt; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	window.prototype.GetComputedStyle = function(el, pseudoElt) { return this.$val.GetComputedStyle(el, pseudoElt); };
-	window.ptr.prototype.GetSelection = function() {
-		var $ptr, w;
-		w = this;
-		return $ifaceNil;
-	};
-	window.prototype.GetSelection = function() { return this.$val.GetSelection(); };
-	window.ptr.prototype.Home = function() {
-		var $ptr, w;
-		w = this;
-		w.Object.home();
-	};
-	window.prototype.Home = function() { return this.$val.Home(); };
-	window.ptr.prototype.MoveBy = function(dx, dy) {
-		var $ptr, dx, dy, w;
-		w = this;
-		w.Object.moveBy(dx, dy);
-	};
-	window.prototype.MoveBy = function(dx, dy) { return this.$val.MoveBy(dx, dy); };
-	window.ptr.prototype.MoveTo = function(x, y) {
-		var $ptr, w, x, y;
-		w = this;
-		w.Object.moveTo(x, y);
-	};
-	window.prototype.MoveTo = function(x, y) { return this.$val.MoveTo(x, y); };
-	window.ptr.prototype.Open = function(url, name, features) {
-		var $ptr, features, name, url, w;
-		w = this;
-		return new window.ptr(w.Object.open($externalize(url, $String), $externalize(name, $String), $externalize(features, $String)));
-	};
-	window.prototype.Open = function(url, name, features) { return this.$val.Open(url, name, features); };
-	window.ptr.prototype.OpenDialog = function(url, name, features, args) {
-		var $ptr, args, features, name, url, w;
-		w = this;
-		return new window.ptr(w.Object.openDialog($externalize(url, $String), $externalize(name, $String), $externalize(features, $String), $externalize(args, sliceType)));
-	};
-	window.prototype.OpenDialog = function(url, name, features, args) { return this.$val.OpenDialog(url, name, features, args); };
-	window.ptr.prototype.PostMessage = function(message, target, transfer) {
-		var $ptr, message, target, transfer, w;
-		w = this;
-		w.Object.postMessage($externalize(message, $String), $externalize(target, $String), $externalize(transfer, sliceType));
-	};
-	window.prototype.PostMessage = function(message, target, transfer) { return this.$val.PostMessage(message, target, transfer); };
-	window.ptr.prototype.Print = function() {
-		var $ptr, w;
-		w = this;
-		w.Object.print();
-	};
-	window.prototype.Print = function() { return this.$val.Print(); };
-	window.ptr.prototype.Prompt = function(prompt, initial) {
-		var $ptr, initial, prompt, w;
-		w = this;
-		return $internalize(w.Object.prompt($externalize(prompt, $String), $externalize(initial, $String)), $String);
-	};
-	window.prototype.Prompt = function(prompt, initial) { return this.$val.Prompt(prompt, initial); };
-	window.ptr.prototype.ResizeBy = function(dw, dh) {
-		var $ptr, dh, dw, w;
-		w = this;
-		w.Object.resizeBy(dw, dh);
-	};
-	window.prototype.ResizeBy = function(dw, dh) { return this.$val.ResizeBy(dw, dh); };
-	window.ptr.prototype.ResizeTo = function(width, height) {
-		var $ptr, height, w, width;
-		w = this;
-		w.Object.resizeTo(width, height);
-	};
-	window.prototype.ResizeTo = function(width, height) { return this.$val.ResizeTo(width, height); };
-	window.ptr.prototype.Scroll = function(x, y) {
-		var $ptr, w, x, y;
-		w = this;
-		w.Object.scroll(x, y);
-	};
-	window.prototype.Scroll = function(x, y) { return this.$val.Scroll(x, y); };
-	window.ptr.prototype.ScrollBy = function(dx, dy) {
-		var $ptr, dx, dy, w;
-		w = this;
-		w.Object.scrollBy(dx, dy);
-	};
-	window.prototype.ScrollBy = function(dx, dy) { return this.$val.ScrollBy(dx, dy); };
-	window.ptr.prototype.ScrollByLines = function(i) {
-		var $ptr, i, w;
-		w = this;
-		w.Object.scrollByLines(i);
-	};
-	window.prototype.ScrollByLines = function(i) { return this.$val.ScrollByLines(i); };
-	window.ptr.prototype.ScrollTo = function(x, y) {
-		var $ptr, w, x, y;
-		w = this;
-		w.Object.scrollTo(x, y);
-	};
-	window.prototype.ScrollTo = function(x, y) { return this.$val.ScrollTo(x, y); };
-	window.ptr.prototype.SetCursor = function(name) {
-		var $ptr, name, w;
-		w = this;
-		w.Object.setCursor($externalize(name, $String));
-	};
-	window.prototype.SetCursor = function(name) { return this.$val.SetCursor(name); };
-	window.ptr.prototype.SetInterval = function(fn, delay) {
-		var $ptr, delay, fn, w;
-		w = this;
-		return $parseInt(w.Object.setInterval($externalize(fn, funcType), delay)) >> 0;
-	};
-	window.prototype.SetInterval = function(fn, delay) { return this.$val.SetInterval(fn, delay); };
-	window.ptr.prototype.SetTimeout = function(fn, delay) {
-		var $ptr, delay, fn, w;
-		w = this;
-		return $parseInt(w.Object.setTimeout($externalize(fn, funcType), delay)) >> 0;
-	};
-	window.prototype.SetTimeout = function(fn, delay) { return this.$val.SetTimeout(fn, delay); };
-	window.ptr.prototype.Stop = function() {
-		var $ptr, w;
-		w = this;
-		w.Object.stop();
-	};
-	window.prototype.Stop = function() { return this.$val.Stop(); };
-	window.ptr.prototype.AddEventListener = function(typ, useCapture, listener) {
-		var $ptr, listener, typ, useCapture, w, wrapper;
-		w = this;
-		wrapper = (function $b(o) {
-			var $ptr, o, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; o = $f.o; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			$r = listener(wrapEvent(o)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.o = o; $f.$s = $s; $f.$r = $r; return $f;
-		});
-		w.Object.addEventListener($externalize(typ, $String), $externalize(wrapper, funcType$1), $externalize(useCapture, $Bool));
-		return wrapper;
-	};
-	window.prototype.AddEventListener = function(typ, useCapture, listener) { return this.$val.AddEventListener(typ, useCapture, listener); };
-	window.ptr.prototype.RemoveEventListener = function(typ, useCapture, listener) {
-		var $ptr, listener, typ, useCapture, w;
-		w = this;
-		w.Object.removeEventListener($externalize(typ, $String), $externalize(listener, funcType$1), $externalize(useCapture, $Bool));
-	};
-	window.prototype.RemoveEventListener = function(typ, useCapture, listener) { return this.$val.RemoveEventListener(typ, useCapture, listener); };
-	wrapDOMHighResTimeStamp = function(o) {
-		var $ptr, o;
-		return new time.Duration(0, $parseFloat(o) * 1e+06);
-	};
-	window.ptr.prototype.RequestAnimationFrame = function(callback) {
-		var $ptr, callback, w, wrapper;
-		w = this;
-		wrapper = (function $b(o) {
-			var $ptr, o, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; o = $f.o; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			$r = callback(wrapDOMHighResTimeStamp(o)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.o = o; $f.$s = $s; $f.$r = $r; return $f;
-		});
-		return $parseInt(w.Object.requestAnimationFrame($externalize(wrapper, funcType$1))) >> 0;
-	};
-	window.prototype.RequestAnimationFrame = function(callback) { return this.$val.RequestAnimationFrame(callback); };
-	window.ptr.prototype.CancelAnimationFrame = function(requestID) {
-		var $ptr, requestID, w;
-		w = this;
-		w.Object.cancelAnimationFrame(requestID);
-	};
-	window.prototype.CancelAnimationFrame = function(requestID) { return this.$val.CancelAnimationFrame(requestID); };
-	PositionError.ptr.prototype.Error = function() {
-		var $ptr, err;
-		err = this;
-		return $internalize(err.Object.message(), $String);
-	};
-	PositionError.prototype.Error = function() { return this.$val.Error(); };
-	BasicNode.ptr.prototype.Underlying = function() {
-		var $ptr, n;
-		n = this;
-		return n.Object;
-	};
-	BasicNode.prototype.Underlying = function() { return this.$val.Underlying(); };
-	BasicNode.ptr.prototype.AddEventListener = function(typ, useCapture, listener) {
-		var $ptr, listener, n, typ, useCapture, wrapper;
-		n = this;
-		wrapper = (function $b(o) {
-			var $ptr, o, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; o = $f.o; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			$r = listener(wrapEvent(o)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.o = o; $f.$s = $s; $f.$r = $r; return $f;
-		});
-		n.Object.addEventListener($externalize(typ, $String), $externalize(wrapper, funcType$1), $externalize(useCapture, $Bool));
-		return wrapper;
-	};
-	BasicNode.prototype.AddEventListener = function(typ, useCapture, listener) { return this.$val.AddEventListener(typ, useCapture, listener); };
-	BasicNode.ptr.prototype.RemoveEventListener = function(typ, useCapture, listener) {
-		var $ptr, listener, n, typ, useCapture;
-		n = this;
-		n.Object.removeEventListener($externalize(typ, $String), $externalize(listener, funcType$1), $externalize(useCapture, $Bool));
-	};
-	BasicNode.prototype.RemoveEventListener = function(typ, useCapture, listener) { return this.$val.RemoveEventListener(typ, useCapture, listener); };
-	BasicNode.ptr.prototype.BaseURI = function() {
-		var $ptr, n;
-		n = this;
-		return $internalize(n.Object.baseURI, $String);
-	};
-	BasicNode.prototype.BaseURI = function() { return this.$val.BaseURI(); };
-	BasicNode.ptr.prototype.ChildNodes = function() {
-		var $ptr, n;
-		n = this;
-		return nodeListToNodes(n.Object.childNodes);
-	};
-	BasicNode.prototype.ChildNodes = function() { return this.$val.ChildNodes(); };
-	BasicNode.ptr.prototype.FirstChild = function() {
-		var $ptr, n;
-		n = this;
-		return wrapNode(n.Object.firstChild);
-	};
-	BasicNode.prototype.FirstChild = function() { return this.$val.FirstChild(); };
-	BasicNode.ptr.prototype.LastChild = function() {
-		var $ptr, n;
-		n = this;
-		return wrapNode(n.Object.lastChild);
-	};
-	BasicNode.prototype.LastChild = function() { return this.$val.LastChild(); };
-	BasicNode.ptr.prototype.NextSibling = function() {
-		var $ptr, n;
-		n = this;
-		return wrapNode(n.Object.nextSibling);
-	};
-	BasicNode.prototype.NextSibling = function() { return this.$val.NextSibling(); };
-	BasicNode.ptr.prototype.NodeName = function() {
-		var $ptr, n;
-		n = this;
-		return $internalize(n.Object.nodeName, $String);
-	};
-	BasicNode.prototype.NodeName = function() { return this.$val.NodeName(); };
-	BasicNode.ptr.prototype.NodeType = function() {
-		var $ptr, n;
-		n = this;
-		return $parseInt(n.Object.nodeType) >> 0;
-	};
-	BasicNode.prototype.NodeType = function() { return this.$val.NodeType(); };
-	BasicNode.ptr.prototype.NodeValue = function() {
-		var $ptr, n;
-		n = this;
-		return $internalize(n.Object.nodeValue, $String);
-	};
-	BasicNode.prototype.NodeValue = function() { return this.$val.NodeValue(); };
-	BasicNode.ptr.prototype.SetNodeValue = function(s) {
-		var $ptr, n, s;
-		n = this;
-		n.Object.nodeValue = $externalize(s, $String);
-	};
-	BasicNode.prototype.SetNodeValue = function(s) { return this.$val.SetNodeValue(s); };
-	BasicNode.ptr.prototype.OwnerDocument = function() {
-		var $ptr, n;
-		n = this;
-		return $ifaceNil;
-	};
-	BasicNode.prototype.OwnerDocument = function() { return this.$val.OwnerDocument(); };
-	BasicNode.ptr.prototype.ParentNode = function() {
-		var $ptr, n;
-		n = this;
-		return wrapNode(n.Object.parentNode);
-	};
-	BasicNode.prototype.ParentNode = function() { return this.$val.ParentNode(); };
-	BasicNode.ptr.prototype.ParentElement = function() {
-		var $ptr, n;
-		n = this;
-		return wrapElement(n.Object.parentElement);
-	};
-	BasicNode.prototype.ParentElement = function() { return this.$val.ParentElement(); };
-	BasicNode.ptr.prototype.PreviousSibling = function() {
-		var $ptr, n;
-		n = this;
-		return wrapNode(n.Object.previousSibling);
-	};
-	BasicNode.prototype.PreviousSibling = function() { return this.$val.PreviousSibling(); };
-	BasicNode.ptr.prototype.TextContent = function() {
-		var $ptr, n;
-		n = this;
-		return $internalize(n.Object.textContent, $String);
-	};
-	BasicNode.prototype.TextContent = function() { return this.$val.TextContent(); };
-	BasicNode.ptr.prototype.SetTextContent = function(s) {
-		var $ptr, n, s;
-		n = this;
-		n.Object.textContent = $externalize(s, $String);
-	};
-	BasicNode.prototype.SetTextContent = function(s) { return this.$val.SetTextContent(s); };
-	BasicNode.ptr.prototype.AppendChild = function(newchild) {
-		var $ptr, _r, n, newchild, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; n = $f.n; newchild = $f.newchild; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		n = this;
-		_r = newchild.Underlying(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		n.Object.appendChild(_r);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BasicNode.ptr.prototype.AppendChild }; } $f.$ptr = $ptr; $f._r = _r; $f.n = n; $f.newchild = newchild; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	BasicNode.prototype.AppendChild = function(newchild) { return this.$val.AppendChild(newchild); };
-	BasicNode.ptr.prototype.CloneNode = function(deep) {
-		var $ptr, deep, n;
-		n = this;
-		return wrapNode(n.Object.cloneNode($externalize(deep, $Bool)));
-	};
-	BasicNode.prototype.CloneNode = function(deep) { return this.$val.CloneNode(deep); };
-	BasicNode.ptr.prototype.CompareDocumentPosition = function(other) {
-		var $ptr, _r, n, other, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; n = $f.n; other = $f.other; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		n = this;
-		_r = other.Underlying(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		return $parseInt(n.Object.compareDocumentPosition(_r)) >> 0;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BasicNode.ptr.prototype.CompareDocumentPosition }; } $f.$ptr = $ptr; $f._r = _r; $f.n = n; $f.other = other; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	BasicNode.prototype.CompareDocumentPosition = function(other) { return this.$val.CompareDocumentPosition(other); };
-	BasicNode.ptr.prototype.Contains = function(other) {
-		var $ptr, _r, n, other, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; n = $f.n; other = $f.other; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		n = this;
-		_r = other.Underlying(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		return !!(n.Object.contains(_r));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BasicNode.ptr.prototype.Contains }; } $f.$ptr = $ptr; $f._r = _r; $f.n = n; $f.other = other; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	BasicNode.prototype.Contains = function(other) { return this.$val.Contains(other); };
-	BasicNode.ptr.prototype.HasChildNodes = function() {
-		var $ptr, n;
-		n = this;
-		return !!(n.Object.hasChildNodes());
-	};
-	BasicNode.prototype.HasChildNodes = function() { return this.$val.HasChildNodes(); };
-	BasicNode.ptr.prototype.InsertBefore = function(which, before) {
-		var $ptr, _r, _r$1, before, n, o, which, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; before = $f.before; n = $f.n; o = $f.o; which = $f.which; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		n = this;
-		o = $ifaceNil;
-		/* */ if (!($interfaceIsEqual(before, $ifaceNil))) { $s = 1; continue; }
-		/* */ $s = 2; continue;
-		/* if (!($interfaceIsEqual(before, $ifaceNil))) { */ case 1:
-			_r = before.Underlying(); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-			o = new $jsObjectPtr(_r);
-		/* } */ case 2:
-		_r$1 = which.Underlying(); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		n.Object.insertBefore(_r$1, $externalize(o, $emptyInterface));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BasicNode.ptr.prototype.InsertBefore }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.before = before; $f.n = n; $f.o = o; $f.which = which; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	BasicNode.prototype.InsertBefore = function(which, before) { return this.$val.InsertBefore(which, before); };
-	BasicNode.ptr.prototype.IsDefaultNamespace = function(s) {
-		var $ptr, n, s;
-		n = this;
-		return !!(n.Object.isDefaultNamespace($externalize(s, $String)));
-	};
-	BasicNode.prototype.IsDefaultNamespace = function(s) { return this.$val.IsDefaultNamespace(s); };
-	BasicNode.ptr.prototype.IsEqualNode = function(other) {
-		var $ptr, _r, n, other, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; n = $f.n; other = $f.other; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		n = this;
-		_r = other.Underlying(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		return !!(n.Object.isEqualNode(_r));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BasicNode.ptr.prototype.IsEqualNode }; } $f.$ptr = $ptr; $f._r = _r; $f.n = n; $f.other = other; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	BasicNode.prototype.IsEqualNode = function(other) { return this.$val.IsEqualNode(other); };
-	BasicNode.ptr.prototype.LookupPrefix = function() {
-		var $ptr, n;
-		n = this;
-		return $internalize(n.Object.lookupPrefix(), $String);
-	};
-	BasicNode.prototype.LookupPrefix = function() { return this.$val.LookupPrefix(); };
-	BasicNode.ptr.prototype.LookupNamespaceURI = function(s) {
-		var $ptr, n, s;
-		n = this;
-		return $internalize(n.Object.lookupNamespaceURI($externalize(s, $String)), $String);
-	};
-	BasicNode.prototype.LookupNamespaceURI = function(s) { return this.$val.LookupNamespaceURI(s); };
-	BasicNode.ptr.prototype.Normalize = function() {
-		var $ptr, n;
-		n = this;
-		n.Object.normalize();
-	};
-	BasicNode.prototype.Normalize = function() { return this.$val.Normalize(); };
-	BasicNode.ptr.prototype.RemoveChild = function(other) {
-		var $ptr, _r, n, other, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; n = $f.n; other = $f.other; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		n = this;
-		_r = other.Underlying(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		n.Object.removeChild(_r);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BasicNode.ptr.prototype.RemoveChild }; } $f.$ptr = $ptr; $f._r = _r; $f.n = n; $f.other = other; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	BasicNode.prototype.RemoveChild = function(other) { return this.$val.RemoveChild(other); };
-	BasicNode.ptr.prototype.ReplaceChild = function(newChild, oldChild) {
-		var $ptr, _r, _r$1, n, newChild, oldChild, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; n = $f.n; newChild = $f.newChild; oldChild = $f.oldChild; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		n = this;
-		_r = newChild.Underlying(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_r$1 = oldChild.Underlying(); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		n.Object.replaceChild(_r, _r$1);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BasicNode.ptr.prototype.ReplaceChild }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.n = n; $f.newChild = newChild; $f.oldChild = oldChild; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	BasicNode.prototype.ReplaceChild = function(newChild, oldChild) { return this.$val.ReplaceChild(newChild, oldChild); };
-	BasicHTMLElement.ptr.prototype.AccessKey = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicElement.BasicNode.Object.accessKey, $String);
-	};
-	BasicHTMLElement.prototype.AccessKey = function() { return this.$val.AccessKey(); };
-	BasicHTMLElement.ptr.prototype.SetAccessKey = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicElement.BasicNode.Object.accessKey = $externalize(s, $String);
-	};
-	BasicHTMLElement.prototype.SetAccessKey = function(s) { return this.$val.SetAccessKey(s); };
-	BasicHTMLElement.ptr.prototype.AccessKeyLabel = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicElement.BasicNode.Object.accessKeyLabel, $String);
-	};
-	BasicHTMLElement.prototype.AccessKeyLabel = function() { return this.$val.AccessKeyLabel(); };
-	BasicHTMLElement.ptr.prototype.SetAccessKeyLabel = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicElement.BasicNode.Object.accessKeyLabel = $externalize(s, $String);
-	};
-	BasicHTMLElement.prototype.SetAccessKeyLabel = function(s) { return this.$val.SetAccessKeyLabel(s); };
-	BasicHTMLElement.ptr.prototype.ContentEditable = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicElement.BasicNode.Object.contentEditable, $String);
-	};
-	BasicHTMLElement.prototype.ContentEditable = function() { return this.$val.ContentEditable(); };
-	BasicHTMLElement.ptr.prototype.SetContentEditable = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicElement.BasicNode.Object.contentEditable = $externalize(s, $String);
-	};
-	BasicHTMLElement.prototype.SetContentEditable = function(s) { return this.$val.SetContentEditable(s); };
-	BasicHTMLElement.ptr.prototype.IsContentEditable = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicElement.BasicNode.Object.isContentEditable);
-	};
-	BasicHTMLElement.prototype.IsContentEditable = function() { return this.$val.IsContentEditable(); };
-	BasicHTMLElement.ptr.prototype.Dir = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicElement.BasicNode.Object.dir, $String);
-	};
-	BasicHTMLElement.prototype.Dir = function() { return this.$val.Dir(); };
-	BasicHTMLElement.ptr.prototype.SetDir = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicElement.BasicNode.Object.dir = $externalize(s, $String);
-	};
-	BasicHTMLElement.prototype.SetDir = function(s) { return this.$val.SetDir(s); };
-	BasicHTMLElement.ptr.prototype.Draggable = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicElement.BasicNode.Object.draggable);
-	};
-	BasicHTMLElement.prototype.Draggable = function() { return this.$val.Draggable(); };
-	BasicHTMLElement.ptr.prototype.SetDraggable = function(b) {
-		var $ptr, b, e;
-		e = this;
-		e.BasicElement.BasicNode.Object.draggable = $externalize(b, $Bool);
-	};
-	BasicHTMLElement.prototype.SetDraggable = function(b) { return this.$val.SetDraggable(b); };
-	BasicHTMLElement.ptr.prototype.Lang = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicElement.BasicNode.Object.lang, $String);
-	};
-	BasicHTMLElement.prototype.Lang = function() { return this.$val.Lang(); };
-	BasicHTMLElement.ptr.prototype.SetLang = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicElement.BasicNode.Object.lang = $externalize(s, $String);
-	};
-	BasicHTMLElement.prototype.SetLang = function(s) { return this.$val.SetLang(s); };
-	BasicHTMLElement.ptr.prototype.OffsetHeight = function() {
-		var $ptr, e;
-		e = this;
-		return $parseFloat(e.BasicElement.BasicNode.Object.offsetHeight);
-	};
-	BasicHTMLElement.prototype.OffsetHeight = function() { return this.$val.OffsetHeight(); };
-	BasicHTMLElement.ptr.prototype.OffsetLeft = function() {
-		var $ptr, e;
-		e = this;
-		return $parseFloat(e.BasicElement.BasicNode.Object.offsetLeft);
-	};
-	BasicHTMLElement.prototype.OffsetLeft = function() { return this.$val.OffsetLeft(); };
-	BasicHTMLElement.ptr.prototype.OffsetParent = function() {
-		var $ptr, e;
-		e = this;
-		return wrapHTMLElement(e.BasicElement.BasicNode.Object.offsetParent);
-	};
-	BasicHTMLElement.prototype.OffsetParent = function() { return this.$val.OffsetParent(); };
-	BasicHTMLElement.ptr.prototype.OffsetTop = function() {
-		var $ptr, e;
-		e = this;
-		return $parseFloat(e.BasicElement.BasicNode.Object.offsetTop);
-	};
-	BasicHTMLElement.prototype.OffsetTop = function() { return this.$val.OffsetTop(); };
-	BasicHTMLElement.ptr.prototype.OffsetWidth = function() {
-		var $ptr, e;
-		e = this;
-		return $parseFloat(e.BasicElement.BasicNode.Object.offsetWidth);
-	};
-	BasicHTMLElement.prototype.OffsetWidth = function() { return this.$val.OffsetWidth(); };
-	BasicHTMLElement.ptr.prototype.Style = function() {
-		var $ptr, e;
-		e = this;
-		return new CSSStyleDeclaration.ptr(e.BasicElement.BasicNode.Object.style);
-	};
-	BasicHTMLElement.prototype.Style = function() { return this.$val.Style(); };
-	BasicHTMLElement.ptr.prototype.TabIndex = function() {
-		var $ptr, e;
-		e = this;
-		return $parseInt(e.BasicElement.BasicNode.Object.tabIndex) >> 0;
-	};
-	BasicHTMLElement.prototype.TabIndex = function() { return this.$val.TabIndex(); };
-	BasicHTMLElement.ptr.prototype.SetTabIndex = function(i) {
-		var $ptr, e, i;
-		e = this;
-		e.BasicElement.BasicNode.Object.tabIndex = i;
-	};
-	BasicHTMLElement.prototype.SetTabIndex = function(i) { return this.$val.SetTabIndex(i); };
-	BasicHTMLElement.ptr.prototype.Title = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicElement.BasicNode.Object.title, $String);
-	};
-	BasicHTMLElement.prototype.Title = function() { return this.$val.Title(); };
-	BasicHTMLElement.ptr.prototype.SetTitle = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicElement.BasicNode.Object.title = $externalize(s, $String);
-	};
-	BasicHTMLElement.prototype.SetTitle = function(s) { return this.$val.SetTitle(s); };
-	BasicHTMLElement.ptr.prototype.Blur = function() {
-		var $ptr, e;
-		e = this;
-		e.BasicElement.BasicNode.Object.blur();
-	};
-	BasicHTMLElement.prototype.Blur = function() { return this.$val.Blur(); };
-	BasicHTMLElement.ptr.prototype.Click = function() {
-		var $ptr, e;
-		e = this;
-		e.BasicElement.BasicNode.Object.click();
-	};
-	BasicHTMLElement.prototype.Click = function() { return this.$val.Click(); };
-	BasicHTMLElement.ptr.prototype.Focus = function() {
-		var $ptr, e;
-		e = this;
-		e.BasicElement.BasicNode.Object.focus();
-	};
-	BasicHTMLElement.prototype.Focus = function() { return this.$val.Focus(); };
-	BasicElement.ptr.prototype.Attributes = function() {
-		var $ptr, e;
-		e = this;
-		return attrSetToMap(e.BasicNode.Object.attributes);
-	};
-	BasicElement.prototype.Attributes = function() { return this.$val.Attributes(); };
-	BasicElement.ptr.prototype.Dataset = function() {
-		var $ptr, e;
-		e = this;
-		return dataSetToMap(e.BasicNode.Object.dataset);
-	};
-	BasicElement.prototype.Dataset = function() { return this.$val.Dataset(); };
-	BasicElement.ptr.prototype.GetBoundingClientRect = function() {
-		var $ptr, e, obj;
-		e = this;
-		obj = e.BasicNode.Object.getBoundingClientRect();
-		return new ClientRect.ptr(obj, 0, 0, 0, 0, 0, 0);
-	};
-	BasicElement.prototype.GetBoundingClientRect = function() { return this.$val.GetBoundingClientRect(); };
-	BasicElement.ptr.prototype.PreviousElementSibling = function() {
-		var $ptr, e;
-		e = this;
-		return wrapElement(e.BasicNode.Object.previousElementSibling);
-	};
-	BasicElement.prototype.PreviousElementSibling = function() { return this.$val.PreviousElementSibling(); };
-	BasicElement.ptr.prototype.NextElementSibling = function() {
-		var $ptr, e;
-		e = this;
-		return wrapElement(e.BasicNode.Object.nextElementSibling);
-	};
-	BasicElement.prototype.NextElementSibling = function() { return this.$val.NextElementSibling(); };
-	BasicElement.ptr.prototype.Class = function() {
-		var $ptr, e;
-		e = this;
-		return new TokenList.ptr(e.BasicNode.Object.classList, e.BasicNode.Object, "className", 0);
-	};
-	BasicElement.prototype.Class = function() { return this.$val.Class(); };
-	BasicElement.ptr.prototype.SetClass = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicNode.Object.className = $externalize(s, $String);
-	};
-	BasicElement.prototype.SetClass = function(s) { return this.$val.SetClass(s); };
-	BasicElement.ptr.prototype.ID = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicNode.Object.id, $String);
-	};
-	BasicElement.prototype.ID = function() { return this.$val.ID(); };
-	BasicElement.ptr.prototype.SetID = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicNode.Object.id = $externalize(s, $String);
-	};
-	BasicElement.prototype.SetID = function(s) { return this.$val.SetID(s); };
-	BasicElement.ptr.prototype.TagName = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicNode.Object.tagName, $String);
-	};
-	BasicElement.prototype.TagName = function() { return this.$val.TagName(); };
-	BasicElement.ptr.prototype.GetAttribute = function(name) {
-		var $ptr, e, name;
-		e = this;
-		return $internalize(e.BasicNode.Object.getAttribute($externalize(name, $String)), $String);
-	};
-	BasicElement.prototype.GetAttribute = function(name) { return this.$val.GetAttribute(name); };
-	BasicElement.ptr.prototype.GetAttributeNS = function(ns, name) {
-		var $ptr, e, name, ns;
-		e = this;
-		return $internalize(e.BasicNode.Object.getAttributeNS($externalize(ns, $String), $externalize(name, $String)), $String);
-	};
-	BasicElement.prototype.GetAttributeNS = function(ns, name) { return this.$val.GetAttributeNS(ns, name); };
-	BasicElement.ptr.prototype.GetElementsByClassName = function(s) {
-		var $ptr, e, s;
-		e = this;
-		return nodeListToElements(e.BasicNode.Object.getElementsByClassName($externalize(s, $String)));
-	};
-	BasicElement.prototype.GetElementsByClassName = function(s) { return this.$val.GetElementsByClassName(s); };
-	BasicElement.ptr.prototype.GetElementsByTagName = function(s) {
-		var $ptr, e, s;
-		e = this;
-		return nodeListToElements(e.BasicNode.Object.getElementsByTagName($externalize(s, $String)));
-	};
-	BasicElement.prototype.GetElementsByTagName = function(s) { return this.$val.GetElementsByTagName(s); };
-	BasicElement.ptr.prototype.GetElementsByTagNameNS = function(ns, name) {
-		var $ptr, e, name, ns;
-		e = this;
-		return nodeListToElements(e.BasicNode.Object.getElementsByTagNameNS($externalize(ns, $String), $externalize(name, $String)));
-	};
-	BasicElement.prototype.GetElementsByTagNameNS = function(ns, name) { return this.$val.GetElementsByTagNameNS(ns, name); };
-	BasicElement.ptr.prototype.HasAttribute = function(s) {
-		var $ptr, e, s;
-		e = this;
-		return !!(e.BasicNode.Object.hasAttribute($externalize(s, $String)));
-	};
-	BasicElement.prototype.HasAttribute = function(s) { return this.$val.HasAttribute(s); };
-	BasicElement.ptr.prototype.HasAttributeNS = function(ns, name) {
-		var $ptr, e, name, ns;
-		e = this;
-		return !!(e.BasicNode.Object.hasAttributeNS($externalize(ns, $String), $externalize(name, $String)));
-	};
-	BasicElement.prototype.HasAttributeNS = function(ns, name) { return this.$val.HasAttributeNS(ns, name); };
-	BasicElement.ptr.prototype.QuerySelector = function(s) {
-		var $ptr, e, s;
-		e = this;
-		return wrapElement(e.BasicNode.Object.querySelector($externalize(s, $String)));
-	};
-	BasicElement.prototype.QuerySelector = function(s) { return this.$val.QuerySelector(s); };
-	BasicElement.ptr.prototype.QuerySelectorAll = function(s) {
-		var $ptr, e, s;
-		e = this;
-		return nodeListToElements(e.BasicNode.Object.querySelectorAll($externalize(s, $String)));
-	};
-	BasicElement.prototype.QuerySelectorAll = function(s) { return this.$val.QuerySelectorAll(s); };
-	BasicElement.ptr.prototype.RemoveAttribute = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicNode.Object.removeAttribute($externalize(s, $String));
-	};
-	BasicElement.prototype.RemoveAttribute = function(s) { return this.$val.RemoveAttribute(s); };
-	BasicElement.ptr.prototype.RemoveAttributeNS = function(ns, name) {
-		var $ptr, e, name, ns;
-		e = this;
-		e.BasicNode.Object.removeAttributeNS($externalize(ns, $String), $externalize(name, $String));
-	};
-	BasicElement.prototype.RemoveAttributeNS = function(ns, name) { return this.$val.RemoveAttributeNS(ns, name); };
-	BasicElement.ptr.prototype.SetAttribute = function(name, value) {
-		var $ptr, e, name, value;
-		e = this;
-		e.BasicNode.Object.setAttribute($externalize(name, $String), $externalize(value, $String));
-	};
-	BasicElement.prototype.SetAttribute = function(name, value) { return this.$val.SetAttribute(name, value); };
-	BasicElement.ptr.prototype.SetAttributeNS = function(ns, name, value) {
-		var $ptr, e, name, ns, value;
-		e = this;
-		e.BasicNode.Object.setAttributeNS($externalize(ns, $String), $externalize(name, $String), $externalize(value, $String));
-	};
-	BasicElement.prototype.SetAttributeNS = function(ns, name, value) { return this.$val.SetAttributeNS(ns, name, value); };
-	BasicElement.ptr.prototype.InnerHTML = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicNode.Object.innerHTML, $String);
-	};
-	BasicElement.prototype.InnerHTML = function() { return this.$val.InnerHTML(); };
-	BasicElement.ptr.prototype.SetInnerHTML = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicNode.Object.innerHTML = $externalize(s, $String);
-	};
-	BasicElement.prototype.SetInnerHTML = function(s) { return this.$val.SetInnerHTML(s); };
-	HTMLAnchorElement.ptr.prototype.Rel = function() {
-		var $ptr, e;
-		e = this;
-		return new TokenList.ptr(e.URLUtils.Object.relList, e.URLUtils.Object, "rel", 0);
-	};
-	HTMLAnchorElement.prototype.Rel = function() { return this.$val.Rel(); };
-	HTMLAppletElement.ptr.prototype.Rel = function() {
-		var $ptr, e;
-		e = this;
-		return new TokenList.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.relList, e.BasicHTMLElement.BasicElement.BasicNode.Object, "rel", 0);
-	};
-	HTMLAppletElement.prototype.Rel = function() { return this.$val.Rel(); };
-	HTMLAreaElement.ptr.prototype.Rel = function() {
-		var $ptr, e;
-		e = this;
-		return new TokenList.ptr(e.URLUtils.Object.relList, e.URLUtils.Object, "rel", 0);
-	};
-	HTMLAreaElement.prototype.Rel = function() { return this.$val.Rel(); };
-	HTMLButtonElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLButtonElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLButtonElement.ptr.prototype.Labels = function() {
-		var $ptr, e;
-		e = this;
-		return getLabels(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLButtonElement.prototype.Labels = function() { return this.$val.Labels(); };
-	HTMLButtonElement.ptr.prototype.Validity = function() {
-		var $ptr, e;
-		e = this;
-		return new ValidityState.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.validity, false, false, false, false, false, false, false, false, false);
-	};
-	HTMLButtonElement.prototype.Validity = function() { return this.$val.Validity(); };
-	HTMLButtonElement.ptr.prototype.CheckValidity = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicHTMLElement.BasicElement.BasicNode.Object.checkValidity());
-	};
-	HTMLButtonElement.prototype.CheckValidity = function() { return this.$val.CheckValidity(); };
-	HTMLButtonElement.ptr.prototype.SetCustomValidity = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.setCustomValidity($externalize(s, $String));
-	};
-	HTMLButtonElement.prototype.SetCustomValidity = function(s) { return this.$val.SetCustomValidity(s); };
-	HTMLCanvasElement.ptr.prototype.GetContext2d = function() {
-		var $ptr, ctx, e;
-		e = this;
-		ctx = e.GetContext("2d");
-		return new CanvasRenderingContext2D.ptr(ctx, "", "", "", 0, 0, 0, "", "", 0, 0, "", "", "", 0, "");
-	};
-	HTMLCanvasElement.prototype.GetContext2d = function() { return this.$val.GetContext2d(); };
-	HTMLCanvasElement.ptr.prototype.GetContext = function(param) {
-		var $ptr, e, param;
-		e = this;
-		return e.BasicHTMLElement.BasicElement.BasicNode.Object.getContext($externalize(param, $String));
-	};
-	HTMLCanvasElement.prototype.GetContext = function(param) { return this.$val.GetContext(param); };
-	CanvasRenderingContext2D.ptr.prototype.CreateLinearGradient = function(x0, y0, x1, y1) {
-		var $ptr, ctx, x0, x1, y0, y1;
-		ctx = this;
-		ctx.Object.createLinearGradient(x0, y0, x1, y1);
-	};
-	CanvasRenderingContext2D.prototype.CreateLinearGradient = function(x0, y0, x1, y1) { return this.$val.CreateLinearGradient(x0, y0, x1, y1); };
-	CanvasRenderingContext2D.ptr.prototype.Rect = function(x, y, width, height) {
-		var $ptr, ctx, height, width, x, y;
-		ctx = this;
-		ctx.Object.rect(x, y, width, height);
-	};
-	CanvasRenderingContext2D.prototype.Rect = function(x, y, width, height) { return this.$val.Rect(x, y, width, height); };
-	CanvasRenderingContext2D.ptr.prototype.FillRect = function(x, y, width, height) {
-		var $ptr, ctx, height, width, x, y;
-		ctx = this;
-		ctx.Object.fillRect(x, y, width, height);
-	};
-	CanvasRenderingContext2D.prototype.FillRect = function(x, y, width, height) { return this.$val.FillRect(x, y, width, height); };
-	CanvasRenderingContext2D.ptr.prototype.StrokeRect = function(x, y, width, height) {
-		var $ptr, ctx, height, width, x, y;
-		ctx = this;
-		ctx.Object.strokeRect(x, y, width, height);
-	};
-	CanvasRenderingContext2D.prototype.StrokeRect = function(x, y, width, height) { return this.$val.StrokeRect(x, y, width, height); };
-	CanvasRenderingContext2D.ptr.prototype.ClearRect = function(x, y, width, height) {
-		var $ptr, ctx, height, width, x, y;
-		ctx = this;
-		ctx.Object.clearRect(x, y, width, height);
-	};
-	CanvasRenderingContext2D.prototype.ClearRect = function(x, y, width, height) { return this.$val.ClearRect(x, y, width, height); };
-	CanvasRenderingContext2D.ptr.prototype.Fill = function() {
-		var $ptr, ctx;
-		ctx = this;
-		ctx.Object.fill();
-	};
-	CanvasRenderingContext2D.prototype.Fill = function() { return this.$val.Fill(); };
-	CanvasRenderingContext2D.ptr.prototype.Stroke = function() {
-		var $ptr, ctx;
-		ctx = this;
-		ctx.Object.stroke();
-	};
-	CanvasRenderingContext2D.prototype.Stroke = function() { return this.$val.Stroke(); };
-	CanvasRenderingContext2D.ptr.prototype.BeginPath = function() {
-		var $ptr, ctx;
-		ctx = this;
-		ctx.Object.beginPath();
-	};
-	CanvasRenderingContext2D.prototype.BeginPath = function() { return this.$val.BeginPath(); };
-	CanvasRenderingContext2D.ptr.prototype.MoveTo = function(x, y) {
-		var $ptr, ctx, x, y;
-		ctx = this;
-		ctx.Object.moveTo(x, y);
-	};
-	CanvasRenderingContext2D.prototype.MoveTo = function(x, y) { return this.$val.MoveTo(x, y); };
-	CanvasRenderingContext2D.ptr.prototype.ClosePath = function() {
-		var $ptr, ctx;
-		ctx = this;
-		ctx.Object.closePath();
-	};
-	CanvasRenderingContext2D.prototype.ClosePath = function() { return this.$val.ClosePath(); };
-	CanvasRenderingContext2D.ptr.prototype.LineTo = function(x, y) {
-		var $ptr, ctx, x, y;
-		ctx = this;
-		ctx.Object.lineTo(x, y);
-	};
-	CanvasRenderingContext2D.prototype.LineTo = function(x, y) { return this.$val.LineTo(x, y); };
-	CanvasRenderingContext2D.ptr.prototype.Clip = function() {
-		var $ptr, ctx;
-		ctx = this;
-		ctx.Object.clip();
-	};
-	CanvasRenderingContext2D.prototype.Clip = function() { return this.$val.Clip(); };
-	CanvasRenderingContext2D.ptr.prototype.QuadraticCurveTo = function(cpx, cpy, x, y) {
-		var $ptr, cpx, cpy, ctx, x, y;
-		ctx = this;
-		ctx.Object.quadraticCurveTo(cpx, cpy, x, y);
-	};
-	CanvasRenderingContext2D.prototype.QuadraticCurveTo = function(cpx, cpy, x, y) { return this.$val.QuadraticCurveTo(cpx, cpy, x, y); };
-	CanvasRenderingContext2D.ptr.prototype.BezierCurveTo = function(cp1x, cp1y, cp2x, cp2y, x, y) {
-		var $ptr, cp1x, cp1y, cp2x, cp2y, ctx, x, y;
-		ctx = this;
-		ctx.Object.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
-	};
-	CanvasRenderingContext2D.prototype.BezierCurveTo = function(cp1x, cp1y, cp2x, cp2y, x, y) { return this.$val.BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y); };
-	CanvasRenderingContext2D.ptr.prototype.Arc = function(x, y, r, sAngle, eAngle, counterclockwise) {
-		var $ptr, counterclockwise, ctx, eAngle, r, sAngle, x, y;
-		ctx = this;
-		ctx.Object.arc(x, y, r, sAngle, eAngle, $externalize(counterclockwise, $Bool));
-	};
-	CanvasRenderingContext2D.prototype.Arc = function(x, y, r, sAngle, eAngle, counterclockwise) { return this.$val.Arc(x, y, r, sAngle, eAngle, counterclockwise); };
-	CanvasRenderingContext2D.ptr.prototype.ArcTo = function(x1, y1, x2, y2, r) {
-		var $ptr, ctx, r, x1, x2, y1, y2;
-		ctx = this;
-		ctx.Object.arcTo(x1, y1, x2, y2, r);
-	};
-	CanvasRenderingContext2D.prototype.ArcTo = function(x1, y1, x2, y2, r) { return this.$val.ArcTo(x1, y1, x2, y2, r); };
-	CanvasRenderingContext2D.ptr.prototype.IsPointInPath = function(x, y) {
-		var $ptr, ctx, x, y;
-		ctx = this;
-		return !!(ctx.Object.isPointInPath(x, y));
-	};
-	CanvasRenderingContext2D.prototype.IsPointInPath = function(x, y) { return this.$val.IsPointInPath(x, y); };
-	CanvasRenderingContext2D.ptr.prototype.Scale = function(scaleWidth, scaleHeight) {
-		var $ptr, ctx, scaleHeight, scaleWidth;
-		ctx = this;
-		ctx.Object.scale(scaleWidth, scaleHeight);
-	};
-	CanvasRenderingContext2D.prototype.Scale = function(scaleWidth, scaleHeight) { return this.$val.Scale(scaleWidth, scaleHeight); };
-	CanvasRenderingContext2D.ptr.prototype.Rotate = function(angle) {
-		var $ptr, angle, ctx;
-		ctx = this;
-		ctx.Object.rotate(angle);
-	};
-	CanvasRenderingContext2D.prototype.Rotate = function(angle) { return this.$val.Rotate(angle); };
-	CanvasRenderingContext2D.ptr.prototype.Translate = function(x, y) {
-		var $ptr, ctx, x, y;
-		ctx = this;
-		ctx.Object.translate(x, y);
-	};
-	CanvasRenderingContext2D.prototype.Translate = function(x, y) { return this.$val.Translate(x, y); };
-	CanvasRenderingContext2D.ptr.prototype.Transform = function(a, b, c, d, e, f) {
-		var $ptr, a, b, c, ctx, d, e, f;
-		ctx = this;
-		ctx.Object.transform(a, b, c, d, e, f);
-	};
-	CanvasRenderingContext2D.prototype.Transform = function(a, b, c, d, e, f) { return this.$val.Transform(a, b, c, d, e, f); };
-	CanvasRenderingContext2D.ptr.prototype.SetTransform = function(a, b, c, d, e, f) {
-		var $ptr, a, b, c, ctx, d, e, f;
-		ctx = this;
-		ctx.Object.setTransform(a, b, c, d, e, f);
-	};
-	CanvasRenderingContext2D.prototype.SetTransform = function(a, b, c, d, e, f) { return this.$val.SetTransform(a, b, c, d, e, f); };
-	CanvasRenderingContext2D.ptr.prototype.FillText = function(text, x, y, maxWidth) {
-		var $ptr, ctx, maxWidth, text, x, y;
-		ctx = this;
-		if (maxWidth === -1) {
-			ctx.Object.fillText($externalize(text, $String), x, y);
-			return;
-		}
-		ctx.Object.fillText($externalize(text, $String), x, y, maxWidth);
-	};
-	CanvasRenderingContext2D.prototype.FillText = function(text, x, y, maxWidth) { return this.$val.FillText(text, x, y, maxWidth); };
-	CanvasRenderingContext2D.ptr.prototype.StrokeText = function(text, x, y, maxWidth) {
-		var $ptr, ctx, maxWidth, text, x, y;
-		ctx = this;
-		if (maxWidth === -1) {
-			ctx.Object.strokeText($externalize(text, $String), x, y);
-			return;
-		}
-		ctx.Object.strokeText($externalize(text, $String), x, y, maxWidth);
-	};
-	CanvasRenderingContext2D.prototype.StrokeText = function(text, x, y, maxWidth) { return this.$val.StrokeText(text, x, y, maxWidth); };
-	HTMLDataListElement.ptr.prototype.Options = function() {
-		var $ptr, e;
-		e = this;
-		return getOptions(e.BasicHTMLElement.BasicElement.BasicNode.Object, "options");
-	};
-	HTMLDataListElement.prototype.Options = function() { return this.$val.Options(); };
-	HTMLFieldSetElement.ptr.prototype.Elements = function() {
-		var $ptr, e;
-		e = this;
-		return nodeListToHTMLElements(e.BasicHTMLElement.BasicElement.BasicNode.Object.elements);
-	};
-	HTMLFieldSetElement.prototype.Elements = function() { return this.$val.Elements(); };
-	HTMLFieldSetElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLFieldSetElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLFieldSetElement.ptr.prototype.Validity = function() {
-		var $ptr, e;
-		e = this;
-		return new ValidityState.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.validity, false, false, false, false, false, false, false, false, false);
-	};
-	HTMLFieldSetElement.prototype.Validity = function() { return this.$val.Validity(); };
-	HTMLFieldSetElement.ptr.prototype.CheckValidity = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicHTMLElement.BasicElement.BasicNode.Object.checkValidity());
-	};
-	HTMLFieldSetElement.prototype.CheckValidity = function() { return this.$val.CheckValidity(); };
-	HTMLFieldSetElement.ptr.prototype.SetCustomValidity = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.setCustomValidity($externalize(s, $String));
-	};
-	HTMLFieldSetElement.prototype.SetCustomValidity = function(s) { return this.$val.SetCustomValidity(s); };
-	HTMLFormElement.ptr.prototype.Elements = function() {
-		var $ptr, e;
-		e = this;
-		return nodeListToHTMLElements(e.BasicHTMLElement.BasicElement.BasicNode.Object.elements);
-	};
-	HTMLFormElement.prototype.Elements = function() { return this.$val.Elements(); };
-	HTMLFormElement.ptr.prototype.CheckValidity = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicHTMLElement.BasicElement.BasicNode.Object.checkValidity());
-	};
-	HTMLFormElement.prototype.CheckValidity = function() { return this.$val.CheckValidity(); };
-	HTMLFormElement.ptr.prototype.Submit = function() {
-		var $ptr, e;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.submit();
-	};
-	HTMLFormElement.prototype.Submit = function() { return this.$val.Submit(); };
-	HTMLFormElement.ptr.prototype.Reset = function() {
-		var $ptr, e;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.reset();
-	};
-	HTMLFormElement.prototype.Reset = function() { return this.$val.Reset(); };
-	HTMLFormElement.ptr.prototype.Item = function(index) {
-		var $ptr, e, index;
-		e = this;
-		return wrapHTMLElement(e.BasicHTMLElement.BasicElement.BasicNode.Object.item(index));
-	};
-	HTMLFormElement.prototype.Item = function(index) { return this.$val.Item(index); };
-	HTMLFormElement.ptr.prototype.NamedItem = function(name) {
-		var $ptr, e, name;
-		e = this;
-		return wrapHTMLElement(e.BasicHTMLElement.BasicElement.BasicNode.Object.namedItem($externalize(name, $String)));
-	};
-	HTMLFormElement.prototype.NamedItem = function(name) { return this.$val.NamedItem(name); };
-	HTMLIFrameElement.ptr.prototype.ContentDocument = function() {
-		var $ptr, e;
-		e = this;
-		return wrapDocument(e.BasicHTMLElement.BasicElement.BasicNode.Object.contentDocument);
-	};
-	HTMLIFrameElement.prototype.ContentDocument = function() { return this.$val.ContentDocument(); };
-	HTMLIFrameElement.ptr.prototype.ContentWindow = function() {
-		var $ptr, e;
-		e = this;
-		return new window.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.contentWindow);
-	};
-	HTMLIFrameElement.prototype.ContentWindow = function() { return this.$val.ContentWindow(); };
-	HTMLInputElement.ptr.prototype.Files = function() {
-		var $ptr, _i, _ref, e, files, i, out;
-		e = this;
-		files = e.BasicHTMLElement.BasicElement.BasicNode.Object.files;
-		out = $makeSlice(sliceType$12, ($parseInt(files.length) >> 0));
-		_ref = out;
-		_i = 0;
-		while (true) {
-			if (!(_i < _ref.$length)) { break; }
-			i = _i;
-			((i < 0 || i >= out.$length) ? $throwRuntimeError("index out of range") : out.$array[out.$offset + i] = new File.ptr(files.item(i)));
-			_i++;
-		}
-		return out;
-	};
-	HTMLInputElement.prototype.Files = function() { return this.$val.Files(); };
-	HTMLInputElement.ptr.prototype.List = function() {
-		var $ptr, e, list;
-		e = this;
-		list = wrapHTMLElement(e.BasicHTMLElement.BasicElement.BasicNode.Object.list);
-		if ($interfaceIsEqual(list, $ifaceNil)) {
-			return ptrType$14.nil;
-		}
-		return $assertType(list, ptrType$14);
-	};
-	HTMLInputElement.prototype.List = function() { return this.$val.List(); };
-	HTMLInputElement.ptr.prototype.Labels = function() {
-		var $ptr, e;
-		e = this;
-		return getLabels(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLInputElement.prototype.Labels = function() { return this.$val.Labels(); };
-	HTMLInputElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLInputElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLInputElement.ptr.prototype.Validity = function() {
-		var $ptr, e;
-		e = this;
-		return new ValidityState.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.validity, false, false, false, false, false, false, false, false, false);
-	};
-	HTMLInputElement.prototype.Validity = function() { return this.$val.Validity(); };
-	HTMLInputElement.ptr.prototype.CheckValidity = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicHTMLElement.BasicElement.BasicNode.Object.checkValidity());
-	};
-	HTMLInputElement.prototype.CheckValidity = function() { return this.$val.CheckValidity(); };
-	HTMLInputElement.ptr.prototype.SetCustomValidity = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.setCustomValidity($externalize(s, $String));
-	};
-	HTMLInputElement.prototype.SetCustomValidity = function(s) { return this.$val.SetCustomValidity(s); };
-	HTMLInputElement.ptr.prototype.Select = function() {
-		var $ptr, e;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.select();
-	};
-	HTMLInputElement.prototype.Select = function() { return this.$val.Select(); };
-	HTMLInputElement.ptr.prototype.SetSelectionRange = function(start, end, direction) {
-		var $ptr, direction, e, end, start;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.setSelectionRange(start, end, $externalize(direction, $String));
-	};
-	HTMLInputElement.prototype.SetSelectionRange = function(start, end, direction) { return this.$val.SetSelectionRange(start, end, direction); };
-	HTMLInputElement.ptr.prototype.StepDown = function(n) {
-		var $ptr, e, n;
-		e = this;
-		return callRecover(e.BasicHTMLElement.BasicElement.BasicNode.Object, "stepDown", new sliceType([new $Int(n)]));
-	};
-	HTMLInputElement.prototype.StepDown = function(n) { return this.$val.StepDown(n); };
-	HTMLInputElement.ptr.prototype.StepUp = function(n) {
-		var $ptr, e, n;
-		e = this;
-		return callRecover(e.BasicHTMLElement.BasicElement.BasicNode.Object, "stepUp", new sliceType([new $Int(n)]));
-	};
-	HTMLInputElement.prototype.StepUp = function(n) { return this.$val.StepUp(n); };
-	HTMLKeygenElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLKeygenElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLKeygenElement.ptr.prototype.Labels = function() {
-		var $ptr, e;
-		e = this;
-		return getLabels(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLKeygenElement.prototype.Labels = function() { return this.$val.Labels(); };
-	HTMLKeygenElement.ptr.prototype.Validity = function() {
-		var $ptr, e;
-		e = this;
-		return new ValidityState.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.validity, false, false, false, false, false, false, false, false, false);
-	};
-	HTMLKeygenElement.prototype.Validity = function() { return this.$val.Validity(); };
-	HTMLKeygenElement.ptr.prototype.CheckValidity = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicHTMLElement.BasicElement.BasicNode.Object.checkValidity());
-	};
-	HTMLKeygenElement.prototype.CheckValidity = function() { return this.$val.CheckValidity(); };
-	HTMLKeygenElement.ptr.prototype.SetCustomValidity = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.setCustomValidity($externalize(s, $String));
-	};
-	HTMLKeygenElement.prototype.SetCustomValidity = function(s) { return this.$val.SetCustomValidity(s); };
-	HTMLLabelElement.ptr.prototype.Control = function() {
-		var $ptr, e;
-		e = this;
-		return wrapHTMLElement(e.BasicHTMLElement.BasicElement.BasicNode.Object.control);
-	};
-	HTMLLabelElement.prototype.Control = function() { return this.$val.Control(); };
-	HTMLLabelElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLLabelElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLLegendElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLLegendElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLLinkElement.ptr.prototype.Rel = function() {
-		var $ptr, e;
-		e = this;
-		return new TokenList.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.relList, e.BasicHTMLElement.BasicElement.BasicNode.Object, "rel", 0);
-	};
-	HTMLLinkElement.prototype.Rel = function() { return this.$val.Rel(); };
-	HTMLLinkElement.ptr.prototype.Sizes = function() {
-		var $ptr, e;
-		e = this;
-		return new TokenList.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.sizes, e.BasicHTMLElement.BasicElement.BasicNode.Object, "", 0);
-	};
-	HTMLLinkElement.prototype.Sizes = function() { return this.$val.Sizes(); };
-	HTMLLinkElement.ptr.prototype.Sheet = function() {
-		var $ptr, e;
-		e = this;
-		return $ifaceNil;
-	};
-	HTMLLinkElement.prototype.Sheet = function() { return this.$val.Sheet(); };
-	HTMLMapElement.ptr.prototype.Areas = function() {
-		var $ptr, _i, _ref, area, areas, e, i, out;
-		e = this;
-		areas = nodeListToElements(e.BasicHTMLElement.BasicElement.BasicNode.Object.areas);
-		out = $makeSlice(sliceType$13, areas.$length);
-		_ref = areas;
-		_i = 0;
-		while (true) {
-			if (!(_i < _ref.$length)) { break; }
-			i = _i;
-			area = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			((i < 0 || i >= out.$length) ? $throwRuntimeError("index out of range") : out.$array[out.$offset + i] = $assertType(area, ptrType$15));
-			_i++;
-		}
-		return out;
-	};
-	HTMLMapElement.prototype.Areas = function() { return this.$val.Areas(); };
-	HTMLMapElement.ptr.prototype.Images = function() {
-		var $ptr, e;
-		e = this;
-		return nodeListToHTMLElements(e.BasicHTMLElement.BasicElement.BasicNode.Object.areas);
-	};
-	HTMLMapElement.prototype.Images = function() { return this.$val.Images(); };
-	HTMLMeterElement.ptr.prototype.Labels = function() {
-		var $ptr, e;
-		e = $clone(this, HTMLMeterElement);
-		return getLabels(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLMeterElement.prototype.Labels = function() { return this.$val.Labels(); };
-	HTMLObjectElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLObjectElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLObjectElement.ptr.prototype.ContentDocument = function() {
-		var $ptr, e;
-		e = this;
-		return wrapDocument(e.BasicHTMLElement.BasicElement.BasicNode.Object.contentDocument);
-	};
-	HTMLObjectElement.prototype.ContentDocument = function() { return this.$val.ContentDocument(); };
-	HTMLObjectElement.ptr.prototype.ContentWindow = function() {
-		var $ptr, e;
-		e = this;
-		return new window.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.contentWindow);
-	};
-	HTMLObjectElement.prototype.ContentWindow = function() { return this.$val.ContentWindow(); };
-	HTMLObjectElement.ptr.prototype.Validity = function() {
-		var $ptr, e;
-		e = this;
-		return new ValidityState.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.validity, false, false, false, false, false, false, false, false, false);
-	};
-	HTMLObjectElement.prototype.Validity = function() { return this.$val.Validity(); };
-	HTMLObjectElement.ptr.prototype.CheckValidity = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicHTMLElement.BasicElement.BasicNode.Object.checkValidity());
-	};
-	HTMLObjectElement.prototype.CheckValidity = function() { return this.$val.CheckValidity(); };
-	HTMLObjectElement.ptr.prototype.SetCustomValidity = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.setCustomValidity($externalize(s, $String));
-	};
-	HTMLObjectElement.prototype.SetCustomValidity = function(s) { return this.$val.SetCustomValidity(s); };
-	HTMLOptionElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLOptionElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLOutputElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLOutputElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLOutputElement.ptr.prototype.Labels = function() {
-		var $ptr, e;
-		e = this;
-		return getLabels(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLOutputElement.prototype.Labels = function() { return this.$val.Labels(); };
-	HTMLOutputElement.ptr.prototype.Validity = function() {
-		var $ptr, e;
-		e = this;
-		return new ValidityState.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.validity, false, false, false, false, false, false, false, false, false);
-	};
-	HTMLOutputElement.prototype.Validity = function() { return this.$val.Validity(); };
-	HTMLOutputElement.ptr.prototype.For = function() {
-		var $ptr, e;
-		e = this;
-		return new TokenList.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.htmlFor, e.BasicHTMLElement.BasicElement.BasicNode.Object, "", 0);
-	};
-	HTMLOutputElement.prototype.For = function() { return this.$val.For(); };
-	HTMLOutputElement.ptr.prototype.CheckValidity = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicHTMLElement.BasicElement.BasicNode.Object.checkValidity());
-	};
-	HTMLOutputElement.prototype.CheckValidity = function() { return this.$val.CheckValidity(); };
-	HTMLOutputElement.ptr.prototype.SetCustomValidity = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.setCustomValidity($externalize(s, $String));
-	};
-	HTMLOutputElement.prototype.SetCustomValidity = function(s) { return this.$val.SetCustomValidity(s); };
-	HTMLProgressElement.ptr.prototype.Labels = function() {
-		var $ptr, e;
-		e = $clone(this, HTMLProgressElement);
-		return getLabels(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLProgressElement.prototype.Labels = function() { return this.$val.Labels(); };
-	HTMLSelectElement.ptr.prototype.Labels = function() {
-		var $ptr, e;
-		e = this;
-		return getLabels(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLSelectElement.prototype.Labels = function() { return this.$val.Labels(); };
-	HTMLSelectElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLSelectElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLSelectElement.ptr.prototype.Options = function() {
-		var $ptr, e;
-		e = this;
-		return getOptions(e.BasicHTMLElement.BasicElement.BasicNode.Object, "options");
-	};
-	HTMLSelectElement.prototype.Options = function() { return this.$val.Options(); };
-	HTMLSelectElement.ptr.prototype.SelectedOptions = function() {
-		var $ptr, e;
-		e = this;
-		return getOptions(e.BasicHTMLElement.BasicElement.BasicNode.Object, "selectedOptions");
-	};
-	HTMLSelectElement.prototype.SelectedOptions = function() { return this.$val.SelectedOptions(); };
-	HTMLSelectElement.ptr.prototype.Item = function(index) {
-		var $ptr, e, el, index;
-		e = this;
-		el = wrapHTMLElement(e.BasicHTMLElement.BasicElement.BasicNode.Object.item(index));
-		if ($interfaceIsEqual(el, $ifaceNil)) {
-			return ptrType$6.nil;
-		}
-		return $assertType(el, ptrType$6);
-	};
-	HTMLSelectElement.prototype.Item = function(index) { return this.$val.Item(index); };
-	HTMLSelectElement.ptr.prototype.NamedItem = function(name) {
-		var $ptr, e, el, name;
-		e = this;
-		el = wrapHTMLElement(e.BasicHTMLElement.BasicElement.BasicNode.Object.namedItem($externalize(name, $String)));
-		if ($interfaceIsEqual(el, $ifaceNil)) {
-			return ptrType$6.nil;
-		}
-		return $assertType(el, ptrType$6);
-	};
-	HTMLSelectElement.prototype.NamedItem = function(name) { return this.$val.NamedItem(name); };
-	HTMLSelectElement.ptr.prototype.Validity = function() {
-		var $ptr, e;
-		e = this;
-		return new ValidityState.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.validity, false, false, false, false, false, false, false, false, false);
-	};
-	HTMLSelectElement.prototype.Validity = function() { return this.$val.Validity(); };
-	HTMLSelectElement.ptr.prototype.CheckValidity = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicHTMLElement.BasicElement.BasicNode.Object.checkValidity());
-	};
-	HTMLSelectElement.prototype.CheckValidity = function() { return this.$val.CheckValidity(); };
-	HTMLSelectElement.ptr.prototype.SetCustomValidity = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.setCustomValidity($externalize(s, $String));
-	};
-	HTMLSelectElement.prototype.SetCustomValidity = function(s) { return this.$val.SetCustomValidity(s); };
-	HTMLTableRowElement.ptr.prototype.Cells = function() {
-		var $ptr, _i, _ref, cell, cells, e, i, out;
-		e = this;
-		cells = nodeListToElements(e.BasicHTMLElement.BasicElement.BasicNode.Object.cells);
-		out = $makeSlice(sliceType$14, cells.$length);
-		_ref = cells;
-		_i = 0;
-		while (true) {
-			if (!(_i < _ref.$length)) { break; }
-			i = _i;
-			cell = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			((i < 0 || i >= out.$length) ? $throwRuntimeError("index out of range") : out.$array[out.$offset + i] = $assertType(cell, ptrType$16));
-			_i++;
-		}
-		return out;
-	};
-	HTMLTableRowElement.prototype.Cells = function() { return this.$val.Cells(); };
-	HTMLTableRowElement.ptr.prototype.InsertCell = function(index) {
-		var $ptr, e, index;
-		e = this;
-		return $assertType(wrapHTMLElement(e.BasicHTMLElement.BasicElement.BasicNode.Object.insertCell(index)), ptrType$16);
-	};
-	HTMLTableRowElement.prototype.InsertCell = function(index) { return this.$val.InsertCell(index); };
-	HTMLTableRowElement.ptr.prototype.DeleteCell = function(index) {
-		var $ptr, e, index;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.deleteCell(index);
-	};
-	HTMLTableRowElement.prototype.DeleteCell = function(index) { return this.$val.DeleteCell(index); };
-	HTMLTableSectionElement.ptr.prototype.Rows = function() {
-		var $ptr, _i, _ref, e, i, out, row, rows;
-		e = this;
-		rows = nodeListToElements(e.BasicHTMLElement.BasicElement.BasicNode.Object.rows);
-		out = $makeSlice(sliceType$15, rows.$length);
-		_ref = rows;
-		_i = 0;
-		while (true) {
-			if (!(_i < _ref.$length)) { break; }
-			i = _i;
-			row = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			((i < 0 || i >= out.$length) ? $throwRuntimeError("index out of range") : out.$array[out.$offset + i] = $assertType(row, ptrType$17));
-			_i++;
-		}
-		return out;
-	};
-	HTMLTableSectionElement.prototype.Rows = function() { return this.$val.Rows(); };
-	HTMLTableSectionElement.ptr.prototype.DeleteRow = function(index) {
-		var $ptr, e, index;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.deleteRow(index);
-	};
-	HTMLTableSectionElement.prototype.DeleteRow = function(index) { return this.$val.DeleteRow(index); };
-	HTMLTableSectionElement.ptr.prototype.InsertRow = function(index) {
-		var $ptr, e, index;
-		e = this;
-		return $assertType(wrapHTMLElement(e.BasicHTMLElement.BasicElement.BasicNode.Object.insertRow(index)), ptrType$17);
-	};
-	HTMLTableSectionElement.prototype.InsertRow = function(index) { return this.$val.InsertRow(index); };
-	HTMLTextAreaElement.ptr.prototype.Form = function() {
-		var $ptr, e;
-		e = this;
-		return getForm(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLTextAreaElement.prototype.Form = function() { return this.$val.Form(); };
-	HTMLTextAreaElement.ptr.prototype.Labels = function() {
-		var $ptr, e;
-		e = this;
-		return getLabels(e.BasicHTMLElement.BasicElement.BasicNode.Object);
-	};
-	HTMLTextAreaElement.prototype.Labels = function() { return this.$val.Labels(); };
-	HTMLTextAreaElement.ptr.prototype.Validity = function() {
-		var $ptr, e;
-		e = this;
-		return new ValidityState.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.validity, false, false, false, false, false, false, false, false, false);
-	};
-	HTMLTextAreaElement.prototype.Validity = function() { return this.$val.Validity(); };
-	HTMLTextAreaElement.ptr.prototype.CheckValidity = function() {
-		var $ptr, e;
-		e = this;
-		return !!(e.BasicHTMLElement.BasicElement.BasicNode.Object.checkValidity());
-	};
-	HTMLTextAreaElement.prototype.CheckValidity = function() { return this.$val.CheckValidity(); };
-	HTMLTextAreaElement.ptr.prototype.SetCustomValidity = function(s) {
-		var $ptr, e, s;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.setCustomValidity($externalize(s, $String));
-	};
-	HTMLTextAreaElement.prototype.SetCustomValidity = function(s) { return this.$val.SetCustomValidity(s); };
-	HTMLTextAreaElement.ptr.prototype.Select = function() {
-		var $ptr, e;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.select();
-	};
-	HTMLTextAreaElement.prototype.Select = function() { return this.$val.Select(); };
-	HTMLTextAreaElement.ptr.prototype.SetSelectionRange = function(start, end, direction) {
-		var $ptr, direction, e, end, start;
-		e = this;
-		e.BasicHTMLElement.BasicElement.BasicNode.Object.setSelectionRange(start, end, $externalize(direction, $String));
-	};
-	HTMLTextAreaElement.prototype.SetSelectionRange = function(start, end, direction) { return this.$val.SetSelectionRange(start, end, direction); };
-	HTMLTrackElement.ptr.prototype.Track = function() {
-		var $ptr, e;
-		e = this;
-		return new TextTrack.ptr(e.BasicHTMLElement.BasicElement.BasicNode.Object.track);
-	};
-	HTMLTrackElement.prototype.Track = function() { return this.$val.Track(); };
-	HTMLBaseElement.ptr.prototype.Href = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicHTMLElement.BasicElement.BasicNode.Object.href, $String);
-	};
-	HTMLBaseElement.prototype.Href = function() { return this.$val.Href(); };
-	HTMLBaseElement.ptr.prototype.Target = function() {
-		var $ptr, e;
-		e = this;
-		return $internalize(e.BasicHTMLElement.BasicElement.BasicNode.Object.target, $String);
-	};
-	HTMLBaseElement.prototype.Target = function() { return this.$val.Target(); };
-	CSSStyleDeclaration.ptr.prototype.ToMap = function() {
-		var $ptr, N, _key, css, i, m, name, value;
-		css = this;
-		m = new $Map();
-		N = $parseInt(css.Object.length) >> 0;
-		i = 0;
-		while (true) {
-			if (!(i < N)) { break; }
-			name = $internalize(css.Object.index(i), $String);
-			value = $internalize(css.Object.getPropertyValue(), $String);
-			_key = name; (m || $throwRuntimeError("assignment to entry in nil map"))[$String.keyFor(_key)] = { k: _key, v: value };
-			i = i + (1) >> 0;
-		}
-		return m;
-	};
-	CSSStyleDeclaration.prototype.ToMap = function() { return this.$val.ToMap(); };
-	CSSStyleDeclaration.ptr.prototype.RemoveProperty = function(name) {
-		var $ptr, css, name;
-		css = this;
-		css.Object.removeProperty($externalize(name, $String));
-	};
-	CSSStyleDeclaration.prototype.RemoveProperty = function(name) { return this.$val.RemoveProperty(name); };
-	CSSStyleDeclaration.ptr.prototype.GetPropertyValue = function(name) {
-		var $ptr, css, name;
-		css = this;
-		return $internalize(css.Object.getPropertyValue($externalize(name, $String)), $String);
-	};
-	CSSStyleDeclaration.prototype.GetPropertyValue = function(name) { return this.$val.GetPropertyValue(name); };
-	CSSStyleDeclaration.ptr.prototype.GetPropertyPriority = function(name) {
-		var $ptr, css, name;
-		css = this;
-		return $internalize(css.Object.getPropertyPriority($externalize(name, $String)), $String);
-	};
-	CSSStyleDeclaration.prototype.GetPropertyPriority = function(name) { return this.$val.GetPropertyPriority(name); };
-	CSSStyleDeclaration.ptr.prototype.SetProperty = function(name, value, priority) {
-		var $ptr, css, name, priority, value;
-		css = this;
-		css.Object.setProperty($externalize(name, $String), $externalize(value, $String), $externalize(priority, $String));
-	};
-	CSSStyleDeclaration.prototype.SetProperty = function(name, value, priority) { return this.$val.SetProperty(name, value, priority); };
-	CSSStyleDeclaration.ptr.prototype.Index = function(idx) {
-		var $ptr, css, idx;
-		css = this;
-		return $internalize(css.Object.index(idx), $String);
-	};
-	CSSStyleDeclaration.prototype.Index = function(idx) { return this.$val.Index(idx); };
-	CSSStyleDeclaration.ptr.prototype.Length = function() {
-		var $ptr, css;
-		css = this;
-		return $parseInt(css.Object.length) >> 0;
-	};
-	CSSStyleDeclaration.prototype.Length = function() { return this.$val.Length(); };
-	wrapEvent = function(o) {
-		var $ptr, _ref, c, ev, o;
-		if (o === null || o === undefined) {
-			return $ifaceNil;
-		}
-		ev = new BasicEvent.ptr(o);
-		c = o.constructor;
-		_ref = c;
-		if (_ref === $global.AnimationEvent) {
-			return new AnimationEvent.ptr(ev);
-		} else if (_ref === $global.AudioProcessingEvent) {
-			return new AudioProcessingEvent.ptr(ev);
-		} else if (_ref === $global.BeforeInputEvent) {
-			return new BeforeInputEvent.ptr(ev);
-		} else if (_ref === $global.BeforeUnloadEvent) {
-			return new BeforeUnloadEvent.ptr(ev);
-		} else if (_ref === $global.BlobEvent) {
-			return new BlobEvent.ptr(ev);
-		} else if (_ref === $global.ClipboardEvent) {
-			return new ClipboardEvent.ptr(ev);
-		} else if (_ref === $global.CloseEvent) {
-			return new CloseEvent.ptr(ev, 0, "", false);
-		} else if (_ref === $global.CompositionEvent) {
-			return new CompositionEvent.ptr(ev);
-		} else if (_ref === $global.CSSFontFaceLoadEvent) {
-			return new CSSFontFaceLoadEvent.ptr(ev);
-		} else if (_ref === $global.CustomEvent) {
-			return new CustomEvent.ptr(ev);
-		} else if (_ref === $global.DeviceLightEvent) {
-			return new DeviceLightEvent.ptr(ev);
-		} else if (_ref === $global.DeviceMotionEvent) {
-			return new DeviceMotionEvent.ptr(ev);
-		} else if (_ref === $global.DeviceOrientationEvent) {
-			return new DeviceOrientationEvent.ptr(ev);
-		} else if (_ref === $global.DeviceProximityEvent) {
-			return new DeviceProximityEvent.ptr(ev);
-		} else if (_ref === $global.DOMTransactionEvent) {
-			return new DOMTransactionEvent.ptr(ev);
-		} else if (_ref === $global.DragEvent) {
-			return new DragEvent.ptr(ev);
-		} else if (_ref === $global.EditingBeforeInputEvent) {
-			return new EditingBeforeInputEvent.ptr(ev);
-		} else if (_ref === $global.ErrorEvent) {
-			return new ErrorEvent.ptr(ev);
-		} else if (_ref === $global.FocusEvent) {
-			return new FocusEvent.ptr(ev);
-		} else if (_ref === $global.GamepadEvent) {
-			return new GamepadEvent.ptr(ev);
-		} else if (_ref === $global.HashChangeEvent) {
-			return new HashChangeEvent.ptr(ev);
-		} else if (_ref === $global.IDBVersionChangeEvent) {
-			return new IDBVersionChangeEvent.ptr(ev);
-		} else if (_ref === $global.KeyboardEvent) {
-			return new KeyboardEvent.ptr(ev, false, 0, false, "", "", 0, "", 0, 0, false, false, false);
-		} else if (_ref === $global.MediaStreamEvent) {
-			return new MediaStreamEvent.ptr(ev);
-		} else if (_ref === $global.MessageEvent) {
-			return new MessageEvent.ptr(ev, null);
-		} else if (_ref === $global.MouseEvent) {
-			return new MouseEvent.ptr(new UIEvent.ptr(ev), false, 0, 0, 0, false, false, 0, 0, 0, 0, false);
-		} else if (_ref === $global.MutationEvent) {
-			return new MutationEvent.ptr(ev);
-		} else if (_ref === $global.OfflineAudioCompletionEvent) {
-			return new OfflineAudioCompletionEvent.ptr(ev);
-		} else if (_ref === $global.PageTransitionEvent) {
-			return new PageTransitionEvent.ptr(ev);
-		} else if (_ref === $global.PointerEvent) {
-			return new PointerEvent.ptr(ev);
-		} else if (_ref === $global.PopStateEvent) {
-			return new PopStateEvent.ptr(ev);
-		} else if (_ref === $global.ProgressEvent) {
-			return new ProgressEvent.ptr(ev);
-		} else if (_ref === $global.RelatedEvent) {
-			return new RelatedEvent.ptr(ev);
-		} else if (_ref === $global.RTCPeerConnectionIceEvent) {
-			return new RTCPeerConnectionIceEvent.ptr(ev);
-		} else if (_ref === $global.SensorEvent) {
-			return new SensorEvent.ptr(ev);
-		} else if (_ref === $global.StorageEvent) {
-			return new StorageEvent.ptr(ev);
-		} else if (_ref === $global.SVGEvent) {
-			return new SVGEvent.ptr(ev);
-		} else if (_ref === $global.SVGZoomEvent) {
-			return new SVGZoomEvent.ptr(ev);
-		} else if (_ref === $global.TimeEvent) {
-			return new TimeEvent.ptr(ev);
-		} else if (_ref === $global.TouchEvent) {
-			return new TouchEvent.ptr(ev);
-		} else if (_ref === $global.TrackEvent) {
-			return new TrackEvent.ptr(ev);
-		} else if (_ref === $global.TransitionEvent) {
-			return new TransitionEvent.ptr(ev);
-		} else if (_ref === $global.UIEvent) {
-			return new UIEvent.ptr(ev);
-		} else if (_ref === $global.UserProximityEvent) {
-			return new UserProximityEvent.ptr(ev);
-		} else if (_ref === $global.WheelEvent) {
-			return new WheelEvent.ptr(ev, 0, 0, 0, 0);
-		} else {
-			return ev;
-		}
-	};
-	BasicEvent.ptr.prototype.Bubbles = function() {
-		var $ptr, ev;
-		ev = this;
-		return !!(ev.Object.bubbles);
-	};
-	BasicEvent.prototype.Bubbles = function() { return this.$val.Bubbles(); };
-	BasicEvent.ptr.prototype.Cancelable = function() {
-		var $ptr, ev;
-		ev = this;
-		return !!(ev.Object.cancelable);
-	};
-	BasicEvent.prototype.Cancelable = function() { return this.$val.Cancelable(); };
-	BasicEvent.ptr.prototype.CurrentTarget = function() {
-		var $ptr, ev;
-		ev = this;
-		return wrapElement(ev.Object.currentTarget);
-	};
-	BasicEvent.prototype.CurrentTarget = function() { return this.$val.CurrentTarget(); };
-	BasicEvent.ptr.prototype.DefaultPrevented = function() {
-		var $ptr, ev;
-		ev = this;
-		return !!(ev.Object.defaultPrevented);
-	};
-	BasicEvent.prototype.DefaultPrevented = function() { return this.$val.DefaultPrevented(); };
-	BasicEvent.ptr.prototype.EventPhase = function() {
-		var $ptr, ev;
-		ev = this;
-		return $parseInt(ev.Object.eventPhase) >> 0;
-	};
-	BasicEvent.prototype.EventPhase = function() { return this.$val.EventPhase(); };
-	BasicEvent.ptr.prototype.Target = function() {
-		var $ptr, ev;
-		ev = this;
-		return wrapElement(ev.Object.target);
-	};
-	BasicEvent.prototype.Target = function() { return this.$val.Target(); };
-	BasicEvent.ptr.prototype.Timestamp = function() {
-		var $ptr, _q, _r, ev, ms, ns, s;
-		ev = this;
-		ms = $parseInt(ev.Object.timeStamp) >> 0;
-		s = (_q = ms / 1000, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero"));
-		ns = ((_r = ms % 1000, _r === _r ? _r : $throwRuntimeError("integer divide by zero")) * 1000000 >> 0);
-		return time.Unix(new $Int64(0, s), new $Int64(0, ns));
-	};
-	BasicEvent.prototype.Timestamp = function() { return this.$val.Timestamp(); };
-	BasicEvent.ptr.prototype.Type = function() {
-		var $ptr, ev;
-		ev = this;
-		return $internalize(ev.Object.type, $String);
-	};
-	BasicEvent.prototype.Type = function() { return this.$val.Type(); };
-	BasicEvent.ptr.prototype.PreventDefault = function() {
-		var $ptr, ev;
-		ev = this;
-		ev.Object.preventDefault();
-	};
-	BasicEvent.prototype.PreventDefault = function() { return this.$val.PreventDefault(); };
-	BasicEvent.ptr.prototype.StopImmediatePropagation = function() {
-		var $ptr, ev;
-		ev = this;
-		ev.Object.stopImmediatePropagation();
-	};
-	BasicEvent.prototype.StopImmediatePropagation = function() { return this.$val.StopImmediatePropagation(); };
-	BasicEvent.ptr.prototype.StopPropagation = function() {
-		var $ptr, ev;
-		ev = this;
-		ev.Object.stopPropagation();
-	};
-	BasicEvent.prototype.StopPropagation = function() { return this.$val.StopPropagation(); };
-	KeyboardEvent.ptr.prototype.ModifierState = function(mod) {
-		var $ptr, ev, mod;
-		ev = this;
-		return !!(ev.BasicEvent.Object.getModifierState($externalize(mod, $String)));
-	};
-	KeyboardEvent.prototype.ModifierState = function(mod) { return this.$val.ModifierState(mod); };
-	MouseEvent.ptr.prototype.RelatedTarget = function() {
-		var $ptr, ev;
-		ev = this;
-		return wrapElement(ev.UIEvent.BasicEvent.Object.target);
-	};
-	MouseEvent.prototype.RelatedTarget = function() { return this.$val.RelatedTarget(); };
-	MouseEvent.ptr.prototype.ModifierState = function(mod) {
-		var $ptr, ev, mod;
-		ev = this;
-		return !!(ev.UIEvent.BasicEvent.Object.getModifierState($externalize(mod, $String)));
-	};
-	MouseEvent.prototype.ModifierState = function(mod) { return this.$val.ModifierState(mod); };
-	ptrType$20.methods = [{prop: "Item", name: "Item", pkg: "", typ: $funcType([$Int], [$String], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "Add", name: "Add", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Toggle", name: "Toggle", pkg: "", typ: $funcType([$String], [], false)}, {prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Slice", name: "Slice", pkg: "", typ: $funcType([], [sliceType$6], false)}, {prop: "SetString", name: "SetString", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Set", name: "Set", pkg: "", typ: $funcType([sliceType$6], [], false)}];
-	documentFragment.methods = [{prop: "GetElementByID", name: "GetElementByID", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$2], false)}];
-	document.methods = [{prop: "Async", name: "Async", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetAsync", name: "SetAsync", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "Doctype", name: "Doctype", pkg: "", typ: $funcType([], [DocumentType], false)}, {prop: "DocumentElement", name: "DocumentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "DocumentURI", name: "DocumentURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Implementation", name: "Implementation", pkg: "", typ: $funcType([], [DOMImplementation], false)}, {prop: "LastStyleSheetSet", name: "LastStyleSheetSet", pkg: "", typ: $funcType([], [$String], false)}, {prop: "PreferredStyleSheetSet", name: "PreferredStyleSheetSet", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SelectedStyleSheetSet", name: "SelectedStyleSheetSet", pkg: "", typ: $funcType([], [$String], false)}, {prop: "StyleSheets", name: "StyleSheets", pkg: "", typ: $funcType([], [sliceType$11], false)}, {prop: "StyleSheetSets", name: "StyleSheetSets", pkg: "", typ: $funcType([], [sliceType$11], false)}, {prop: "AdoptNode", name: "AdoptNode", pkg: "", typ: $funcType([Node], [Node], false)}, {prop: "ImportNode", name: "ImportNode", pkg: "", typ: $funcType([Node, $Bool], [Node], false)}, {prop: "CreateDocumentFragment", name: "CreateDocumentFragment", pkg: "", typ: $funcType([], [DocumentFragment], false)}, {prop: "CreateElement", name: "CreateElement", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "CreateElementNS", name: "CreateElementNS", pkg: "", typ: $funcType([$String, $String], [Element], false)}, {prop: "CreateTextNode", name: "CreateTextNode", pkg: "", typ: $funcType([$String], [ptrType$11], false)}, {prop: "ElementFromPoint", name: "ElementFromPoint", pkg: "", typ: $funcType([$Int, $Int], [Element], false)}, {prop: "EnableStyleSheetsForSet", name: "EnableStyleSheetsForSet", pkg: "", typ: $funcType([$String], [], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$2], false)}, {prop: "GetElementByID", name: "GetElementByID", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$2], false)}];
-	ptrType$24.methods = [{prop: "ActiveElement", name: "ActiveElement", pkg: "", typ: $funcType([], [HTMLElement], false)}, {prop: "Body", name: "Body", pkg: "", typ: $funcType([], [HTMLElement], false)}, {prop: "Cookie", name: "Cookie", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetCookie", name: "SetCookie", pkg: "", typ: $funcType([$String], [], false)}, {prop: "DefaultView", name: "DefaultView", pkg: "", typ: $funcType([], [Window], false)}, {prop: "DesignMode", name: "DesignMode", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetDesignMode", name: "SetDesignMode", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "Domain", name: "Domain", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetDomain", name: "SetDomain", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Forms", name: "Forms", pkg: "", typ: $funcType([], [sliceType$7], false)}, {prop: "Head", name: "Head", pkg: "", typ: $funcType([], [ptrType$7], false)}, {prop: "Images", name: "Images", pkg: "", typ: $funcType([], [sliceType$8], false)}, {prop: "LastModified", name: "LastModified", pkg: "", typ: $funcType([], [time.Time], false)}, {prop: "Links", name: "Links", pkg: "", typ: $funcType([], [sliceType$3], false)}, {prop: "Location", name: "Location", pkg: "", typ: $funcType([], [ptrType$21], false)}, {prop: "Plugins", name: "Plugins", pkg: "", typ: $funcType([], [sliceType$9], false)}, {prop: "ReadyState", name: "ReadyState", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Referrer", name: "Referrer", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Scripts", name: "Scripts", pkg: "", typ: $funcType([], [sliceType$10], false)}, {prop: "Title", name: "Title", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetTitle", name: "SetTitle", pkg: "", typ: $funcType([$String], [], false)}, {prop: "URL", name: "URL", pkg: "", typ: $funcType([], [$String], false)}];
-	ptrType$28.methods = [{prop: "Console", name: "Console", pkg: "", typ: $funcType([], [ptrType$26], false)}, {prop: "Document", name: "Document", pkg: "", typ: $funcType([], [Document], false)}, {prop: "FrameElement", name: "FrameElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "Location", name: "Location", pkg: "", typ: $funcType([], [ptrType$21], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetName", name: "SetName", pkg: "", typ: $funcType([$String], [], false)}, {prop: "InnerHeight", name: "InnerHeight", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "InnerWidth", name: "InnerWidth", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Length", name: "Length", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Opener", name: "Opener", pkg: "", typ: $funcType([], [Window], false)}, {prop: "OuterHeight", name: "OuterHeight", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "OuterWidth", name: "OuterWidth", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScrollX", name: "ScrollX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScrollY", name: "ScrollY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Parent", name: "Parent", pkg: "", typ: $funcType([], [Window], false)}, {prop: "ScreenX", name: "ScreenX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScreenY", name: "ScreenY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScrollMaxX", name: "ScrollMaxX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScrollMaxY", name: "ScrollMaxY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Top", name: "Top", pkg: "", typ: $funcType([], [Window], false)}, {prop: "History", name: "History", pkg: "", typ: $funcType([], [History], false)}, {prop: "Navigator", name: "Navigator", pkg: "", typ: $funcType([], [Navigator], false)}, {prop: "Screen", name: "Screen", pkg: "", typ: $funcType([], [ptrType$27], false)}, {prop: "Alert", name: "Alert", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Back", name: "Back", pkg: "", typ: $funcType([], [], false)}, {prop: "Blur", name: "Blur", pkg: "", typ: $funcType([], [], false)}, {prop: "ClearInterval", name: "ClearInterval", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "ClearTimeout", name: "ClearTimeout", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [], false)}, {prop: "Confirm", name: "Confirm", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "Focus", name: "Focus", pkg: "", typ: $funcType([], [], false)}, {prop: "Forward", name: "Forward", pkg: "", typ: $funcType([], [], false)}, {prop: "GetComputedStyle", name: "GetComputedStyle", pkg: "", typ: $funcType([Element, $String], [ptrType$25], false)}, {prop: "GetSelection", name: "GetSelection", pkg: "", typ: $funcType([], [Selection], false)}, {prop: "Home", name: "Home", pkg: "", typ: $funcType([], [], false)}, {prop: "MoveBy", name: "MoveBy", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MoveTo", name: "MoveTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Open", name: "Open", pkg: "", typ: $funcType([$String, $String, $String], [Window], false)}, {prop: "OpenDialog", name: "OpenDialog", pkg: "", typ: $funcType([$String, $String, $String, sliceType], [Window], false)}, {prop: "PostMessage", name: "PostMessage", pkg: "", typ: $funcType([$String, $String, sliceType], [], false)}, {prop: "Print", name: "Print", pkg: "", typ: $funcType([], [], false)}, {prop: "Prompt", name: "Prompt", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "ResizeBy", name: "ResizeBy", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ResizeTo", name: "ResizeTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Scroll", name: "Scroll", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ScrollBy", name: "ScrollBy", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ScrollByLines", name: "ScrollByLines", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "ScrollTo", name: "ScrollTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "SetCursor", name: "SetCursor", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetInterval", name: "SetInterval", pkg: "", typ: $funcType([funcType, $Int], [$Int], false)}, {prop: "SetTimeout", name: "SetTimeout", pkg: "", typ: $funcType([funcType, $Int], [$Int], false)}, {prop: "Stop", name: "Stop", pkg: "", typ: $funcType([], [], false)}, {prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "RequestAnimationFrame", name: "RequestAnimationFrame", pkg: "", typ: $funcType([funcType$3], [$Int], false)}, {prop: "CancelAnimationFrame", name: "CancelAnimationFrame", pkg: "", typ: $funcType([$Int], [], false)}];
-	ptrType$29.methods = [{prop: "Error", name: "Error", pkg: "", typ: $funcType([], [$String], false)}];
-	ptrType$22.methods = [{prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType$12], false)}, {prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$1], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}];
-	ptrType.methods = [{prop: "AccessKey", name: "AccessKey", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetAccessKey", name: "SetAccessKey", pkg: "", typ: $funcType([$String], [], false)}, {prop: "AccessKeyLabel", name: "AccessKeyLabel", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetAccessKeyLabel", name: "SetAccessKeyLabel", pkg: "", typ: $funcType([$String], [], false)}, {prop: "ContentEditable", name: "ContentEditable", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetContentEditable", name: "SetContentEditable", pkg: "", typ: $funcType([$String], [], false)}, {prop: "IsContentEditable", name: "IsContentEditable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Dir", name: "Dir", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetDir", name: "SetDir", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Draggable", name: "Draggable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetDraggable", name: "SetDraggable", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "Lang", name: "Lang", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetLang", name: "SetLang", pkg: "", typ: $funcType([$String], [], false)}, {prop: "OffsetHeight", name: "OffsetHeight", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetLeft", name: "OffsetLeft", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetParent", name: "OffsetParent", pkg: "", typ: $funcType([], [HTMLElement], false)}, {prop: "OffsetTop", name: "OffsetTop", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetWidth", name: "OffsetWidth", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "Style", name: "Style", pkg: "", typ: $funcType([], [ptrType$25], false)}, {prop: "TabIndex", name: "TabIndex", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetTabIndex", name: "SetTabIndex", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Title", name: "Title", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetTitle", name: "SetTitle", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Blur", name: "Blur", pkg: "", typ: $funcType([], [], false)}, {prop: "Click", name: "Click", pkg: "", typ: $funcType([], [], false)}, {prop: "Focus", name: "Focus", pkg: "", typ: $funcType([], [], false)}];
-	ptrType$31.methods = [{prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "Dataset", name: "Dataset", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "GetBoundingClientRect", name: "GetBoundingClientRect", pkg: "", typ: $funcType([], [ClientRect], false)}, {prop: "PreviousElementSibling", name: "PreviousElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "NextElementSibling", name: "NextElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "Class", name: "Class", pkg: "", typ: $funcType([], [ptrType$20], false)}, {prop: "SetClass", name: "SetClass", pkg: "", typ: $funcType([$String], [], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetID", name: "SetID", pkg: "", typ: $funcType([$String], [], false)}, {prop: "TagName", name: "TagName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "GetAttribute", name: "GetAttribute", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "GetAttributeNS", name: "GetAttributeNS", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$2], false)}, {prop: "HasAttribute", name: "HasAttribute", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "HasAttributeNS", name: "HasAttributeNS", pkg: "", typ: $funcType([$String, $String], [$Bool], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "RemoveAttribute", name: "RemoveAttribute", pkg: "", typ: $funcType([$String], [], false)}, {prop: "RemoveAttributeNS", name: "RemoveAttributeNS", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttribute", name: "SetAttribute", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttributeNS", name: "SetAttributeNS", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "InnerHTML", name: "InnerHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetInnerHTML", name: "SetInnerHTML", pkg: "", typ: $funcType([$String], [], false)}];
-	ptrType$32.methods = [{prop: "Rel", name: "Rel", pkg: "", typ: $funcType([], [ptrType$20], false)}];
-	ptrType$33.methods = [{prop: "Rel", name: "Rel", pkg: "", typ: $funcType([], [ptrType$20], false)}];
-	ptrType$15.methods = [{prop: "Rel", name: "Rel", pkg: "", typ: $funcType([], [ptrType$20], false)}];
-	ptrType$34.methods = [{prop: "Href", name: "Href", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Target", name: "Target", pkg: "", typ: $funcType([], [$String], false)}];
-	ptrType$36.methods = [{prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "Labels", name: "Labels", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "Validity", name: "Validity", pkg: "", typ: $funcType([], [ptrType$35], false)}, {prop: "CheckValidity", name: "CheckValidity", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetCustomValidity", name: "SetCustomValidity", pkg: "", typ: $funcType([$String], [], false)}];
-	ptrType$38.methods = [{prop: "GetContext2d", name: "GetContext2d", pkg: "", typ: $funcType([], [ptrType$37], false)}, {prop: "GetContext", name: "GetContext", pkg: "", typ: $funcType([$String], [ptrType$12], false)}];
-	ptrType$37.methods = [{prop: "CreateLinearGradient", name: "CreateLinearGradient", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int], [], false)}, {prop: "Rect", name: "Rect", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int], [], false)}, {prop: "FillRect", name: "FillRect", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int], [], false)}, {prop: "StrokeRect", name: "StrokeRect", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int], [], false)}, {prop: "ClearRect", name: "ClearRect", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([], [], false)}, {prop: "Stroke", name: "Stroke", pkg: "", typ: $funcType([], [], false)}, {prop: "BeginPath", name: "BeginPath", pkg: "", typ: $funcType([], [], false)}, {prop: "MoveTo", name: "MoveTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ClosePath", name: "ClosePath", pkg: "", typ: $funcType([], [], false)}, {prop: "LineTo", name: "LineTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Clip", name: "Clip", pkg: "", typ: $funcType([], [], false)}, {prop: "QuadraticCurveTo", name: "QuadraticCurveTo", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int], [], false)}, {prop: "BezierCurveTo", name: "BezierCurveTo", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int, $Int, $Int], [], false)}, {prop: "Arc", name: "Arc", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int, $Int, $Bool], [], false)}, {prop: "ArcTo", name: "ArcTo", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int, $Int], [], false)}, {prop: "IsPointInPath", name: "IsPointInPath", pkg: "", typ: $funcType([$Int, $Int], [$Bool], false)}, {prop: "Scale", name: "Scale", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Rotate", name: "Rotate", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Translate", name: "Translate", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Transform", name: "Transform", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int, $Int, $Int], [], false)}, {prop: "SetTransform", name: "SetTransform", pkg: "", typ: $funcType([$Int, $Int, $Int, $Int, $Int, $Int], [], false)}, {prop: "FillText", name: "FillText", pkg: "", typ: $funcType([$String, $Int, $Int, $Int], [], false)}, {prop: "StrokeText", name: "StrokeText", pkg: "", typ: $funcType([$String, $Int, $Int, $Int], [], false)}];
-	ptrType$14.methods = [{prop: "Options", name: "Options", pkg: "", typ: $funcType([], [sliceType$5], false)}];
-	ptrType$39.methods = [{prop: "Elements", name: "Elements", pkg: "", typ: $funcType([], [sliceType$3], false)}, {prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "Validity", name: "Validity", pkg: "", typ: $funcType([], [ptrType$35], false)}, {prop: "CheckValidity", name: "CheckValidity", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetCustomValidity", name: "SetCustomValidity", pkg: "", typ: $funcType([$String], [], false)}];
-	ptrType$4.methods = [{prop: "Elements", name: "Elements", pkg: "", typ: $funcType([], [sliceType$3], false)}, {prop: "CheckValidity", name: "CheckValidity", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Submit", name: "Submit", pkg: "", typ: $funcType([], [], false)}, {prop: "Reset", name: "Reset", pkg: "", typ: $funcType([], [], false)}, {prop: "Item", name: "Item", pkg: "", typ: $funcType([$Int], [HTMLElement], false)}, {prop: "NamedItem", name: "NamedItem", pkg: "", typ: $funcType([$String], [HTMLElement], false)}];
-	ptrType$40.methods = [{prop: "ContentDocument", name: "ContentDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ContentWindow", name: "ContentWindow", pkg: "", typ: $funcType([], [Window], false)}];
-	ptrType$41.methods = [{prop: "Files", name: "Files", pkg: "", typ: $funcType([], [sliceType$12], false)}, {prop: "List", name: "List", pkg: "", typ: $funcType([], [ptrType$14], false)}, {prop: "Labels", name: "Labels", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "Validity", name: "Validity", pkg: "", typ: $funcType([], [ptrType$35], false)}, {prop: "CheckValidity", name: "CheckValidity", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetCustomValidity", name: "SetCustomValidity", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Select", name: "Select", pkg: "", typ: $funcType([], [], false)}, {prop: "SetSelectionRange", name: "SetSelectionRange", pkg: "", typ: $funcType([$Int, $Int, $String], [], false)}, {prop: "StepDown", name: "StepDown", pkg: "", typ: $funcType([$Int], [$error], false)}, {prop: "StepUp", name: "StepUp", pkg: "", typ: $funcType([$Int], [$error], false)}];
-	ptrType$42.methods = [{prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "Labels", name: "Labels", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "Validity", name: "Validity", pkg: "", typ: $funcType([], [ptrType$35], false)}, {prop: "CheckValidity", name: "CheckValidity", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetCustomValidity", name: "SetCustomValidity", pkg: "", typ: $funcType([$String], [], false)}];
-	ptrType$5.methods = [{prop: "Control", name: "Control", pkg: "", typ: $funcType([], [HTMLElement], false)}, {prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}];
-	ptrType$43.methods = [{prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}];
-	ptrType$44.methods = [{prop: "Rel", name: "Rel", pkg: "", typ: $funcType([], [ptrType$20], false)}, {prop: "Sizes", name: "Sizes", pkg: "", typ: $funcType([], [ptrType$20], false)}, {prop: "Sheet", name: "Sheet", pkg: "", typ: $funcType([], [StyleSheet], false)}];
-	ptrType$45.methods = [{prop: "Areas", name: "Areas", pkg: "", typ: $funcType([], [sliceType$13], false)}, {prop: "Images", name: "Images", pkg: "", typ: $funcType([], [sliceType$3], false)}];
-	HTMLMeterElement.methods = [{prop: "Labels", name: "Labels", pkg: "", typ: $funcType([], [sliceType$4], false)}];
-	ptrType$46.methods = [{prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "ContentDocument", name: "ContentDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ContentWindow", name: "ContentWindow", pkg: "", typ: $funcType([], [Window], false)}, {prop: "Validity", name: "Validity", pkg: "", typ: $funcType([], [ptrType$35], false)}, {prop: "CheckValidity", name: "CheckValidity", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetCustomValidity", name: "SetCustomValidity", pkg: "", typ: $funcType([$String], [], false)}];
-	ptrType$6.methods = [{prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}];
-	ptrType$47.methods = [{prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "Labels", name: "Labels", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "Validity", name: "Validity", pkg: "", typ: $funcType([], [ptrType$35], false)}, {prop: "For", name: "For", pkg: "", typ: $funcType([], [ptrType$20], false)}, {prop: "CheckValidity", name: "CheckValidity", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetCustomValidity", name: "SetCustomValidity", pkg: "", typ: $funcType([$String], [], false)}];
-	HTMLProgressElement.methods = [{prop: "Labels", name: "Labels", pkg: "", typ: $funcType([], [sliceType$4], false)}];
-	ptrType$48.methods = [{prop: "Labels", name: "Labels", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "Options", name: "Options", pkg: "", typ: $funcType([], [sliceType$5], false)}, {prop: "SelectedOptions", name: "SelectedOptions", pkg: "", typ: $funcType([], [sliceType$5], false)}, {prop: "Item", name: "Item", pkg: "", typ: $funcType([$Int], [ptrType$6], false)}, {prop: "NamedItem", name: "NamedItem", pkg: "", typ: $funcType([$String], [ptrType$6], false)}, {prop: "Validity", name: "Validity", pkg: "", typ: $funcType([], [ptrType$35], false)}, {prop: "CheckValidity", name: "CheckValidity", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetCustomValidity", name: "SetCustomValidity", pkg: "", typ: $funcType([$String], [], false)}];
-	ptrType$17.methods = [{prop: "Cells", name: "Cells", pkg: "", typ: $funcType([], [sliceType$14], false)}, {prop: "InsertCell", name: "InsertCell", pkg: "", typ: $funcType([$Int], [ptrType$16], false)}, {prop: "DeleteCell", name: "DeleteCell", pkg: "", typ: $funcType([$Int], [], false)}];
-	ptrType$49.methods = [{prop: "Rows", name: "Rows", pkg: "", typ: $funcType([], [sliceType$15], false)}, {prop: "DeleteRow", name: "DeleteRow", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "InsertRow", name: "InsertRow", pkg: "", typ: $funcType([$Int], [ptrType$17], false)}];
-	ptrType$50.methods = [{prop: "Form", name: "Form", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "Labels", name: "Labels", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "Validity", name: "Validity", pkg: "", typ: $funcType([], [ptrType$35], false)}, {prop: "CheckValidity", name: "CheckValidity", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetCustomValidity", name: "SetCustomValidity", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Select", name: "Select", pkg: "", typ: $funcType([], [], false)}, {prop: "SetSelectionRange", name: "SetSelectionRange", pkg: "", typ: $funcType([$Int, $Int, $String], [], false)}];
-	ptrType$52.methods = [{prop: "Track", name: "Track", pkg: "", typ: $funcType([], [ptrType$51], false)}];
-	ptrType$25.methods = [{prop: "ToMap", name: "ToMap", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "RemoveProperty", name: "RemoveProperty", pkg: "", typ: $funcType([$String], [], false)}, {prop: "GetPropertyValue", name: "GetPropertyValue", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "GetPropertyPriority", name: "GetPropertyPriority", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "SetProperty", name: "SetProperty", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "Index", name: "Index", pkg: "", typ: $funcType([$Int], [$String], false)}, {prop: "Length", name: "Length", pkg: "", typ: $funcType([], [$Int], false)}];
-	ptrType$18.methods = [{prop: "Bubbles", name: "Bubbles", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Cancelable", name: "Cancelable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "CurrentTarget", name: "CurrentTarget", pkg: "", typ: $funcType([], [Element], false)}, {prop: "DefaultPrevented", name: "DefaultPrevented", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "EventPhase", name: "EventPhase", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Target", name: "Target", pkg: "", typ: $funcType([], [Element], false)}, {prop: "Timestamp", name: "Timestamp", pkg: "", typ: $funcType([], [time.Time], false)}, {prop: "Type", name: "Type", pkg: "", typ: $funcType([], [$String], false)}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $funcType([], [], false)}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $funcType([], [], false)}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $funcType([], [], false)}];
-	ptrType$53.methods = [{prop: "ModifierState", name: "ModifierState", pkg: "", typ: $funcType([$String], [$Bool], false)}];
-	ptrType$54.methods = [{prop: "RelatedTarget", name: "RelatedTarget", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ModifierState", name: "ModifierState", pkg: "", typ: $funcType([$String], [$Bool], false)}];
-	TokenList.init([{prop: "dtl", name: "dtl", pkg: "github.com/influx6/dom", typ: ptrType$12, tag: ""}, {prop: "o", name: "o", pkg: "github.com/influx6/dom", typ: ptrType$12, tag: ""}, {prop: "sa", name: "sa", pkg: "github.com/influx6/dom", typ: $String, tag: ""}, {prop: "Length", name: "Length", pkg: "", typ: $Int, tag: "js:\"length\""}]);
-	Document.init([{prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "AdoptNode", name: "AdoptNode", pkg: "", typ: $funcType([Node], [Node], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "Async", name: "Async", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$1], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "CreateDocumentFragment", name: "CreateDocumentFragment", pkg: "", typ: $funcType([], [DocumentFragment], false)}, {prop: "CreateElement", name: "CreateElement", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "CreateElementNS", name: "CreateElementNS", pkg: "", typ: $funcType([$String, $String], [Element], false)}, {prop: "CreateTextNode", name: "CreateTextNode", pkg: "", typ: $funcType([$String], [ptrType$11], false)}, {prop: "Doctype", name: "Doctype", pkg: "", typ: $funcType([], [DocumentType], false)}, {prop: "DocumentElement", name: "DocumentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "DocumentURI", name: "DocumentURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ElementFromPoint", name: "ElementFromPoint", pkg: "", typ: $funcType([$Int, $Int], [Element], false)}, {prop: "EnableStyleSheetsForSet", name: "EnableStyleSheetsForSet", pkg: "", typ: $funcType([$String], [], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "GetElementByID", name: "GetElementByID", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$2], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Implementation", name: "Implementation", pkg: "", typ: $funcType([], [DOMImplementation], false)}, {prop: "ImportNode", name: "ImportNode", pkg: "", typ: $funcType([Node, $Bool], [Node], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LastStyleSheetSet", name: "LastStyleSheetSet", pkg: "", typ: $funcType([], [$String], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "PreferredStyleSheetSet", name: "PreferredStyleSheetSet", pkg: "", typ: $funcType([], [$String], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "SelectedStyleSheetSet", name: "SelectedStyleSheetSet", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetAsync", name: "SetAsync", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "StyleSheetSets", name: "StyleSheetSets", pkg: "", typ: $funcType([], [sliceType$11], false)}, {prop: "StyleSheets", name: "StyleSheets", pkg: "", typ: $funcType([], [sliceType$11], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType$12], false)}]);
-	DocumentFragment.init([{prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$1], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "GetElementByID", name: "GetElementByID", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType$12], false)}]);
-	documentFragment.init([{prop: "BasicNode", name: "", pkg: "", typ: ptrType$22, tag: ""}]);
-	document.init([{prop: "BasicNode", name: "", pkg: "", typ: ptrType$22, tag: ""}]);
-	htmlDocument.init([{prop: "document", name: "", pkg: "github.com/influx6/dom", typ: ptrType$23, tag: ""}]);
-	URLUtils.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}, {prop: "Href", name: "Href", pkg: "", typ: $String, tag: "js:\"href\""}, {prop: "Protocol", name: "Protocol", pkg: "", typ: $String, tag: "js:\"protocol\""}, {prop: "Host", name: "Host", pkg: "", typ: $String, tag: "js:\"host\""}, {prop: "Hostname", name: "Hostname", pkg: "", typ: $String, tag: "js:\"hostname\""}, {prop: "Port", name: "Port", pkg: "", typ: $String, tag: "js:\"port\""}, {prop: "Pathname", name: "Pathname", pkg: "", typ: $String, tag: "js:\"pathname\""}, {prop: "Search", name: "Search", pkg: "", typ: $String, tag: "js:\"search\""}, {prop: "Hash", name: "Hash", pkg: "", typ: $String, tag: "js:\"hash\""}, {prop: "Username", name: "Username", pkg: "", typ: $String, tag: "js:\"username\""}, {prop: "Password", name: "Password", pkg: "", typ: $String, tag: "js:\"password\""}, {prop: "Origin", name: "Origin", pkg: "", typ: $String, tag: "js:\"origin\""}]);
-	Location.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}, {prop: "URLUtils", name: "", pkg: "", typ: ptrType$1, tag: ""}]);
-	HTMLElement.init([{prop: "AccessKey", name: "AccessKey", pkg: "", typ: $funcType([], [$String], false)}, {prop: "AccessKeyLabel", name: "AccessKeyLabel", pkg: "", typ: $funcType([], [$String], false)}, {prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Blur", name: "Blur", pkg: "", typ: $funcType([], [], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$1], false)}, {prop: "Class", name: "Class", pkg: "", typ: $funcType([], [ptrType$20], false)}, {prop: "Click", name: "Click", pkg: "", typ: $funcType([], [], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "ContentEditable", name: "ContentEditable", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Dataset", name: "Dataset", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "Dir", name: "Dir", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Draggable", name: "Draggable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "Focus", name: "Focus", pkg: "", typ: $funcType([], [], false)}, {prop: "GetAttribute", name: "GetAttribute", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "GetAttributeNS", name: "GetAttributeNS", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "GetBoundingClientRect", name: "GetBoundingClientRect", pkg: "", typ: $funcType([], [ClientRect], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$2], false)}, {prop: "HasAttribute", name: "HasAttribute", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "HasAttributeNS", name: "HasAttributeNS", pkg: "", typ: $funcType([$String, $String], [$Bool], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InnerHTML", name: "InnerHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsContentEditable", name: "IsContentEditable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "Lang", name: "Lang", pkg: "", typ: $funcType([], [$String], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NextElementSibling", name: "NextElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "OffsetHeight", name: "OffsetHeight", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetLeft", name: "OffsetLeft", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetParent", name: "OffsetParent", pkg: "", typ: $funcType([], [HTMLElement], false)}, {prop: "OffsetTop", name: "OffsetTop", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetWidth", name: "OffsetWidth", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "PreviousElementSibling", name: "PreviousElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "RemoveAttribute", name: "RemoveAttribute", pkg: "", typ: $funcType([$String], [], false)}, {prop: "RemoveAttributeNS", name: "RemoveAttributeNS", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "SetAccessKey", name: "SetAccessKey", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetAccessKeyLabel", name: "SetAccessKeyLabel", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetAttribute", name: "SetAttribute", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttributeNS", name: "SetAttributeNS", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "SetContentEditable", name: "SetContentEditable", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetDir", name: "SetDir", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetDraggable", name: "SetDraggable", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "SetID", name: "SetID", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetInnerHTML", name: "SetInnerHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetLang", name: "SetLang", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTitle", name: "SetTitle", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Style", name: "Style", pkg: "", typ: $funcType([], [ptrType$25], false)}, {prop: "TagName", name: "TagName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Title", name: "Title", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType$12], false)}]);
-	Window.init([{prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "Alert", name: "Alert", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Back", name: "Back", pkg: "", typ: $funcType([], [], false)}, {prop: "Blur", name: "Blur", pkg: "", typ: $funcType([], [], false)}, {prop: "CancelAnimationFrame", name: "CancelAnimationFrame", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "ClearInterval", name: "ClearInterval", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "ClearTimeout", name: "ClearTimeout", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [], false)}, {prop: "Confirm", name: "Confirm", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "Console", name: "Console", pkg: "", typ: $funcType([], [ptrType$26], false)}, {prop: "Document", name: "Document", pkg: "", typ: $funcType([], [Document], false)}, {prop: "Focus", name: "Focus", pkg: "", typ: $funcType([], [], false)}, {prop: "Forward", name: "Forward", pkg: "", typ: $funcType([], [], false)}, {prop: "FrameElement", name: "FrameElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "GetComputedStyle", name: "GetComputedStyle", pkg: "", typ: $funcType([Element, $String], [ptrType$25], false)}, {prop: "GetSelection", name: "GetSelection", pkg: "", typ: $funcType([], [Selection], false)}, {prop: "History", name: "History", pkg: "", typ: $funcType([], [History], false)}, {prop: "Home", name: "Home", pkg: "", typ: $funcType([], [], false)}, {prop: "InnerHeight", name: "InnerHeight", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "InnerWidth", name: "InnerWidth", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Length", name: "Length", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Location", name: "Location", pkg: "", typ: $funcType([], [ptrType$21], false)}, {prop: "MoveBy", name: "MoveBy", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MoveTo", name: "MoveTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Navigator", name: "Navigator", pkg: "", typ: $funcType([], [Navigator], false)}, {prop: "Open", name: "Open", pkg: "", typ: $funcType([$String, $String, $String], [Window], false)}, {prop: "OpenDialog", name: "OpenDialog", pkg: "", typ: $funcType([$String, $String, $String, sliceType], [Window], false)}, {prop: "Opener", name: "Opener", pkg: "", typ: $funcType([], [Window], false)}, {prop: "OuterHeight", name: "OuterHeight", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "OuterWidth", name: "OuterWidth", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Parent", name: "Parent", pkg: "", typ: $funcType([], [Window], false)}, {prop: "PostMessage", name: "PostMessage", pkg: "", typ: $funcType([$String, $String, sliceType], [], false)}, {prop: "Print", name: "Print", pkg: "", typ: $funcType([], [], false)}, {prop: "Prompt", name: "Prompt", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "RequestAnimationFrame", name: "RequestAnimationFrame", pkg: "", typ: $funcType([funcType$3], [$Int], false)}, {prop: "ResizeBy", name: "ResizeBy", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ResizeTo", name: "ResizeTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Screen", name: "Screen", pkg: "", typ: $funcType([], [ptrType$27], false)}, {prop: "ScreenX", name: "ScreenX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScreenY", name: "ScreenY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Scroll", name: "Scroll", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ScrollBy", name: "ScrollBy", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ScrollByLines", name: "ScrollByLines", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "ScrollMaxX", name: "ScrollMaxX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScrollMaxY", name: "ScrollMaxY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScrollTo", name: "ScrollTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ScrollX", name: "ScrollX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScrollY", name: "ScrollY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetCursor", name: "SetCursor", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetInterval", name: "SetInterval", pkg: "", typ: $funcType([funcType, $Int], [$Int], false)}, {prop: "SetName", name: "SetName", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTimeout", name: "SetTimeout", pkg: "", typ: $funcType([funcType, $Int], [$Int], false)}, {prop: "Stop", name: "Stop", pkg: "", typ: $funcType([], [], false)}, {prop: "Top", name: "Top", pkg: "", typ: $funcType([], [Window], false)}]);
-	window.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}]);
-	Selection.init([]);
-	Screen.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}, {prop: "AvailTop", name: "AvailTop", pkg: "", typ: $Int, tag: "js:\"availTop\""}, {prop: "AvailLeft", name: "AvailLeft", pkg: "", typ: $Int, tag: "js:\"availLeft\""}, {prop: "AvailHeight", name: "AvailHeight", pkg: "", typ: $Int, tag: "js:\"availHeight\""}, {prop: "AvailWidth", name: "AvailWidth", pkg: "", typ: $Int, tag: "js:\"availWidth\""}, {prop: "ColorDepth", name: "ColorDepth", pkg: "", typ: $Int, tag: "js:\"colorDepth\""}, {prop: "Height", name: "Height", pkg: "", typ: $Int, tag: "js:\"height\""}, {prop: "Left", name: "Left", pkg: "", typ: $Int, tag: "js:\"left\""}, {prop: "PixelDepth", name: "PixelDepth", pkg: "", typ: $Int, tag: "js:\"pixelDepth\""}, {prop: "Top", name: "Top", pkg: "", typ: $Int, tag: "js:\"top\""}, {prop: "Width", name: "Width", pkg: "", typ: $Int, tag: "js:\"width\""}]);
-	Navigator.init([{prop: "AppName", name: "AppName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "AppVersion", name: "AppVersion", pkg: "", typ: $funcType([], [$String], false)}, {prop: "CookieEnabled", name: "CookieEnabled", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "DoNotTrack", name: "DoNotTrack", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Geolocation", name: "Geolocation", pkg: "", typ: $funcType([], [Geolocation], false)}, {prop: "Language", name: "Language", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Online", name: "Online", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Platform", name: "Platform", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Product", name: "Product", pkg: "", typ: $funcType([], [$String], false)}, {prop: "RegisterProtocolHandler", name: "RegisterProtocolHandler", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "UserAgent", name: "UserAgent", pkg: "", typ: $funcType([], [$String], false)}]);
-	Geolocation.init([{prop: "ClearWatch", name: "ClearWatch", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "CurrentPosition", name: "CurrentPosition", pkg: "", typ: $funcType([funcType$4, funcType$5, PositionOptions], [Position], false)}, {prop: "WatchPosition", name: "WatchPosition", pkg: "", typ: $funcType([funcType$4, funcType$5, PositionOptions], [$Int], false)}]);
-	PositionError.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}, {prop: "Code", name: "Code", pkg: "", typ: $Int, tag: "js:\"code\""}]);
-	PositionOptions.init([{prop: "EnableHighAccuracy", name: "EnableHighAccuracy", pkg: "", typ: $Bool, tag: ""}, {prop: "Timeout", name: "Timeout", pkg: "", typ: time.Duration, tag: ""}, {prop: "MaximumAge", name: "MaximumAge", pkg: "", typ: time.Duration, tag: ""}]);
-	Position.init([{prop: "Coords", name: "Coords", pkg: "", typ: ptrType$30, tag: ""}, {prop: "Timestamp", name: "Timestamp", pkg: "", typ: time.Time, tag: ""}]);
-	Coordinates.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}, {prop: "Latitude", name: "Latitude", pkg: "", typ: $Float64, tag: "js:\"latitude\""}, {prop: "Longitude", name: "Longitude", pkg: "", typ: $Float64, tag: "js:\"longitude\""}, {prop: "Altitude", name: "Altitude", pkg: "", typ: $Float64, tag: "js:\"altitude\""}, {prop: "Accuracy", name: "Accuracy", pkg: "", typ: $Float64, tag: "js:\"accuracy\""}, {prop: "AltitudeAccuracy", name: "AltitudeAccuracy", pkg: "", typ: $Float64, tag: "js:\"altitudeAccuracy\""}, {prop: "Heading", name: "Heading", pkg: "", typ: $Float64, tag: "js:\"heading\""}, {prop: "Speed", name: "Speed", pkg: "", typ: $Float64, tag: "js:\"speed\""}]);
-	History.init([{prop: "Back", name: "Back", pkg: "", typ: $funcType([], [], false)}, {prop: "Forward", name: "Forward", pkg: "", typ: $funcType([], [], false)}, {prop: "Go", name: "Go", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Length", name: "Length", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "PushState", name: "PushState", pkg: "", typ: $funcType([$emptyInterface, $String, $String], [], false)}, {prop: "ReplaceState", name: "ReplaceState", pkg: "", typ: $funcType([$emptyInterface, $String, $String], [], false)}, {prop: "State", name: "State", pkg: "", typ: $funcType([], [$emptyInterface], false)}]);
-	Console.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}]);
-	DocumentType.init([]);
-	DOMImplementation.init([]);
-	StyleSheet.init([]);
-	Node.init([{prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$1], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType$12], false)}]);
-	BasicNode.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}]);
-	Element.init([{prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$1], false)}, {prop: "Class", name: "Class", pkg: "", typ: $funcType([], [ptrType$20], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "Dataset", name: "Dataset", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "GetAttribute", name: "GetAttribute", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "GetAttributeNS", name: "GetAttributeNS", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "GetBoundingClientRect", name: "GetBoundingClientRect", pkg: "", typ: $funcType([], [ClientRect], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$2], false)}, {prop: "HasAttribute", name: "HasAttribute", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "HasAttributeNS", name: "HasAttributeNS", pkg: "", typ: $funcType([$String, $String], [$Bool], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InnerHTML", name: "InnerHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NextElementSibling", name: "NextElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "PreviousElementSibling", name: "PreviousElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$2], false)}, {prop: "RemoveAttribute", name: "RemoveAttribute", pkg: "", typ: $funcType([$String], [], false)}, {prop: "RemoveAttributeNS", name: "RemoveAttributeNS", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "SetAttribute", name: "SetAttribute", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttributeNS", name: "SetAttributeNS", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "SetID", name: "SetID", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetInnerHTML", name: "SetInnerHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "TagName", name: "TagName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType$12], false)}]);
-	ClientRect.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}, {prop: "Height", name: "Height", pkg: "", typ: $Float64, tag: "js:\"height\""}, {prop: "Width", name: "Width", pkg: "", typ: $Float64, tag: "js:\"width\""}, {prop: "Left", name: "Left", pkg: "", typ: $Float64, tag: "js:\"left\""}, {prop: "Right", name: "Right", pkg: "", typ: $Float64, tag: "js:\"right\""}, {prop: "Top", name: "Top", pkg: "", typ: $Float64, tag: "js:\"top\""}, {prop: "Bottom", name: "Bottom", pkg: "", typ: $Float64, tag: "js:\"bottom\""}]);
-	BasicHTMLElement.init([{prop: "BasicElement", name: "", pkg: "", typ: ptrType$31, tag: ""}]);
-	BasicElement.init([{prop: "BasicNode", name: "", pkg: "", typ: ptrType$22, tag: ""}]);
-	HTMLAnchorElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "URLUtils", name: "", pkg: "", typ: ptrType$1, tag: ""}, {prop: "HrefLang", name: "HrefLang", pkg: "", typ: $String, tag: "js:\"hreflang\""}, {prop: "Media", name: "Media", pkg: "", typ: $String, tag: "js:\"media\""}, {prop: "TabIndex", name: "TabIndex", pkg: "", typ: $Int, tag: "js:\"tabIndex\""}, {prop: "Target", name: "Target", pkg: "", typ: $String, tag: "js:\"target\""}, {prop: "Text", name: "Text", pkg: "", typ: $String, tag: "js:\"text\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}]);
-	HTMLAppletElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Alt", name: "Alt", pkg: "", typ: $String, tag: "js:\"alt\""}, {prop: "Coords", name: "Coords", pkg: "", typ: $String, tag: "js:\"coords\""}, {prop: "HrefLang", name: "HrefLang", pkg: "", typ: $String, tag: "js:\"hreflang\""}, {prop: "Media", name: "Media", pkg: "", typ: $String, tag: "js:\"media\""}, {prop: "Search", name: "Search", pkg: "", typ: $String, tag: "js:\"search\""}, {prop: "Shape", name: "Shape", pkg: "", typ: $String, tag: "js:\"shape\""}, {prop: "TabIndex", name: "TabIndex", pkg: "", typ: $Int, tag: "js:\"tabIndex\""}, {prop: "Target", name: "Target", pkg: "", typ: $String, tag: "js:\"target\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}]);
-	HTMLAreaElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "URLUtils", name: "", pkg: "", typ: ptrType$1, tag: ""}, {prop: "Alt", name: "Alt", pkg: "", typ: $String, tag: "js:\"alt\""}, {prop: "Coords", name: "Coords", pkg: "", typ: $String, tag: "js:\"coords\""}, {prop: "HrefLang", name: "HrefLang", pkg: "", typ: $String, tag: "js:\"hreflang\""}, {prop: "Media", name: "Media", pkg: "", typ: $String, tag: "js:\"media\""}, {prop: "Search", name: "Search", pkg: "", typ: $String, tag: "js:\"search\""}, {prop: "Shape", name: "Shape", pkg: "", typ: $String, tag: "js:\"shape\""}, {prop: "TabIndex", name: "TabIndex", pkg: "", typ: $Int, tag: "js:\"tabIndex\""}, {prop: "Target", name: "Target", pkg: "", typ: $String, tag: "js:\"target\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}]);
-	HTMLAudioElement.init([{prop: "HTMLMediaElement", name: "", pkg: "", typ: ptrType$2, tag: ""}]);
-	HTMLBRElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLBaseElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLBodyElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	ValidityState.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}, {prop: "CustomError", name: "CustomError", pkg: "", typ: $Bool, tag: "js:\"customError\""}, {prop: "PatternMismatch", name: "PatternMismatch", pkg: "", typ: $Bool, tag: "js:\"patternMismatch\""}, {prop: "RangeOverflow", name: "RangeOverflow", pkg: "", typ: $Bool, tag: "js:\"rangeOverflow\""}, {prop: "RangeUnderflow", name: "RangeUnderflow", pkg: "", typ: $Bool, tag: "js:\"rangeUnderflow\""}, {prop: "StepMismatch", name: "StepMismatch", pkg: "", typ: $Bool, tag: "js:\"stepMismatch\""}, {prop: "TooLong", name: "TooLong", pkg: "", typ: $Bool, tag: "js:\"tooLong\""}, {prop: "TypeMismatch", name: "TypeMismatch", pkg: "", typ: $Bool, tag: "js:\"typeMismatch\""}, {prop: "Valid", name: "Valid", pkg: "", typ: $Bool, tag: "js:\"valid\""}, {prop: "ValueMissing", name: "ValueMissing", pkg: "", typ: $Bool, tag: "js:\"valueMissing\""}]);
-	HTMLButtonElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "AutoFocus", name: "AutoFocus", pkg: "", typ: $Bool, tag: "js:\"autofocus\""}, {prop: "Disabled", name: "Disabled", pkg: "", typ: $Bool, tag: "js:\"disabled\""}, {prop: "FormAction", name: "FormAction", pkg: "", typ: $String, tag: "js:\"formAction\""}, {prop: "FormEncType", name: "FormEncType", pkg: "", typ: $String, tag: "js:\"formEncType\""}, {prop: "FormMethod", name: "FormMethod", pkg: "", typ: $String, tag: "js:\"formMethod\""}, {prop: "FormNoValidate", name: "FormNoValidate", pkg: "", typ: $Bool, tag: "js:\"formNoValidate\""}, {prop: "FormTarget", name: "FormTarget", pkg: "", typ: $String, tag: "js:\"formTarget\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "TabIndex", name: "TabIndex", pkg: "", typ: $Int, tag: "js:\"tabIndex\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}, {prop: "ValidationMessage", name: "ValidationMessage", pkg: "", typ: $String, tag: "js:\"validationMessage\""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: "js:\"value\""}, {prop: "WillValidate", name: "WillValidate", pkg: "", typ: $Bool, tag: "js:\"willValidate\""}]);
-	HTMLCanvasElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Height", name: "Height", pkg: "", typ: $Int, tag: "js:\"height\""}, {prop: "Width", name: "Width", pkg: "", typ: $Int, tag: "js:\"width\""}]);
-	CanvasRenderingContext2D.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}, {prop: "FillStyle", name: "FillStyle", pkg: "", typ: $String, tag: "js:\"fillStyle\""}, {prop: "StrokeStyle", name: "StrokeStyle", pkg: "", typ: $String, tag: "js:\"strokeStyle\""}, {prop: "ShadowColor", name: "ShadowColor", pkg: "", typ: $String, tag: "js:\"shadowColor\""}, {prop: "ShadowBlur", name: "ShadowBlur", pkg: "", typ: $Int, tag: "js:\"shadowBlur\""}, {prop: "ShadowOffsetX", name: "ShadowOffsetX", pkg: "", typ: $Int, tag: "js:\"shadowOffsetX\""}, {prop: "ShadowOffsetY", name: "ShadowOffsetY", pkg: "", typ: $Int, tag: "js:\"shadowOffsetY\""}, {prop: "LineCap", name: "LineCap", pkg: "", typ: $String, tag: "js:\"lineCap\""}, {prop: "LineJoin", name: "LineJoin", pkg: "", typ: $String, tag: "js:\"lineJoin\""}, {prop: "LineWidth", name: "LineWidth", pkg: "", typ: $Int, tag: "js:\"lineWidth\""}, {prop: "MiterLimit", name: "MiterLimit", pkg: "", typ: $Int, tag: "js:\"miterLimit\""}, {prop: "Font", name: "Font", pkg: "", typ: $String, tag: "js:\"font\""}, {prop: "TextAlign", name: "TextAlign", pkg: "", typ: $String, tag: "js:\"textAlign\""}, {prop: "TextBaseline", name: "TextBaseline", pkg: "", typ: $String, tag: "js:\"textBaseline\""}, {prop: "GlobalAlpha", name: "GlobalAlpha", pkg: "", typ: $Float64, tag: "js:\"globalAlpha\""}, {prop: "GlobalCompositeOperation", name: "GlobalCompositeOperation", pkg: "", typ: $String, tag: "js:\"globalCompositeOperation\""}]);
-	HTMLDListElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLDataElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: "js:\"value\""}]);
-	HTMLDataListElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLDirectoryElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLDivElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLEmbedElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Src", name: "Src", pkg: "", typ: $String, tag: "js:\"src\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}, {prop: "Width", name: "Width", pkg: "", typ: $String, tag: "js:\"width\""}]);
-	HTMLFieldSetElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Disabled", name: "Disabled", pkg: "", typ: $Bool, tag: "js:\"disabled\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}, {prop: "ValidationMessage", name: "ValidationMessage", pkg: "", typ: $String, tag: "js:\"validationMessage\""}, {prop: "WillValidate", name: "WillValidate", pkg: "", typ: $Bool, tag: "js:\"willValidate\""}]);
-	HTMLFontElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLFormElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "AcceptCharset", name: "AcceptCharset", pkg: "", typ: $String, tag: "js:\"acceptCharset\""}, {prop: "Action", name: "Action", pkg: "", typ: $String, tag: "js:\"action\""}, {prop: "Autocomplete", name: "Autocomplete", pkg: "", typ: $String, tag: "js:\"autocomplete\""}, {prop: "Encoding", name: "Encoding", pkg: "", typ: $String, tag: "js:\"encoding\""}, {prop: "Enctype", name: "Enctype", pkg: "", typ: $String, tag: "js:\"enctype\""}, {prop: "Length", name: "Length", pkg: "", typ: $Int, tag: "js:\"length\""}, {prop: "Method", name: "Method", pkg: "", typ: $String, tag: "js:\"method\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "NoValidate", name: "NoValidate", pkg: "", typ: $Bool, tag: "js:\"noValidate\""}, {prop: "Target", name: "Target", pkg: "", typ: $String, tag: "js:\"target\""}]);
-	HTMLFrameElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLFrameSetElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLHRElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLHeadElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLHeadingElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLHtmlElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLIFrameElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Width", name: "Width", pkg: "", typ: $String, tag: "js:\"width\""}, {prop: "Height", name: "Height", pkg: "", typ: $String, tag: "js:\"height\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "Src", name: "Src", pkg: "", typ: $String, tag: "js:\"src\""}, {prop: "SrcDoc", name: "SrcDoc", pkg: "", typ: $String, tag: "js:\"srcdoc\""}, {prop: "Seamless", name: "Seamless", pkg: "", typ: $Bool, tag: "js:\"seamless\""}]);
-	HTMLImageElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Complete", name: "Complete", pkg: "", typ: $Bool, tag: "js:\"complete\""}, {prop: "CrossOrigin", name: "CrossOrigin", pkg: "", typ: $String, tag: "js:\"crossOrigin\""}, {prop: "Height", name: "Height", pkg: "", typ: $Int, tag: "js:\"height\""}, {prop: "IsMap", name: "IsMap", pkg: "", typ: $Bool, tag: "js:\"isMap\""}, {prop: "NaturalHeight", name: "NaturalHeight", pkg: "", typ: $Int, tag: "js:\"naturalHeight\""}, {prop: "NaturalWidth", name: "NaturalWidth", pkg: "", typ: $Int, tag: "js:\"naturalWidth\""}, {prop: "Src", name: "Src", pkg: "", typ: $String, tag: "js:\"src\""}, {prop: "UseMap", name: "UseMap", pkg: "", typ: $String, tag: "js:\"useMap\""}, {prop: "Width", name: "Width", pkg: "", typ: $Int, tag: "js:\"width\""}]);
-	HTMLInputElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Accept", name: "Accept", pkg: "", typ: $String, tag: "js:\"accept\""}, {prop: "Alt", name: "Alt", pkg: "", typ: $String, tag: "js:\"alt\""}, {prop: "Autocomplete", name: "Autocomplete", pkg: "", typ: $String, tag: "js:\"autocomplete\""}, {prop: "Autofocus", name: "Autofocus", pkg: "", typ: $Bool, tag: "js:\"autofocus\""}, {prop: "Checked", name: "Checked", pkg: "", typ: $Bool, tag: "js:\"checked\""}, {prop: "DefaultChecked", name: "DefaultChecked", pkg: "", typ: $Bool, tag: "js:\"defaultChecked\""}, {prop: "DefaultValue", name: "DefaultValue", pkg: "", typ: $String, tag: "js:\"defaultValue\""}, {prop: "DirName", name: "DirName", pkg: "", typ: $String, tag: "js:\"dirName\""}, {prop: "Disabled", name: "Disabled", pkg: "", typ: $Bool, tag: "js:\"disabled\""}, {prop: "FormAction", name: "FormAction", pkg: "", typ: $String, tag: "js:\"formAction\""}, {prop: "FormEncType", name: "FormEncType", pkg: "", typ: $String, tag: "js:\"formEncType\""}, {prop: "FormMethod", name: "FormMethod", pkg: "", typ: $String, tag: "js:\"formMethod\""}, {prop: "FormNoValidate", name: "FormNoValidate", pkg: "", typ: $Bool, tag: "js:\"formNoValidate\""}, {prop: "FormTarget", name: "FormTarget", pkg: "", typ: $String, tag: "js:\"formTarget\""}, {prop: "Height", name: "Height", pkg: "", typ: $String, tag: "js:\"height\""}, {prop: "Indeterminate", name: "Indeterminate", pkg: "", typ: $Bool, tag: "js:\"indeterminate\""}, {prop: "Max", name: "Max", pkg: "", typ: $String, tag: "js:\"max\""}, {prop: "MaxLength", name: "MaxLength", pkg: "", typ: $Int, tag: "js:\"maxLength\""}, {prop: "Min", name: "Min", pkg: "", typ: $String, tag: "js:\"min\""}, {prop: "Multiple", name: "Multiple", pkg: "", typ: $Bool, tag: "js:\"multiple\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "Pattern", name: "Pattern", pkg: "", typ: $String, tag: "js:\"pattern\""}, {prop: "Placeholder", name: "Placeholder", pkg: "", typ: $String, tag: "js:\"placeholder\""}, {prop: "ReadOnly", name: "ReadOnly", pkg: "", typ: $Bool, tag: "js:\"readOnly\""}, {prop: "Required", name: "Required", pkg: "", typ: $Bool, tag: "js:\"required\""}, {prop: "SelectionDirection", name: "SelectionDirection", pkg: "", typ: $String, tag: "js:\"selectionDirection\""}, {prop: "SelectionEnd", name: "SelectionEnd", pkg: "", typ: $Int, tag: "js:\"selectionEnd\""}, {prop: "SelectionStart", name: "SelectionStart", pkg: "", typ: $Int, tag: "js:\"selectionStart\""}, {prop: "Size", name: "Size", pkg: "", typ: $Int, tag: "js:\"size\""}, {prop: "Src", name: "Src", pkg: "", typ: $String, tag: "js:\"src\""}, {prop: "Step", name: "Step", pkg: "", typ: $String, tag: "js:\"step\""}, {prop: "TabIndex", name: "TabIndex", pkg: "", typ: $Int, tag: "js:\"tabIndex\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}, {prop: "ValidationMessage", name: "ValidationMessage", pkg: "", typ: $String, tag: "js:\"validationMessage\""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: "js:\"value\""}, {prop: "ValueAsDate", name: "ValueAsDate", pkg: "", typ: time.Time, tag: "js:\"valueAsDate\""}, {prop: "ValueAsNumber", name: "ValueAsNumber", pkg: "", typ: $Float64, tag: "js:\"valueAsNumber\""}, {prop: "Width", name: "Width", pkg: "", typ: $String, tag: "js:\"width\""}, {prop: "WillValidate", name: "WillValidate", pkg: "", typ: $Bool, tag: "js:\"willValidate\""}]);
-	File.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}]);
-	HTMLKeygenElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Autofocus", name: "Autofocus", pkg: "", typ: $Bool, tag: "js:\"autofocus\""}, {prop: "Challenge", name: "Challenge", pkg: "", typ: $String, tag: "js:\"challenge\""}, {prop: "Disabled", name: "Disabled", pkg: "", typ: $Bool, tag: "js:\"disabled\""}, {prop: "Keytype", name: "Keytype", pkg: "", typ: $String, tag: "js:\"keytype\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}, {prop: "ValidationMessage", name: "ValidationMessage", pkg: "", typ: $String, tag: "js:\"validationMessage\""}, {prop: "WillValidate", name: "WillValidate", pkg: "", typ: $Bool, tag: "js:\"willValidate\""}]);
-	HTMLLIElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Value", name: "Value", pkg: "", typ: $Int, tag: "js:\"value\""}]);
-	HTMLLabelElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "For", name: "For", pkg: "", typ: $String, tag: "js:\"htmlFor\""}]);
-	HTMLLegendElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLLinkElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Disabled", name: "Disabled", pkg: "", typ: $Bool, tag: "js:\"disabled\""}, {prop: "Href", name: "Href", pkg: "", typ: $String, tag: "js:\"href\""}, {prop: "HrefLang", name: "HrefLang", pkg: "", typ: $String, tag: "js:\"hrefLang\""}, {prop: "Media", name: "Media", pkg: "", typ: $String, tag: "js:\"media\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}]);
-	HTMLMapElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}]);
-	HTMLMediaElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLMenuElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLMetaElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Content", name: "Content", pkg: "", typ: $String, tag: "js:\"content\""}, {prop: "HTTPEquiv", name: "HTTPEquiv", pkg: "", typ: $String, tag: "js:\"httpEquiv\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}]);
-	HTMLMeterElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "High", name: "High", pkg: "", typ: $Float64, tag: "js:\"high\""}, {prop: "Low", name: "Low", pkg: "", typ: $Float64, tag: "js:\"low\""}, {prop: "Max", name: "Max", pkg: "", typ: $Float64, tag: "js:\"max\""}, {prop: "Min", name: "Min", pkg: "", typ: $Float64, tag: "js:\"min\""}, {prop: "Optimum", name: "Optimum", pkg: "", typ: $Float64, tag: "js:\"optimum\""}]);
-	HTMLModElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Cite", name: "Cite", pkg: "", typ: $String, tag: "js:\"cite\""}, {prop: "DateTime", name: "DateTime", pkg: "", typ: $String, tag: "js:\"dateTime\""}]);
-	HTMLOListElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Reversed", name: "Reversed", pkg: "", typ: $Bool, tag: "js:\"reversed\""}, {prop: "Start", name: "Start", pkg: "", typ: $Int, tag: "js:\"start\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}]);
-	HTMLObjectElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Data", name: "Data", pkg: "", typ: $String, tag: "js:\"data\""}, {prop: "Height", name: "Height", pkg: "", typ: $String, tag: "js:\"height\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "TabIndex", name: "TabIndex", pkg: "", typ: $Int, tag: "js:\"tabIndex\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}, {prop: "TypeMustMatch", name: "TypeMustMatch", pkg: "", typ: $Bool, tag: "js:\"typeMustMatch\""}, {prop: "UseMap", name: "UseMap", pkg: "", typ: $String, tag: "js:\"useMap\""}, {prop: "ValidationMessage", name: "ValidationMessage", pkg: "", typ: $String, tag: "js:\"validationMessage\""}, {prop: "With", name: "With", pkg: "", typ: $String, tag: "js:\"with\""}, {prop: "WillValidate", name: "WillValidate", pkg: "", typ: $Bool, tag: "js:\"willValidate\""}]);
-	HTMLOptGroupElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Disabled", name: "Disabled", pkg: "", typ: $Bool, tag: "js:\"disabled\""}, {prop: "Label", name: "Label", pkg: "", typ: $String, tag: "js:\"label\""}]);
-	HTMLOptionElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "DefaultSelected", name: "DefaultSelected", pkg: "", typ: $Bool, tag: "js:\"defaultSelected\""}, {prop: "Disabled", name: "Disabled", pkg: "", typ: $Bool, tag: "js:\"disabled\""}, {prop: "Index", name: "Index", pkg: "", typ: $Int, tag: "js:\"index\""}, {prop: "Label", name: "Label", pkg: "", typ: $String, tag: "js:\"label\""}, {prop: "Selected", name: "Selected", pkg: "", typ: $Bool, tag: "js:\"selected\""}, {prop: "Text", name: "Text", pkg: "", typ: $String, tag: "js:\"text\""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: "js:\"value\""}]);
-	HTMLOutputElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "DefaultValue", name: "DefaultValue", pkg: "", typ: $String, tag: "js:\"defaultValue\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}, {prop: "ValidationMessage", name: "ValidationMessage", pkg: "", typ: $String, tag: "js:\"validationMessage\""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: "js:\"value\""}, {prop: "WillValidate", name: "WillValidate", pkg: "", typ: $Bool, tag: "js:\"willValidate\""}]);
-	HTMLParagraphElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLParamElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: "js:\"value\""}]);
-	HTMLPreElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLProgressElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Max", name: "Max", pkg: "", typ: $Float64, tag: "js:\"max\""}, {prop: "Position", name: "Position", pkg: "", typ: $Float64, tag: "js:\"position\""}, {prop: "Value", name: "Value", pkg: "", typ: $Float64, tag: "js:\"value\""}]);
-	HTMLQuoteElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Cite", name: "Cite", pkg: "", typ: $String, tag: "js:\"cite\""}]);
-	HTMLScriptElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}, {prop: "Src", name: "Src", pkg: "", typ: $String, tag: "js:\"src\""}, {prop: "Charset", name: "Charset", pkg: "", typ: $String, tag: "js:\"charset\""}, {prop: "Async", name: "Async", pkg: "", typ: $Bool, tag: "js:\"async\""}, {prop: "Defer", name: "Defer", pkg: "", typ: $Bool, tag: "js:\"defer\""}, {prop: "Text", name: "Text", pkg: "", typ: $String, tag: "js:\"text\""}]);
-	HTMLSelectElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Autofocus", name: "Autofocus", pkg: "", typ: $Bool, tag: "js:\"autofocus\""}, {prop: "Disabled", name: "Disabled", pkg: "", typ: $Bool, tag: "js:\"disabled\""}, {prop: "Length", name: "Length", pkg: "", typ: $Int, tag: "js:\"length\""}, {prop: "Multiple", name: "Multiple", pkg: "", typ: $Bool, tag: "js:\"multiple\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "Required", name: "Required", pkg: "", typ: $Bool, tag: "js:\"required\""}, {prop: "SelectedIndex", name: "SelectedIndex", pkg: "", typ: $Int, tag: "js:\"selectedIndex\""}, {prop: "Size", name: "Size", pkg: "", typ: $Int, tag: "js:\"size\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}, {prop: "ValidationMessage", name: "ValidationMessage", pkg: "", typ: $String, tag: "js:\"validationMessage\""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: "js:\"value\""}, {prop: "WillValidate", name: "WillValidate", pkg: "", typ: $Bool, tag: "js:\"willValidate\""}]);
-	HTMLSourceElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Media", name: "Media", pkg: "", typ: $String, tag: "js:\"media\""}, {prop: "Src", name: "Src", pkg: "", typ: $String, tag: "js:\"src\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}]);
-	HTMLSpanElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLStyleElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLTableCaptionElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLTableCellElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "ColSpan", name: "ColSpan", pkg: "", typ: $Int, tag: "js:\"colSpan\""}, {prop: "RowSpan", name: "RowSpan", pkg: "", typ: $Int, tag: "js:\"rowSpan\""}, {prop: "CellIndex", name: "CellIndex", pkg: "", typ: $Int, tag: "js:\"cellIndex\""}]);
-	HTMLTableColElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Span", name: "Span", pkg: "", typ: $Int, tag: "js:\"span\""}]);
-	HTMLTableDataCellElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLTableElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLTableHeaderCellElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Abbr", name: "Abbr", pkg: "", typ: $String, tag: "js:\"abbr\""}, {prop: "Scope", name: "Scope", pkg: "", typ: $String, tag: "js:\"scope\""}]);
-	HTMLTableRowElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "RowIndex", name: "RowIndex", pkg: "", typ: $Int, tag: "js:\"rowIndex\""}, {prop: "SectionRowIndex", name: "SectionRowIndex", pkg: "", typ: $Int, tag: "js:\"sectionRowIndex\""}]);
-	HTMLTableSectionElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLTextAreaElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Autocomplete", name: "Autocomplete", pkg: "", typ: $String, tag: "js:\"autocomplete\""}, {prop: "Autofocus", name: "Autofocus", pkg: "", typ: $Bool, tag: "js:\"autofocus\""}, {prop: "Cols", name: "Cols", pkg: "", typ: $Int, tag: "js:\"cols\""}, {prop: "DefaultValue", name: "DefaultValue", pkg: "", typ: $String, tag: "js:\"defaultValue\""}, {prop: "DirName", name: "DirName", pkg: "", typ: $String, tag: "js:\"dirName\""}, {prop: "Disabled", name: "Disabled", pkg: "", typ: $Bool, tag: "js:\"disabled\""}, {prop: "MaxLength", name: "MaxLength", pkg: "", typ: $Int, tag: "js:\"maxLength\""}, {prop: "Name", name: "Name", pkg: "", typ: $String, tag: "js:\"name\""}, {prop: "Placeholder", name: "Placeholder", pkg: "", typ: $String, tag: "js:\"placeholder\""}, {prop: "ReadOnly", name: "ReadOnly", pkg: "", typ: $Bool, tag: "js:\"readOnly\""}, {prop: "Required", name: "Required", pkg: "", typ: $Bool, tag: "js:\"required\""}, {prop: "Rows", name: "Rows", pkg: "", typ: $Int, tag: "js:\"rows\""}, {prop: "SelectionDirection", name: "SelectionDirection", pkg: "", typ: $String, tag: "js:\"selectionDirection\""}, {prop: "SelectionStart", name: "SelectionStart", pkg: "", typ: $Int, tag: "js:\"selectionStart\""}, {prop: "SelectionEnd", name: "SelectionEnd", pkg: "", typ: $Int, tag: "js:\"selectionEnd\""}, {prop: "TabIndex", name: "TabIndex", pkg: "", typ: $Int, tag: "js:\"tabIndex\""}, {prop: "TextLength", name: "TextLength", pkg: "", typ: $Int, tag: "js:\"textLength\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}, {prop: "ValidationMessage", name: "ValidationMessage", pkg: "", typ: $String, tag: "js:\"validationMessage\""}, {prop: "Value", name: "Value", pkg: "", typ: $String, tag: "js:\"value\""}, {prop: "WillValidate", name: "WillValidate", pkg: "", typ: $Bool, tag: "js:\"willValidate\""}, {prop: "Wrap", name: "Wrap", pkg: "", typ: $String, tag: "js:\"wrap\""}]);
-	HTMLTimeElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "DateTime", name: "DateTime", pkg: "", typ: $String, tag: "js:\"dateTime\""}]);
-	HTMLTitleElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Text", name: "Text", pkg: "", typ: $String, tag: "js:\"text\""}]);
-	TextTrack.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}]);
-	HTMLTrackElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Kind", name: "Kind", pkg: "", typ: $String, tag: "js:\"kind\""}, {prop: "Src", name: "Src", pkg: "", typ: $String, tag: "js:\"src\""}, {prop: "Srclang", name: "Srclang", pkg: "", typ: $String, tag: "js:\"srclang\""}, {prop: "Label", name: "Label", pkg: "", typ: $String, tag: "js:\"label\""}, {prop: "Default", name: "Default", pkg: "", typ: $Bool, tag: "js:\"default\""}, {prop: "ReadyState", name: "ReadyState", pkg: "", typ: $Int, tag: "js:\"readyState\""}]);
-	HTMLUListElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLUnknownElement.init([{prop: "BasicHTMLElement", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	HTMLVideoElement.init([{prop: "HTMLMediaElement", name: "", pkg: "", typ: ptrType$2, tag: ""}]);
-	CSSStyleDeclaration.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}]);
-	Text.init([{prop: "BasicNode", name: "", pkg: "", typ: ptrType$22, tag: ""}]);
-	Event.init([{prop: "Bubbles", name: "Bubbles", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Cancelable", name: "Cancelable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "CurrentTarget", name: "CurrentTarget", pkg: "", typ: $funcType([], [Element], false)}, {prop: "DefaultPrevented", name: "DefaultPrevented", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "EventPhase", name: "EventPhase", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $funcType([], [], false)}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $funcType([], [], false)}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $funcType([], [], false)}, {prop: "Target", name: "Target", pkg: "", typ: $funcType([], [Element], false)}, {prop: "Timestamp", name: "Timestamp", pkg: "", typ: $funcType([], [time.Time], false)}, {prop: "Type", name: "Type", pkg: "", typ: $funcType([], [$String], false)}]);
-	BasicEvent.init([{prop: "Object", name: "", pkg: "", typ: ptrType$12, tag: ""}]);
-	AnimationEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	AudioProcessingEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	BeforeInputEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	BeforeUnloadEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	BlobEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	ClipboardEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	CloseEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}, {prop: "Code", name: "Code", pkg: "", typ: $Int, tag: "js:\"code\""}, {prop: "Reason", name: "Reason", pkg: "", typ: $String, tag: "js:\"reason\""}, {prop: "WasClean", name: "WasClean", pkg: "", typ: $Bool, tag: "js:\"wasClean\""}]);
-	CompositionEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	CSSFontFaceLoadEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	CustomEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	DeviceLightEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	DeviceMotionEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	DeviceOrientationEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	DeviceProximityEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	DOMTransactionEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	DragEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	EditingBeforeInputEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	ErrorEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	FocusEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	GamepadEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	HashChangeEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	IDBVersionChangeEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	KeyboardEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}, {prop: "AltKey", name: "AltKey", pkg: "", typ: $Bool, tag: "js:\"altKey\""}, {prop: "CharCode", name: "CharCode", pkg: "", typ: $Int, tag: "js:\"charCode\""}, {prop: "CtrlKey", name: "CtrlKey", pkg: "", typ: $Bool, tag: "js:\"ctrlKey\""}, {prop: "Key", name: "Key", pkg: "", typ: $String, tag: "js:\"key\""}, {prop: "KeyIdentifier", name: "KeyIdentifier", pkg: "", typ: $String, tag: "js:\"keyIdentifier\""}, {prop: "KeyCode", name: "KeyCode", pkg: "", typ: $Int, tag: "js:\"keyCode\""}, {prop: "Locale", name: "Locale", pkg: "", typ: $String, tag: "js:\"locale\""}, {prop: "Location", name: "Location", pkg: "", typ: $Int, tag: "js:\"location\""}, {prop: "KeyLocation", name: "KeyLocation", pkg: "", typ: $Int, tag: "js:\"keyLocation\""}, {prop: "MetaKey", name: "MetaKey", pkg: "", typ: $Bool, tag: "js:\"metaKey\""}, {prop: "Repeat", name: "Repeat", pkg: "", typ: $Bool, tag: "js:\"repeat\""}, {prop: "ShiftKey", name: "ShiftKey", pkg: "", typ: $Bool, tag: "js:\"shiftKey\""}]);
-	MediaStreamEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	MessageEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}, {prop: "Data", name: "Data", pkg: "", typ: ptrType$12, tag: "js:\"data\""}]);
-	MouseEvent.init([{prop: "UIEvent", name: "", pkg: "", typ: ptrType$19, tag: ""}, {prop: "AltKey", name: "AltKey", pkg: "", typ: $Bool, tag: "js:\"altKey\""}, {prop: "Button", name: "Button", pkg: "", typ: $Int, tag: "js:\"button\""}, {prop: "ClientX", name: "ClientX", pkg: "", typ: $Int, tag: "js:\"clientX\""}, {prop: "ClientY", name: "ClientY", pkg: "", typ: $Int, tag: "js:\"clientY\""}, {prop: "CtrlKey", name: "CtrlKey", pkg: "", typ: $Bool, tag: "js:\"ctrlKey\""}, {prop: "MetaKey", name: "MetaKey", pkg: "", typ: $Bool, tag: "js:\"metaKey\""}, {prop: "MovementX", name: "MovementX", pkg: "", typ: $Int, tag: "js:\"movementX\""}, {prop: "MovementY", name: "MovementY", pkg: "", typ: $Int, tag: "js:\"movementY\""}, {prop: "ScreenX", name: "ScreenX", pkg: "", typ: $Int, tag: "js:\"screenX\""}, {prop: "ScreenY", name: "ScreenY", pkg: "", typ: $Int, tag: "js:\"screenY\""}, {prop: "ShiftKey", name: "ShiftKey", pkg: "", typ: $Bool, tag: "js:\"shiftKey\""}]);
-	MutationEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	OfflineAudioCompletionEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	PageTransitionEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	PointerEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	PopStateEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	ProgressEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	RelatedEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	RTCPeerConnectionIceEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	SensorEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	StorageEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	SVGEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	SVGZoomEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	TimeEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	TouchEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	TrackEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	TransitionEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	UIEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	UserProximityEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}]);
-	WheelEvent.init([{prop: "BasicEvent", name: "", pkg: "", typ: ptrType$18, tag: ""}, {prop: "DeltaX", name: "DeltaX", pkg: "", typ: $Float64, tag: "js:\"deltaX\""}, {prop: "DeltaY", name: "DeltaY", pkg: "", typ: $Float64, tag: "js:\"deltaY\""}, {prop: "DeltaZ", name: "DeltaZ", pkg: "", typ: $Float64, tag: "js:\"deltaZ\""}, {prop: "DeltaMode", name: "DeltaMode", pkg: "", typ: $Int, tag: "js:\"deltaMode\""}]);
+$packages["github.com/influx6/haiku/trees/events"] = (function() {
+	var $pkg = {}, $init, events, trees, Click;
+	events = $packages["github.com/influx6/haiku/events"];
+	trees = $packages["github.com/influx6/haiku/trees"];
+	Click = function(fx, selectorOverride) {
+		var $ptr, fx, selectorOverride;
+		return trees.NewEvent("click", selectorOverride, fx);
+	};
+	$pkg.Click = Click;
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = strings.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = time.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.$init = $init;
-	return $pkg;
-})();
-$packages["github.com/influx6/haiku/events"] = (function() {
-	var $pkg = {}, $init, errors, fmt, js, dom, strings, sync, NextHandler, FlatHandler, FlatChains, FlatChain, EventSubs, JSEventMux, EventSub, EventManager, ptrType, sliceType$1, funcType, ptrType$1, ptrType$3, ptrType$4, sliceType$2, funcType$2, funcType$3, mapType, mapType$1, FlatChainIdentity, NewFlatChain, NewEventSub, NewEventManager, GetEventID, BuildEventID;
-	errors = $packages["errors"];
-	fmt = $packages["fmt"];
-	js = $packages["github.com/gopherjs/gopherjs/js"];
-	dom = $packages["github.com/influx6/dom"];
-	strings = $packages["strings"];
-	sync = $packages["sync"];
-	NextHandler = $pkg.NextHandler = $newType(4, $kindFunc, "events.NextHandler", "NextHandler", "github.com/influx6/haiku/events", null);
-	FlatHandler = $pkg.FlatHandler = $newType(4, $kindFunc, "events.FlatHandler", "FlatHandler", "github.com/influx6/haiku/events", null);
-	FlatChains = $pkg.FlatChains = $newType(8, $kindInterface, "events.FlatChains", "FlatChains", "github.com/influx6/haiku/events", null);
-	FlatChain = $pkg.FlatChain = $newType(0, $kindStruct, "events.FlatChain", "FlatChain", "github.com/influx6/haiku/events", function(op_, prev_, next_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.op = $throwNilPointerError;
-			this.prev = $ifaceNil;
-			this.next = $ifaceNil;
-			return;
-		}
-		this.op = op_;
-		this.prev = prev_;
-		this.next = next_;
-	});
-	EventSubs = $pkg.EventSubs = $newType(8, $kindInterface, "events.EventSubs", "EventSubs", "github.com/influx6/haiku/events", null);
-	JSEventMux = $pkg.JSEventMux = $newType(4, $kindFunc, "events.JSEventMux", "JSEventMux", "github.com/influx6/haiku/events", null);
-	EventSub = $pkg.EventSub = $newType(0, $kindStruct, "events.EventSub", "EventSub", "github.com/influx6/haiku/events", function(FlatChains_, Type_, Target_, stopPropagate_, stopImmediatePropagate_, preventDefault_, jslink_, dom_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.FlatChains = $ifaceNil;
-			this.Type = "";
-			this.Target = "";
-			this.stopPropagate = false;
-			this.stopImmediatePropagate = false;
-			this.preventDefault = false;
-			this.jslink = $throwNilPointerError;
-			this.dom = $ifaceNil;
-			return;
-		}
-		this.FlatChains = FlatChains_;
-		this.Type = Type_;
-		this.Target = Target_;
-		this.stopPropagate = stopPropagate_;
-		this.stopImmediatePropagate = stopImmediatePropagate_;
-		this.preventDefault = preventDefault_;
-		this.jslink = jslink_;
-		this.dom = dom_;
-	});
-	EventManager = $pkg.EventManager = $newType(0, $kindStruct, "events.EventManager", "EventManager", "github.com/influx6/haiku/events", function(events_, attaches_, ro_, wo_, dom_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.events = false;
-			this.attaches = false;
-			this.ro = new sync.RWMutex.ptr(new sync.Mutex.ptr(0, 0), 0, 0, 0, 0);
-			this.wo = new sync.RWMutex.ptr(new sync.Mutex.ptr(0, 0), 0, 0, 0, 0);
-			this.dom = $ifaceNil;
-			return;
-		}
-		this.events = events_;
-		this.attaches = attaches_;
-		this.ro = ro_;
-		this.wo = wo_;
-		this.dom = dom_;
-	});
-	ptrType = $ptrType(EventManager);
-	sliceType$1 = $sliceType($emptyInterface);
-	funcType = $funcType([dom.Event], [], false);
-	ptrType$1 = $ptrType(FlatChain);
-	ptrType$3 = $ptrType(js.Object);
-	ptrType$4 = $ptrType(EventSub);
-	sliceType$2 = $sliceType(EventSubs);
-	funcType$2 = $funcType([EventSubs], [], false);
-	funcType$3 = $funcType([ptrType], [], false);
-	mapType = $mapType($String, EventSubs);
-	mapType$1 = $mapType(ptrType, $Bool);
-	FlatChainIdentity = function() {
-		var $ptr;
-		return NewFlatChain((function $b(c, nx) {
-			var $ptr, c, nx, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; c = $f.c; nx = $f.nx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			$r = nx(c); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.c = c; $f.nx = nx; $f.$s = $s; $f.$r = $r; return $f;
-		}));
-	};
-	$pkg.FlatChainIdentity = FlatChainIdentity;
-	NewFlatChain = function(fx) {
-		var $ptr, fx;
-		return new FlatChain.ptr(fx, $ifaceNil, $ifaceNil);
-	};
-	$pkg.NewFlatChain = NewFlatChain;
-	FlatChain.ptr.prototype.UnChain = function() {
-		var $ptr, next, prev, r, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; next = $f.next; prev = $f.prev; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		r = this;
-		prev = r.prev;
-		next = r.next;
-		/* */ if (!($interfaceIsEqual(prev, $ifaceNil)) && !($interfaceIsEqual(next, $ifaceNil))) { $s = 1; continue; }
-		/* */ $s = 2; continue;
-		/* if (!($interfaceIsEqual(prev, $ifaceNil)) && !($interfaceIsEqual(next, $ifaceNil))) { */ case 1:
-			$r = prev.useNext(next); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			$r = next.usePrev(prev); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			return;
-		/* } */ case 2:
-		$r = prev.useNext($ifaceNil); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.UnChain }; } $f.$ptr = $ptr; $f.next = next; $f.prev = prev; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	FlatChain.prototype.UnChain = function() { return this.$val.UnChain(); };
-	FlatChain.ptr.prototype.Bind = function(rnx) {
-		var $ptr, _r, r, rnx, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; r = $f.r; rnx = $f.rnx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		rnx = [rnx];
-		r = this;
-		_r = r.Next((function(rnx) { return function $b(ev, nx) {
-			var $ptr, ev, nx, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; ev = $f.ev; nx = $f.nx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			$r = rnx[0](ev); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			$r = nx(ev); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.ev = ev; $f.nx = nx; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(rnx)); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.Bind }; } $f.$ptr = $ptr; $f._r = _r; $f.r = r; $f.rnx = rnx; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	FlatChain.prototype.Bind = function(rnx) { return this.$val.Bind(rnx); };
-	FlatChain.ptr.prototype.Next = function(rnx) {
-		var $ptr, _r, nx, r, rnx, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; nx = $f.nx; r = $f.r; rnx = $f.rnx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		r = this;
-		nx = NewFlatChain(rnx);
-		_r = r.NChain(nx); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.Next }; } $f.$ptr = $ptr; $f._r = _r; $f.nx = nx; $f.r = r; $f.rnx = rnx; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	FlatChain.prototype.Next = function(rnx) { return this.$val.Next(rnx); };
-	FlatChain.ptr.prototype.Chain = function(rx) {
-		var $ptr, _r, r, rx, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; r = $f.r; rx = $f.rx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		r = this;
-		/* */ if ($interfaceIsEqual(r.next, $ifaceNil)) { $s = 1; continue; }
-		/* */ $s = 2; continue;
-		/* if ($interfaceIsEqual(r.next, $ifaceNil)) { */ case 1:
-			$r = rx.usePrev(r); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			r.useNext(rx);
-			$s = 3; continue;
-		/* } else { */ case 2:
-			_r = r.next.Chain(rx); /* */ $s = 5; case 5: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-			_r;
-		/* } */ case 3:
-		return r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.Chain }; } $f.$ptr = $ptr; $f._r = _r; $f.r = r; $f.rx = rx; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	FlatChain.prototype.Chain = function(rx) { return this.$val.Chain(rx); };
-	FlatChain.ptr.prototype.NChain = function(rx) {
-		var $ptr, _r, r, rx, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; r = $f.r; rx = $f.rx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		r = this;
-		if ($interfaceIsEqual(r.next, $ifaceNil)) {
-			r.useNext(rx);
-			return rx;
-		}
-		_r = r.next.NChain(rx); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.NChain }; } $f.$ptr = $ptr; $f._r = _r; $f.r = r; $f.rx = rx; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	FlatChain.prototype.NChain = function(rx) { return this.$val.NChain(rx); };
-	FlatChain.ptr.prototype.HandleContext = function(c) {
-		var $ptr, c, r, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; c = $f.c; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		r = [r];
-		r[0] = this;
-		$r = r[0].op(c, (function(r) { return function $b(c$1) {
-			var $ptr, c$1, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; c$1 = $f.c$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			/* */ if (!($interfaceIsEqual(r[0].next, $ifaceNil))) { $s = 1; continue; }
-			/* */ $s = 2; continue;
-			/* if (!($interfaceIsEqual(r[0].next, $ifaceNil))) { */ case 1:
-				$r = r[0].next.HandleContext(c$1); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* } */ case 2:
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.c$1 = c$1; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(r)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: FlatChain.ptr.prototype.HandleContext }; } $f.$ptr = $ptr; $f.c = c; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	FlatChain.prototype.HandleContext = function(c) { return this.$val.HandleContext(c); };
-	FlatChain.ptr.prototype.useNext = function(fl) {
-		var $ptr, fl, r;
-		r = this;
-		r.next = fl;
-	};
-	FlatChain.prototype.useNext = function(fl) { return this.$val.useNext(fl); };
-	FlatChain.ptr.prototype.usePrev = function(fl) {
-		var $ptr, fl, r;
-		r = this;
-		r.prev = fl;
-	};
-	FlatChain.prototype.usePrev = function(fl) { return this.$val.usePrev(fl); };
-	NewEventSub = function(evtype, evtarget) {
-		var $ptr, evtarget, evtype;
-		return new EventSub.ptr(FlatChainIdentity(), evtype, evtarget, false, false, false, $throwNilPointerError, $ifaceNil);
-	};
-	$pkg.NewEventSub = NewEventSub;
-	EventSub.ptr.prototype.DOM = function(dom$1) {
-		var $ptr, _r, dom$1, e, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; dom$1 = $f.dom$1; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		e = this;
-		$r = e.Offload(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		e.dom = dom$1;
-		_r = e.dom.AddEventListener(e.EventType(), true, $methodVal(e, "TriggerMatch")); /* */ $s = 2; case 2: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		e.jslink = _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventSub.ptr.prototype.DOM }; } $f.$ptr = $ptr; $f._r = _r; $f.dom$1 = dom$1; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventSub.prototype.DOM = function(dom$1) { return this.$val.DOM(dom$1); };
-	EventSub.ptr.prototype.Offload = function() {
-		var $ptr, e, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		e = this;
-		if ($interfaceIsEqual(e.dom, $ifaceNil)) {
-			return;
-		}
-		/* */ if (!(e.jslink === $throwNilPointerError)) { $s = 1; continue; }
-		/* */ $s = 2; continue;
-		/* if (!(e.jslink === $throwNilPointerError)) { */ case 1:
-			$r = e.dom.RemoveEventListener(e.EventType(), true, e.jslink); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			e.jslink = $throwNilPointerError;
-		/* } */ case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventSub.ptr.prototype.Offload }; } $f.$ptr = $ptr; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventSub.prototype.Offload = function() { return this.$val.Offload(); };
-	EventSub.ptr.prototype.Trigger = function(h) {
-		var $ptr, e, h, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; e = $f.e; h = $f.h; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		e = this;
-		$r = e.FlatChains.HandleContext(h); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventSub.ptr.prototype.Trigger }; } $f.$ptr = $ptr; $f.e = e; $f.h = h; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventSub.prototype.Trigger = function(h) { return this.$val.Trigger(h); };
-	EventSub.ptr.prototype.TriggerMatch = function(h) {
-		var $ptr, _i, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _ref, e, h, item, match, parent, posis, target, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _ref = $f._ref; e = $f.e; h = $f.h; item = $f.item; match = $f.match; parent = $f.parent; posis = $f.posis; target = $f.target; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		e = this;
-		_r = h.Type(); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_r$1 = strings.ToLower(_r); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		_r$2 = strings.ToLower(e.EventType()); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		/* */ if (!(_r$1 === _r$2)) { $s = 1; continue; }
-		/* */ $s = 2; continue;
-		/* if (!(_r$1 === _r$2)) { */ case 1:
-			return;
-		/* } */ case 2:
-		_r$3 = h.Target(); /* */ $s = 6; case 6: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		_r$4 = _r$3.ParentElement(); /* */ $s = 7; case 7: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		parent = _r$4;
-		match = false;
-		_r$5 = parent.QuerySelectorAll(e.EventSelector()); /* */ $s = 8; case 8: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-		posis = _r$5;
-		_r$6 = h.Target(); /* */ $s = 9; case 9: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-		target = _r$6;
-		_ref = posis;
-		_i = 0;
-		/* while (true) { */ case 10:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 11; continue; }
-			item = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			_r$7 = item.Underlying(); /* */ $s = 14; case 14: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-			_r$8 = target.Underlying(); /* */ $s = 15; case 15: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
-			/* */ if (!(_r$7 === _r$8)) { $s = 12; continue; }
-			/* */ $s = 13; continue;
-			/* if (!(_r$7 === _r$8)) { */ case 12:
-				_i++;
-				/* continue; */ $s = 10; continue;
-			/* } */ case 13:
-			match = true;
-			/* break; */ $s = 11; continue;
-		/* } */ $s = 10; continue; case 11:
-		/* */ if (match) { $s = 16; continue; }
-		/* */ $s = 17; continue;
-		/* if (match) { */ case 16:
-			/* */ if (e.StopImmediatePropagation()) { $s = 18; continue; }
-			/* */ $s = 19; continue;
-			/* if (e.StopImmediatePropagation()) { */ case 18:
-				$r = h.StopImmediatePropagation(); /* */ $s = 21; case 21: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$s = 20; continue;
-			/* } else { */ case 19:
-				/* */ if (e.StopPropagation()) { $s = 22; continue; }
-				/* */ $s = 23; continue;
-				/* if (e.StopPropagation()) { */ case 22:
-					$r = h.StopPropagation(); /* */ $s = 24; case 24: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				/* } */ case 23:
-			/* } */ case 20:
-			/* */ if (e.PreventDefault()) { $s = 25; continue; }
-			/* */ $s = 26; continue;
-			/* if (e.PreventDefault()) { */ case 25:
-				$r = h.PreventDefault(); /* */ $s = 27; case 27: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* } */ case 26:
-			$r = e.FlatChains.HandleContext(h); /* */ $s = 28; case 28: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* } */ case 17:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventSub.ptr.prototype.TriggerMatch }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._ref = _ref; $f.e = e; $f.h = h; $f.item = item; $f.match = match; $f.parent = parent; $f.posis = posis; $f.target = target; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventSub.prototype.TriggerMatch = function(h) { return this.$val.TriggerMatch(h); };
-	EventSub.ptr.prototype.SetStopPropagation = function(n) {
-		var $ptr, e, n;
-		e = this;
-		e.stopPropagate = n;
-	};
-	EventSub.prototype.SetStopPropagation = function(n) { return this.$val.SetStopPropagation(n); };
-	EventSub.ptr.prototype.SetStopImmediatePropagation = function(n) {
-		var $ptr, e, n;
-		e = this;
-		e.stopImmediatePropagate = n;
-	};
-	EventSub.prototype.SetStopImmediatePropagation = function(n) { return this.$val.SetStopImmediatePropagation(n); };
-	EventSub.ptr.prototype.SetPreventDefault = function(n) {
-		var $ptr, e, n;
-		e = this;
-		e.preventDefault = n;
-	};
-	EventSub.prototype.SetPreventDefault = function(n) { return this.$val.SetPreventDefault(n); };
-	EventSub.ptr.prototype.StopPropagation = function() {
-		var $ptr, e;
-		e = this;
-		return e.stopPropagate;
-	};
-	EventSub.prototype.StopPropagation = function() { return this.$val.StopPropagation(); };
-	EventSub.ptr.prototype.StopImmediatePropagation = function() {
-		var $ptr, e;
-		e = this;
-		return e.stopImmediatePropagate;
-	};
-	EventSub.prototype.StopImmediatePropagation = function() { return this.$val.StopImmediatePropagation(); };
-	EventSub.ptr.prototype.PreventDefault = function() {
-		var $ptr, e;
-		e = this;
-		return e.preventDefault;
-	};
-	EventSub.prototype.PreventDefault = function() { return this.$val.PreventDefault(); };
-	EventSub.ptr.prototype.EventSelector = function() {
-		var $ptr, e;
-		e = this;
-		return e.Target;
-	};
-	EventSub.prototype.EventSelector = function() { return this.$val.EventSelector(); };
-	EventSub.ptr.prototype.ID = function() {
-		var $ptr, _r, e, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		e = this;
-		_r = GetEventID(e); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventSub.ptr.prototype.ID }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventSub.prototype.ID = function() { return this.$val.ID(); };
-	EventSub.ptr.prototype.EventType = function() {
-		var $ptr, e;
-		e = this;
-		return e.Type;
-	};
-	EventSub.prototype.EventType = function() { return this.$val.EventType(); };
-	NewEventManager = function() {
-		var $ptr, em;
-		em = new EventManager.ptr(new $Map(), new $Map(), new sync.RWMutex.ptr(new sync.Mutex.ptr(0, 0), 0, 0, 0, 0), new sync.RWMutex.ptr(new sync.Mutex.ptr(0, 0), 0, 0, 0, 0), $ifaceNil);
-		return em;
-	};
-	$pkg.NewEventManager = NewEventManager;
-	EventManager.ptr.prototype.HasWatch = function(m) {
-		var $ptr, _entry, _tuple, em, m, ok, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _tuple = $f._tuple; em = $f.em; m = $f.m; ok = $f.ok; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		em = this;
-		ok = false;
-		$r = em.ro.RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_tuple = (_entry = em.events[$String.keyFor(m)], _entry !== undefined ? [_entry.v, true] : [$ifaceNil, false]); ok = _tuple[1];
-		$r = em.ro.RUnlock(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		return ok;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.HasWatch }; } $f.$ptr = $ptr; $f._entry = _entry; $f._tuple = _tuple; $f.em = em; $f.m = m; $f.ok = ok; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.HasWatch = function(m) { return this.$val.HasWatch(m); };
-	EventManager.ptr.prototype.GetEvent = function(event) {
-		var $ptr, _entry, _tuple, ed, em, event, ok, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _tuple = $f._tuple; ed = $f.ed; em = $f.em; event = $f.event; ok = $f.ok; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		em = this;
-		ed = $ifaceNil;
-		ok = false;
-		$r = em.ro.RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_tuple = (_entry = em.events[$String.keyFor(event)], _entry !== undefined ? [_entry.v, true] : [$ifaceNil, false]); ed = _tuple[0]; ok = _tuple[1];
-		$r = em.ro.RUnlock(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		if (!ok) {
-			return [$ifaceNil, $pkg.ErrEventNotFound];
-		}
-		return [ed, $ifaceNil];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.GetEvent }; } $f.$ptr = $ptr; $f._entry = _entry; $f._tuple = _tuple; $f.ed = ed; $f.em = em; $f.event = event; $f.ok = ok; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.GetEvent = function(event) { return this.$val.GetEvent(event); };
-	EventManager.ptr.prototype.NewEvent = function(evtype, evselector) {
-		var $ptr, _r, _r$1, _r$2, _r$3, _tuple, ed, em, emo, eo, evselector, evtype, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _tuple = $f._tuple; ed = $f.ed; em = $f.em; emo = $f.emo; eo = $f.eo; evselector = $f.evselector; evtype = $f.evtype; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		em = this;
-		_r = BuildEventID(evtype, evselector); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		eo = _r;
-		_r$1 = em.HasWatch(eo); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		/* */ if (_r$1) { $s = 2; continue; }
-		/* */ $s = 3; continue;
-		/* if (_r$1) { */ case 2:
-			_r$2 = em.GetEvent(eo); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-			_tuple = _r$2; ed = _tuple[0];
-			return [ed, false];
-		/* } */ case 3:
-		emo = NewEventSub(evtype, evselector);
-		_r$3 = em.AddEvent(emo); /* */ $s = 6; case 6: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		_r$3;
-		return [emo, true];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.NewEvent }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f.ed = ed; $f.em = em; $f.emo = emo; $f.eo = eo; $f.evselector = evselector; $f.evtype = evtype; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.NewEvent = function(evtype, evselector) { return this.$val.NewEvent(evtype, evselector); };
-	EventManager.ptr.prototype.AttachManager = function(esm) {
-		var $ptr, _key, _r, _r$1, em, esm, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _key = $f._key; _r = $f._r; _r$1 = $f._r$1; em = $f.em; esm = $f.esm; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		em = this;
-		_r = esm.HasManager(em); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		/* */ if (_r) { $s = 1; continue; }
-		/* */ $s = 2; continue;
-		/* if (_r) { */ case 1:
-			return;
-		/* } */ case 2:
-		_r$1 = em.HasManager(esm); /* */ $s = 6; case 6: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		/* */ if (_r$1) { $s = 4; continue; }
-		/* */ $s = 5; continue;
-		/* if (_r$1) { */ case 4:
-			return;
-		/* } */ case 5:
-		$r = em.wo.Lock(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_key = esm; (em.attaches || $throwRuntimeError("assignment to entry in nil map"))[ptrType.keyFor(_key)] = { k: _key, v: true };
-		$r = em.wo.Unlock(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ if (!($interfaceIsEqual(em.dom, $ifaceNil))) { $s = 9; continue; }
-		/* */ $s = 10; continue;
-		/* if (!($interfaceIsEqual(em.dom, $ifaceNil))) { */ case 9:
-			$r = esm.LoadDOM(em.dom); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* } */ case 10:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.AttachManager }; } $f.$ptr = $ptr; $f._key = _key; $f._r = _r; $f._r$1 = _r$1; $f.em = em; $f.esm = esm; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.AttachManager = function(esm) { return this.$val.AttachManager(esm); };
-	EventManager.ptr.prototype.DetachManager = function(esm) {
-		var $ptr, _r, em, esm, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; em = $f.em; esm = $f.esm; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		em = this;
-		_r = em.HasManager(esm); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		/* */ if (!_r) { $s = 1; continue; }
-		/* */ $s = 2; continue;
-		/* if (!_r) { */ case 1:
-			return;
-		/* } */ case 2:
-		$r = em.wo.Lock(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		delete em.attaches[ptrType.keyFor(esm)];
-		$r = em.wo.Unlock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.DetachManager }; } $f.$ptr = $ptr; $f._r = _r; $f.em = em; $f.esm = esm; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.DetachManager = function(esm) { return this.$val.DetachManager(esm); };
-	EventManager.ptr.prototype.HasManager = function(esm) {
-		var $ptr, _entry, em, esm, ok, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; em = $f.em; esm = $f.esm; ok = $f.ok; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		em = this;
-		$r = em.wo.RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		ok = (_entry = em.attaches[ptrType.keyFor(esm)], _entry !== undefined ? _entry.v : false);
-		$r = em.wo.RUnlock(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		return ok;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.HasManager }; } $f.$ptr = $ptr; $f._entry = _entry; $f.em = em; $f.esm = esm; $f.ok = ok; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.HasManager = function(esm) { return this.$val.HasManager(esm); };
-	EventManager.ptr.prototype.AddEvent = function(eo) {
-		var $ptr, _key, _r, _r$1, em, eo, id, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _key = $f._key; _r = $f._r; _r$1 = $f._r$1; em = $f.em; eo = $f.eo; id = $f.id; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		em = this;
-		_r = eo.ID(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		id = _r;
-		_r$1 = em.HasWatch(id); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		/* */ if (_r$1) { $s = 2; continue; }
-		/* */ $s = 3; continue;
-		/* if (_r$1) { */ case 2:
-			return false;
-		/* } */ case 3:
-		$r = em.ro.Lock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_key = id; (em.events || $throwRuntimeError("assignment to entry in nil map"))[$String.keyFor(_key)] = { k: _key, v: eo };
-		$r = em.ro.Unlock(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		return true;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.AddEvent }; } $f.$ptr = $ptr; $f._key = _key; $f._r = _r; $f._r$1 = _r$1; $f.em = em; $f.eo = eo; $f.id = id; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.AddEvent = function(eo) { return this.$val.AddEvent(eo); };
-	EventManager.ptr.prototype.AddEvents = function(ems) {
-		var $ptr, _i, _r, _ref, em, ems, eo, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; em = $f.em; ems = $f.ems; eo = $f.eo; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		em = this;
-		_ref = ems;
-		_i = 0;
-		/* while (true) { */ case 1:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 2; continue; }
-			eo = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			_r = em.AddEvent(eo); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-			_r;
-			_i++;
-		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.AddEvents }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.em = em; $f.ems = ems; $f.eo = eo; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.AddEvents = function(ems) { return this.$val.AddEvents(ems); };
-	EventManager.ptr.prototype.EachEvent = function(fx) {
-		var $ptr, _entry, _i, _keys, _ref, em, eo, fx, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _i = $f._i; _keys = $f._keys; _ref = $f._ref; em = $f.em; eo = $f.eo; fx = $f.fx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		em = this;
-		$r = em.ro.Lock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_ref = em.events;
-		_i = 0;
-		_keys = $keys(_ref);
-		/* while (true) { */ case 2:
-			/* if (!(_i < _keys.length)) { break; } */ if(!(_i < _keys.length)) { $s = 3; continue; }
-			_entry = _ref[_keys[_i]];
-			if (_entry === undefined) {
-				_i++;
-				/* continue; */ $s = 2; continue;
-			}
-			eo = _entry.v;
-			$r = fx(eo); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			_i++;
-		/* } */ $s = 2; continue; case 3:
-		$r = em.ro.Unlock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.EachEvent }; } $f.$ptr = $ptr; $f._entry = _entry; $f._i = _i; $f._keys = _keys; $f._ref = _ref; $f.em = em; $f.eo = eo; $f.fx = fx; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.EachEvent = function(fx) { return this.$val.EachEvent(fx); };
-	EventManager.ptr.prototype.EachManager = function(fx) {
-		var $ptr, _entry, _i, _keys, _ref, em, eo, fx, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _i = $f._i; _keys = $f._keys; _ref = $f._ref; em = $f.em; eo = $f.eo; fx = $f.fx; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		em = this;
-		$r = em.wo.Lock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_ref = em.attaches;
-		_i = 0;
-		_keys = $keys(_ref);
-		/* while (true) { */ case 2:
-			/* if (!(_i < _keys.length)) { break; } */ if(!(_i < _keys.length)) { $s = 3; continue; }
-			_entry = _ref[_keys[_i]];
-			if (_entry === undefined) {
-				_i++;
-				/* continue; */ $s = 2; continue;
-			}
-			eo = _entry.k;
-			$r = fx(eo); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			_i++;
-		/* } */ $s = 2; continue; case 3:
-		$r = em.wo.Unlock(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.EachManager }; } $f.$ptr = $ptr; $f._entry = _entry; $f._i = _i; $f._keys = _keys; $f._ref = _ref; $f.em = em; $f.eo = eo; $f.fx = fx; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.EachManager = function(fx) { return this.$val.EachManager(fx); };
-	EventManager.ptr.prototype.LoadDOM = function(dom$1) {
-		var $ptr, dom$1, em, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; dom$1 = $f.dom$1; em = $f.em; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		dom$1 = [dom$1];
-		em = this;
-		em.dom = dom$1[0];
-		$r = em.EachEvent((function(dom$1) { return function $b(es) {
-			var $ptr, es, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; es = $f.es; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			$r = es.DOM(dom$1[0]); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.es = es; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(dom$1)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = em.EachManager((function(dom$1) { return function $b(ems) {
-			var $ptr, ems, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; ems = $f.ems; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			$r = ems.LoadDOM(dom$1[0]); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.ems = ems; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(dom$1)); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventManager.ptr.prototype.LoadDOM }; } $f.$ptr = $ptr; $f.dom$1 = dom$1; $f.em = em; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	EventManager.prototype.LoadDOM = function(dom$1) { return this.$val.LoadDOM(dom$1); };
-	GetEventID = function(m) {
-		var $ptr, _arg, _arg$1, _r, _r$1, _r$2, _r$3, m, sel, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; m = $f.m; sel = $f.sel; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_r = m.EventSelector(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_r$1 = strings.TrimSpace(_r); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		sel = _r$1;
-		_arg = sel;
-		_r$2 = m.EventType(); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		_arg$1 = _r$2;
-		_r$3 = BuildEventID(_arg, _arg$1); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		return _r$3;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: GetEventID }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.m = m; $f.sel = sel; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.GetEventID = GetEventID;
-	BuildEventID = function(etype, eselect) {
-		var $ptr, _r, eselect, etype, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; eselect = $f.eselect; etype = $f.etype; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_r = fmt.Sprintf("%s#%s", new sliceType$1([new $String(eselect), new $String(etype)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BuildEventID }; } $f.$ptr = $ptr; $f._r = _r; $f.eselect = eselect; $f.etype = etype; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.BuildEventID = BuildEventID;
-	ptrType$1.methods = [{prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([funcType], [FlatChains], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([dom.Event], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}];
-	ptrType$4.methods = [{prop: "DOM", name: "DOM", pkg: "", typ: $funcType([dom.Element], [], false)}, {prop: "Offload", name: "Offload", pkg: "", typ: $funcType([], [], false)}, {prop: "Trigger", name: "Trigger", pkg: "", typ: $funcType([dom.Event], [], false)}, {prop: "TriggerMatch", name: "TriggerMatch", pkg: "", typ: $funcType([dom.Event], [], false)}, {prop: "SetStopPropagation", name: "SetStopPropagation", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "SetStopImmediatePropagation", name: "SetStopImmediatePropagation", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "SetPreventDefault", name: "SetPreventDefault", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "EventSelector", name: "EventSelector", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "EventType", name: "EventType", pkg: "", typ: $funcType([], [$String], false)}];
-	ptrType.methods = [{prop: "HasWatch", name: "HasWatch", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "GetEvent", name: "GetEvent", pkg: "", typ: $funcType([$String], [EventSubs, $error], false)}, {prop: "NewEvent", name: "NewEvent", pkg: "", typ: $funcType([$String, $String], [EventSubs, $Bool], false)}, {prop: "AttachManager", name: "AttachManager", pkg: "", typ: $funcType([ptrType], [], false)}, {prop: "DetachManager", name: "DetachManager", pkg: "", typ: $funcType([ptrType], [], false)}, {prop: "HasManager", name: "HasManager", pkg: "", typ: $funcType([ptrType], [$Bool], false)}, {prop: "AddEvent", name: "AddEvent", pkg: "", typ: $funcType([EventSubs], [$Bool], false)}, {prop: "AddEvents", name: "AddEvents", pkg: "", typ: $funcType([sliceType$2], [], true)}, {prop: "EachEvent", name: "EachEvent", pkg: "", typ: $funcType([funcType$2], [], false)}, {prop: "EachManager", name: "EachManager", pkg: "", typ: $funcType([funcType$3], [], false)}, {prop: "LoadDOM", name: "LoadDOM", pkg: "", typ: $funcType([dom.Element], [], false)}];
-	NextHandler.init([dom.Event], [], false);
-	FlatHandler.init([dom.Event, NextHandler], [], false);
-	FlatChains.init([{prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([dom.Event], [], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}]);
-	FlatChain.init([{prop: "op", name: "op", pkg: "github.com/influx6/haiku/events", typ: FlatHandler, tag: ""}, {prop: "prev", name: "prev", pkg: "github.com/influx6/haiku/events", typ: FlatChains, tag: ""}, {prop: "next", name: "next", pkg: "github.com/influx6/haiku/events", typ: FlatChains, tag: ""}]);
-	EventSubs.init([{prop: "Chain", name: "Chain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "DOM", name: "DOM", pkg: "", typ: $funcType([dom.Element], [], false)}, {prop: "EventSelector", name: "EventSelector", pkg: "", typ: $funcType([], [$String], false)}, {prop: "EventType", name: "EventType", pkg: "", typ: $funcType([], [$String], false)}, {prop: "HandleContext", name: "HandleContext", pkg: "", typ: $funcType([dom.Event], [], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NChain", name: "NChain", pkg: "", typ: $funcType([FlatChains], [FlatChains], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([FlatHandler], [FlatChains], false)}, {prop: "Offload", name: "Offload", pkg: "", typ: $funcType([], [], false)}, {prop: "PreventDefault", name: "PreventDefault", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetPreventDefault", name: "SetPreventDefault", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "SetStopImmediatePropagation", name: "SetStopImmediatePropagation", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "SetStopPropagation", name: "SetStopPropagation", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "StopImmediatePropagation", name: "StopImmediatePropagation", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "StopPropagation", name: "StopPropagation", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Trigger", name: "Trigger", pkg: "", typ: $funcType([dom.Event], [], false)}, {prop: "TriggerMatch", name: "TriggerMatch", pkg: "", typ: $funcType([dom.Event], [], false)}, {prop: "UnChain", name: "UnChain", pkg: "", typ: $funcType([], [], false)}, {prop: "useNext", name: "useNext", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}, {prop: "usePrev", name: "usePrev", pkg: "github.com/influx6/haiku/events", typ: $funcType([FlatChains], [], false)}]);
-	JSEventMux.init([ptrType$3], [], false);
-	EventSub.init([{prop: "FlatChains", name: "", pkg: "", typ: FlatChains, tag: ""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: ""}, {prop: "Target", name: "Target", pkg: "", typ: $String, tag: ""}, {prop: "stopPropagate", name: "stopPropagate", pkg: "github.com/influx6/haiku/events", typ: $Bool, tag: ""}, {prop: "stopImmediatePropagate", name: "stopImmediatePropagate", pkg: "github.com/influx6/haiku/events", typ: $Bool, tag: ""}, {prop: "preventDefault", name: "preventDefault", pkg: "github.com/influx6/haiku/events", typ: $Bool, tag: ""}, {prop: "jslink", name: "jslink", pkg: "github.com/influx6/haiku/events", typ: JSEventMux, tag: ""}, {prop: "dom", name: "dom", pkg: "github.com/influx6/haiku/events", typ: dom.Element, tag: ""}]);
-	EventManager.init([{prop: "events", name: "events", pkg: "github.com/influx6/haiku/events", typ: mapType, tag: ""}, {prop: "attaches", name: "attaches", pkg: "github.com/influx6/haiku/events", typ: mapType$1, tag: ""}, {prop: "ro", name: "ro", pkg: "github.com/influx6/haiku/events", typ: sync.RWMutex, tag: ""}, {prop: "wo", name: "wo", pkg: "github.com/influx6/haiku/events", typ: sync.RWMutex, tag: ""}, {prop: "dom", name: "dom", pkg: "github.com/influx6/haiku/events", typ: dom.Element, tag: ""}]);
-	$init = function() {
-		$pkg.$init = function() {};
-		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = fmt.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = js.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = dom.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = strings.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = sync.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$pkg.ErrEventNotFound = errors.New("Event not found");
+		$r = events.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = trees.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
@@ -39344,18 +35196,19 @@ $packages["html/template"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/views"] = (function() {
-	var $pkg = {}, $init, bytes, errors, fmt, detect, js, dom, flux, events, trees, elems, template, regexp, strings, sync, atomic, PathSpec, PathObserver, HistoryProvider, Pages, StateResponse, StateValidator, States, State, StateEngine, Views, ViewStates, HideView, ShowView, ViewMux, View, sliceType$1, sliceType$3, funcType, ptrType$3, ptrType$4, ptrType$5, ptrType$6, sliceType$4, ptrType$7, ptrType$8, sliceType$5, ptrType$10, ptrType$11, ptrType$12, funcType$1, mapType, chanType, ptrType$13, ptrType$14, excessStops, _r, CreateFragment, AddNodeIfNone, AddNodeIfNoneInList, AddElementIfNoneInList, Patch, PatchTree, allEmpty, Path, HashChangePath, PopStatePath, History, Page, NewPage, GetLocation, PushDOMState, SetDOMHash, panicBrowserDetect, BrowserSupportsPushState, NewState, NewStateEngine, BuildStateEngine, NewView, MakeView;
+	var $pkg = {}, $init, bytes, errors, fmt, detect, js, flux, events, jsutils, trees, elems, template, log, regexp, strings, sync, atomic, PathSpec, PathObserver, HistoryProvider, Pages, StateResponse, StateValidator, States, State, StateEngine, Views, ViewStates, HideView, ShowView, ViewMux, View, sliceType$1, ptrType$3, sliceType$3, sliceType$4, funcType, ptrType$4, ptrType$5, ptrType$6, ptrType$7, sliceType$5, ptrType$8, ptrType$9, sliceType$6, ptrType$11, ptrType$12, ptrType$13, funcType$1, mapType, chanType, ptrType$14, ptrType$15, excessStops, _r, CreateFragment, AddNodeIfNone, AddNodeIfNoneInList, Patch, allEmpty, Path, HashChangePath, PopStatePath, History, Page, NewPage, GetLocation, PushDOMState, SetDOMHash, panicBrowserDetect, BrowserSupportsPushState, NewState, NewStateEngine, BuildStateEngine, NewView, MakeView;
 	bytes = $packages["bytes"];
 	errors = $packages["errors"];
 	fmt = $packages["fmt"];
 	detect = $packages["github.com/go-humble/detect"];
 	js = $packages["github.com/gopherjs/gopherjs/js"];
-	dom = $packages["github.com/influx6/dom"];
 	flux = $packages["github.com/influx6/flux"];
 	events = $packages["github.com/influx6/haiku/events"];
+	jsutils = $packages["github.com/influx6/haiku/jsutils"];
 	trees = $packages["github.com/influx6/haiku/trees"];
 	elems = $packages["github.com/influx6/haiku/trees/elems"];
 	template = $packages["html/template"];
+	log = $packages["log"];
 	regexp = $packages["regexp"];
 	strings = $packages["strings"];
 	sync = $packages["sync"];
@@ -39385,7 +35238,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	HistoryProvider = $pkg.HistoryProvider = $newType(0, $kindStruct, "views.HistoryProvider", "HistoryProvider", "github.com/influx6/haiku/views", function(PathObserver_) {
 		this.$val = this;
 		if (arguments.length === 0) {
-			this.PathObserver = ptrType$3.nil;
+			this.PathObserver = ptrType$4.nil;
 			return;
 		}
 		this.PathObserver = PathObserver_;
@@ -39393,8 +35246,8 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	Pages = $pkg.Pages = $newType(0, $kindStruct, "views.Pages", "Pages", "github.com/influx6/haiku/views", function(StateEngine_, HistoryProvider_) {
 		this.$val = this;
 		if (arguments.length === 0) {
-			this.StateEngine = ptrType$4.nil;
-			this.HistoryProvider = ptrType$5.nil;
+			this.StateEngine = ptrType$5.nil;
+			this.HistoryProvider = ptrType$6.nil;
 			return;
 		}
 		this.StateEngine = StateEngine_;
@@ -39410,7 +35263,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 			this.activator = $throwNilPointerError;
 			this.deactivator = $throwNilPointerError;
 			this.optionalValidator = $throwNilPointerError;
-			this.engine = ptrType$4.nil;
+			this.engine = ptrType$5.nil;
 			this.vo = new sync.Mutex.ptr(0, 0);
 			this.ro = new sync.Mutex.ptr(0, 0);
 			this.do$7 = new sync.Mutex.ptr(0, 0);
@@ -39463,9 +35316,9 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 			this.ShowState = $ifaceNil;
 			this.activeState = $ifaceNil;
 			this.encoder = $ifaceNil;
-			this.events = ptrType$8.nil;
+			this.events = ptrType$9.nil;
 			this.fx = $throwNilPointerError;
-			this.dom = $ifaceNil;
+			this.dom = null;
 			this.liveMarkup = $ifaceNil;
 			return;
 		}
@@ -39481,285 +35334,196 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		this.liveMarkup = liveMarkup_;
 	});
 	sliceType$1 = $sliceType($String);
-	sliceType$3 = $sliceType($emptyInterface);
+	ptrType$3 = $ptrType(js.Object);
+	sliceType$3 = $sliceType(ptrType$3);
+	sliceType$4 = $sliceType($emptyInterface);
 	funcType = $funcType([], [], false);
-	ptrType$3 = $ptrType(PathObserver);
-	ptrType$4 = $ptrType(StateEngine);
-	ptrType$5 = $ptrType(HistoryProvider);
-	ptrType$6 = $ptrType($Int64);
-	sliceType$4 = $sliceType(States);
-	ptrType$7 = $ptrType(View);
-	ptrType$8 = $ptrType(events.EventManager);
-	sliceType$5 = $sliceType(trees.Appliable);
-	ptrType$10 = $ptrType(PathSpec);
-	ptrType$11 = $ptrType(Pages);
-	ptrType$12 = $ptrType(State);
+	ptrType$4 = $ptrType(PathObserver);
+	ptrType$5 = $ptrType(StateEngine);
+	ptrType$6 = $ptrType(HistoryProvider);
+	ptrType$7 = $ptrType($Int64);
+	sliceType$5 = $sliceType(States);
+	ptrType$8 = $ptrType(View);
+	ptrType$9 = $ptrType(events.EventManager);
+	sliceType$6 = $sliceType(trees.Appliable);
+	ptrType$11 = $ptrType(PathSpec);
+	ptrType$12 = $ptrType(Pages);
+	ptrType$13 = $ptrType(State);
 	funcType$1 = $funcType([States, $String, funcType], [], false);
 	mapType = $mapType(States, $String);
 	chanType = $chanType($Bool, false, true);
-	ptrType$13 = $ptrType(HideView);
-	ptrType$14 = $ptrType(ShowView);
+	ptrType$14 = $ptrType(HideView);
+	ptrType$15 = $ptrType(ShowView);
 	CreateFragment = function(html) {
-		var $ptr, _i, _r$1, _r$2, _r$3, _r$4, _ref, div, doc, fragment, html, node, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _ref = $f._ref; div = $f.div; doc = $f.doc; fragment = $f.fragment; html = $f.html; node = $f.node; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, div, fragment, html, nodes;
 		panicBrowserDetect();
-		_r$1 = dom.GetWindow().Document(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		doc = _r$1;
-		_r$2 = doc.CreateElement("div"); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		div = _r$2;
-		$r = div.SetInnerHTML(html); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_r$3 = doc.CreateDocumentFragment(); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		fragment = _r$3;
-		_r$4 = div.ChildNodes(); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		_ref = _r$4;
-		_i = 0;
-		/* while (true) { */ case 6:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 7; continue; }
-			node = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			$r = fragment.AppendChild(node); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			_i++;
-		/* } */ $s = 6; continue; case 7:
+		div = jsutils.CreateElement("div");
+		jsutils.SetInnerHTML(div, html);
+		fragment = jsutils.CreateDocumentFragment();
+		nodes = jsutils.ChildNodeList(div);
+		jsutils.AppendChild(fragment, nodes);
 		return fragment;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: CreateFragment }; } $f.$ptr = $ptr; $f._i = _i; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f.div = div; $f.doc = doc; $f.fragment = fragment; $f.html = html; $f.node = node; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.CreateFragment = CreateFragment;
 	AddNodeIfNone = function(dest, src) {
-		var $ptr, _arg, _arg$1, _arg$2, _r$1, _r$2, dest, src, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _r$1 = $f._r$1; _r$2 = $f._r$2; dest = $f.dest; src = $f.src; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_arg = dest;
-		_r$1 = dest.ChildNodes(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		_arg$1 = _r$1;
-		_arg$2 = src;
-		_r$2 = AddNodeIfNoneInList(_arg, _arg$1, _arg$2); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		_r$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AddNodeIfNone }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.dest = dest; $f.src = src; $f.$s = $s; $f.$r = $r; return $f;
+		var $ptr, dest, src;
+		AddNodeIfNoneInList(dest, jsutils.ChildNodeList(dest), src);
 	};
 	$pkg.AddNodeIfNone = AddNodeIfNone;
 	AddNodeIfNoneInList = function(dest, against, with$1) {
-		var $ptr, _i, _r$1, _ref, against, dest, no, with$1, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$1 = $f._r$1; _ref = $f._ref; against = $f.against; dest = $f.dest; no = $f.no; with$1 = $f.with$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _i, _ref, against, dest, no, with$1;
 		_ref = against;
 		_i = 0;
-		/* while (true) { */ case 1:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 2; continue; }
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
 			no = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			_r$1 = no.IsEqualNode(with$1); /* */ $s = 5; case 5: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-			/* */ if (_r$1) { $s = 3; continue; }
-			/* */ $s = 4; continue;
-			/* if (_r$1) { */ case 3:
-				$r = dest.ReplaceChild(with$1, no); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			if (jsutils.IsEqualNode(no, with$1)) {
+				jsutils.ReplaceNode(dest, with$1, no);
 				return true;
-			/* } */ case 4:
+			}
 			_i++;
-		/* } */ $s = 1; continue; case 2:
-		$r = dest.AppendChild(with$1); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		}
+		jsutils.AppendChild(dest, new sliceType$3([with$1]));
 		return false;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AddNodeIfNoneInList }; } $f.$ptr = $ptr; $f._i = _i; $f._r$1 = _r$1; $f._ref = _ref; $f.against = against; $f.dest = dest; $f.no = no; $f.with$1 = with$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.AddNodeIfNoneInList = AddNodeIfNoneInList;
-	AddElementIfNoneInList = function(dest, against, with$1) {
-		var $ptr, _i, _r$1, _ref, against, dest, no, with$1, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$1 = $f._r$1; _ref = $f._ref; against = $f.against; dest = $f.dest; no = $f.no; with$1 = $f.with$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_ref = against;
+	Patch = function(fragment, live) {
+		var $ptr, _arg, _arg$1, _arg$2, _arg$3, _entry, _i, _i$1, _keys, _r$1, _r$2, _r$3, _r$4, _ref, _ref$1, _tmp, _tmp$1, _tmp$2, _tmp$3, attrs, children, class$1, fragment, hash, id, key, live, nchildren, no, no$1, node, sel, shadowNodes, tagname, target, uid, value, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _entry = $f._entry; _i = $f._i; _i$1 = $f._i$1; _keys = $f._keys; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _ref = $f._ref; _ref$1 = $f._ref$1; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; attrs = $f.attrs; children = $f.children; class$1 = $f.class$1; fragment = $f.fragment; hash = $f.hash; id = $f.id; key = $f.key; live = $f.live; nchildren = $f.nchildren; no = $f.no; no$1 = $f.no$1; node = $f.node; sel = $f.sel; shadowNodes = $f.shadowNodes; tagname = $f.tagname; target = $f.target; uid = $f.uid; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		if (!!!(live.hasChildNodes())) {
+			jsutils.AppendChild(live, new sliceType$3([fragment]));
+			return;
+		}
+		shadowNodes = jsutils.ChildNodeList(fragment);
+		_ref = shadowNodes;
 		_i = 0;
 		/* while (true) { */ case 1:
 			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 2; continue; }
-			no = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			_r$1 = no.IsEqualNode(with$1); /* */ $s = 5; case 5: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-			/* */ if (_r$1) { $s = 3; continue; }
+			node = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+			/* */ if (node === null || node === undefined) { $s = 3; continue; }
 			/* */ $s = 4; continue;
-			/* if (_r$1) { */ case 3:
-				$r = dest.ReplaceChild(with$1, no); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				return true;
+			/* if (node === null || node === undefined) { */ case 3:
+				_i++;
+				/* continue; */ $s = 1; continue;
 			/* } */ case 4:
+			/* */ if (node.constructor === $global.Text) { $s = 5; continue; }
+			/* */ $s = 6; continue;
+			/* if (node.constructor === $global.Text) { */ case 5:
+				jsutils.AppendChild(live, new sliceType$3([node]));
+				_i++;
+				/* continue patchloop; */ $s = 1; continue s;
+			/* } */ case 6:
+			tagname = jsutils.GetTag(node);
+			_tmp = ""; _tmp$1 = ""; _tmp$2 = ""; _tmp$3 = ""; id = _tmp; hash = _tmp$1; class$1 = _tmp$2; uid = _tmp$3;
+			if (jsutils.HasAttribute(node, "id")) {
+				id = jsutils.GetAttribute(node, "id");
+			}
+			if (jsutils.HasAttribute(node, "class")) {
+				id = jsutils.GetAttribute(node, "class");
+			}
+			if (jsutils.HasAttribute(node, "hash")) {
+				hash = jsutils.GetAttribute(node, "hash");
+			}
+			if (jsutils.HasAttribute(node, "uid")) {
+				uid = jsutils.GetAttribute(node, "uid");
+			}
+			if (allEmpty(new sliceType$1([id, hash, uid]))) {
+				AddNodeIfNone(live, node);
+			}
+			/* */ if (allEmpty(new sliceType$1([hash, uid]))) { $s = 7; continue; }
+			/* */ $s = 8; continue;
+			/* if (allEmpty(new sliceType$1([hash, uid]))) { */ case 7:
+				/* */ if (allEmpty(new sliceType$1([id]))) { $s = 9; continue; }
+				/* */ $s = 10; continue;
+				/* if (allEmpty(new sliceType$1([id]))) { */ case 9:
+					no = jsutils.QuerySelectorAll(live, class$1);
+					if (no.$length <= 0) {
+						jsutils.AppendChild(live, new sliceType$3([node]));
+					} else {
+						AddNodeIfNoneInList(live, no, node);
+					}
+					$s = 11; continue;
+				/* } else { */ case 10:
+					_arg = live;
+					_r$1 = fmt.Sprintf("#%s", new sliceType$4([new $String(id)])); /* */ $s = 12; case 12: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+					_arg$1 = _r$1;
+					_r$2 = jsutils.QuerySelector(_arg, _arg$1); /* */ $s = 13; case 13: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+					no$1 = _r$2;
+					if (no$1 === null || !(no$1 === undefined)) {
+						jsutils.AppendChild(live, new sliceType$3([node]));
+					} else {
+						jsutils.ReplaceNode(live, node, no$1);
+					}
+				/* } */ case 11:
+				_i++;
+				/* continue patchloop; */ $s = 1; continue s;
+			/* } */ case 8:
+			_r$3 = strings.ToLower(tagname); /* */ $s = 14; case 14: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+			_arg$2 = new $String(_r$3);
+			_arg$3 = new $String(uid);
+			_r$4 = fmt.Sprintf("%s[uid='%s']", new sliceType$4([_arg$2, _arg$3])); /* */ $s = 15; case 15: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+			sel = _r$4;
+			target = jsutils.QuerySelector(live, sel);
+			/* */ if (target === null || target === undefined) { $s = 16; continue; }
+			/* */ $s = 17; continue;
+			/* if (target === null || target === undefined) { */ case 16:
+				jsutils.AppendChild(live, new sliceType$3([node]));
+				_i++;
+				/* continue patchloop; */ $s = 1; continue s;
+			/* } */ case 17:
+			/* */ if (jsutils.HasAttribute(node, "haikuRemoved")) { $s = 18; continue; }
+			/* */ $s = 19; continue;
+			/* if (jsutils.HasAttribute(node, "haikuRemoved")) { */ case 18:
+				$r = log.Printf("removed node: %+s", new sliceType$4([new $jsObjectPtr(node)])); /* */ $s = 20; case 20: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				jsutils.RemoveChild(target, new sliceType$3([target]));
+				_i++;
+				/* continue patchloop; */ $s = 1; continue s;
+			/* } */ case 19:
+			nchildren = jsutils.ChildNodeList(node);
+			/* */ if (nchildren.$length <= 0) { $s = 21; continue; }
+			/* */ $s = 22; continue;
+			/* if (nchildren.$length <= 0) { */ case 21:
+				jsutils.ReplaceNode(live, node, target);
+				_i++;
+				/* continue patchloop; */ $s = 1; continue s;
+			/* } */ case 22:
+			/* */ if (jsutils.GetAttribute(target, "hash") === hash) { $s = 23; continue; }
+			/* */ $s = 24; continue;
+			/* if (jsutils.GetAttribute(target, "hash") === hash) { */ case 23:
+				_i++;
+				/* continue patchloop; */ $s = 1; continue s;
+			/* } */ case 24:
+			attrs = jsutils.Attributes(node);
+			_ref$1 = attrs;
+			_i$1 = 0;
+			_keys = $keys(_ref$1);
+			while (true) {
+				if (!(_i$1 < _keys.length)) { break; }
+				_entry = _ref$1[_keys[_i$1]];
+				if (_entry === undefined) {
+					_i$1++;
+					continue;
+				}
+				key = _entry.k;
+				value = _entry.v;
+				jsutils.SetAttribute(target, key, value);
+				_i$1++;
+			}
+			children = jsutils.ChildNodeList(target);
+			/* */ if (children.$length <= 1) { $s = 25; continue; }
+			/* */ $s = 26; continue;
+			/* if (children.$length <= 1) { */ case 25:
+				jsutils.SetInnerHTML(target, "");
+				jsutils.AppendChild(target, nchildren);
+				_i++;
+				/* continue patchloop; */ $s = 1; continue s;
+			/* } */ case 26:
+			$r = Patch(node, target); /* */ $s = 27; case 27: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			_i++;
 		/* } */ $s = 1; continue; case 2:
-		$r = dest.AppendChild(with$1); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		return false;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AddElementIfNoneInList }; } $f.$ptr = $ptr; $f._i = _i; $f._r$1 = _r$1; $f._ref = _ref; $f.against = against; $f.dest = dest; $f.no = no; $f.with$1 = with$1; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.AddElementIfNoneInList = AddElementIfNoneInList;
-	Patch = function(fragment, live) {
-		var $ptr, fragment, live, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; fragment = $f.fragment; live = $f.live; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = PatchTree(fragment, live, 0); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Patch }; } $f.$ptr = $ptr; $f.fragment = fragment; $f.live = live; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Patch }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._entry = _entry; $f._i = _i; $f._i$1 = _i$1; $f._keys = _keys; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f.attrs = attrs; $f.children = children; $f.class$1 = class$1; $f.fragment = fragment; $f.hash = hash; $f.id = id; $f.key = key; $f.live = live; $f.nchildren = nchildren; $f.no = no; $f.no$1 = no$1; $f.node = node; $f.sel = sel; $f.shadowNodes = shadowNodes; $f.tagname = tagname; $f.target = target; $f.uid = uid; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.Patch = Patch;
-	PatchTree = function(fragment, live, level) {
-		var $ptr, _arg, _arg$1, _entry, _i, _i$1, _i$2, _keys, _r$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$19, _r$2, _r$20, _r$21, _r$22, _r$23, _r$24, _r$25, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _ref$1, _ref$2, _ref$3, _tmp, _tmp$1, _tmp$2, _tmp$3, attrs, class$1, elem, enode, fragment, hash, id, key, level, live, no, no$1, node, sel, shadowNodes, tagname, target, uid, value, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _entry = $f._entry; _i = $f._i; _i$1 = $f._i$1; _i$2 = $f._i$2; _keys = $f._keys; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$2 = $f._r$2; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$24 = $f._r$24; _r$25 = $f._r$25; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; _ref$3 = $f._ref$3; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; attrs = $f.attrs; class$1 = $f.class$1; elem = $f.elem; enode = $f.enode; fragment = $f.fragment; hash = $f.hash; id = $f.id; key = $f.key; level = $f.level; live = $f.live; no = $f.no; no$1 = $f.no$1; node = $f.node; sel = $f.sel; shadowNodes = $f.shadowNodes; tagname = $f.tagname; target = $f.target; uid = $f.uid; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_r$1 = live.HasChildNodes(); /* */ $s = 3; case 3: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		/* */ if (!_r$1) { $s = 1; continue; }
-		/* */ $s = 2; continue;
-		/* if (!_r$1) { */ case 1:
-			$r = live.AppendChild(fragment); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			return;
-		/* } */ case 2:
-		_r$2 = fragment.ChildNodes(); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		shadowNodes = _r$2;
-		_ref = shadowNodes;
-		_i = 0;
-		/* while (true) { */ case 6:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 7; continue; }
-			node = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			_ref$1 = node;
-			/* */ if ($assertType(_ref$1, dom.Element, true)[1]) { $s = 8; continue; }
-			/* */ $s = 9; continue;
-			/* if ($assertType(_ref$1, dom.Element, true)[1]) { */ case 8:
-				elem = $assertType(node, dom.Element);
-				_r$3 = elem.TagName(); /* */ $s = 11; case 11: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-				tagname = _r$3;
-				_tmp = ""; _tmp$1 = ""; _tmp$2 = ""; _tmp$3 = ""; id = _tmp; hash = _tmp$1; class$1 = _tmp$2; uid = _tmp$3;
-				_r$4 = elem.HasAttribute("id"); /* */ $s = 14; case 14: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-				/* */ if (_r$4) { $s = 12; continue; }
-				/* */ $s = 13; continue;
-				/* if (_r$4) { */ case 12:
-					_r$5 = elem.GetAttribute("id"); /* */ $s = 15; case 15: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-					id = _r$5;
-				/* } */ case 13:
-				_r$6 = elem.HasAttribute("class"); /* */ $s = 18; case 18: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-				/* */ if (_r$6) { $s = 16; continue; }
-				/* */ $s = 17; continue;
-				/* if (_r$6) { */ case 16:
-					_r$7 = elem.GetAttribute("class"); /* */ $s = 19; case 19: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-					id = _r$7;
-				/* } */ case 17:
-				_r$8 = elem.HasAttribute("hash"); /* */ $s = 22; case 22: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
-				/* */ if (_r$8) { $s = 20; continue; }
-				/* */ $s = 21; continue;
-				/* if (_r$8) { */ case 20:
-					_r$9 = elem.GetAttribute("hash"); /* */ $s = 23; case 23: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
-					hash = _r$9;
-				/* } */ case 21:
-				_r$10 = elem.HasAttribute("uid"); /* */ $s = 26; case 26: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
-				/* */ if (_r$10) { $s = 24; continue; }
-				/* */ $s = 25; continue;
-				/* if (_r$10) { */ case 24:
-					_r$11 = elem.GetAttribute("uid"); /* */ $s = 27; case 27: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
-					uid = _r$11;
-				/* } */ case 25:
-				/* */ if (allEmpty(new sliceType$1([id, hash, uid]))) { $s = 28; continue; }
-				/* */ $s = 29; continue;
-				/* if (allEmpty(new sliceType$1([id, hash, uid]))) { */ case 28:
-					$r = AddNodeIfNone(live, node); /* */ $s = 30; case 30: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				/* } */ case 29:
-				/* */ if (allEmpty(new sliceType$1([hash, uid]))) { $s = 31; continue; }
-				/* */ $s = 32; continue;
-				/* if (allEmpty(new sliceType$1([hash, uid]))) { */ case 31:
-					/* */ if (allEmpty(new sliceType$1([id]))) { $s = 33; continue; }
-					/* */ $s = 34; continue;
-					/* if (allEmpty(new sliceType$1([id]))) { */ case 33:
-						_r$12 = live.QuerySelectorAll(class$1); /* */ $s = 36; case 36: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
-						no = _r$12;
-						/* */ if (no.$length <= 0) { $s = 37; continue; }
-						/* */ $s = 38; continue;
-						/* if (no.$length <= 0) { */ case 37:
-							$r = live.AppendChild(node); /* */ $s = 40; case 40: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-							$s = 39; continue;
-						/* } else { */ case 38:
-							_r$13 = AddElementIfNoneInList(live, no, node); /* */ $s = 41; case 41: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
-							_r$13;
-						/* } */ case 39:
-						$s = 35; continue;
-					/* } else { */ case 34:
-						_r$14 = fmt.Sprintf("#%s", new sliceType$3([new $String(id)])); /* */ $s = 42; case 42: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
-						_r$15 = live.QuerySelector(_r$14); /* */ $s = 43; case 43: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
-						no$1 = _r$15;
-						/* */ if ($interfaceIsEqual(no$1, $ifaceNil)) { $s = 44; continue; }
-						/* */ $s = 45; continue;
-						/* if ($interfaceIsEqual(no$1, $ifaceNil)) { */ case 44:
-							$r = live.AppendChild(node); /* */ $s = 47; case 47: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-							$s = 46; continue;
-						/* } else { */ case 45:
-							$r = live.ReplaceChild(node, no$1); /* */ $s = 48; case 48: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-						/* } */ case 46:
-					/* } */ case 35:
-					_i++;
-					/* continue patchloop; */ $s = 6; continue s;
-				/* } */ case 32:
-				_r$16 = strings.ToLower(tagname); /* */ $s = 49; case 49: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
-				_arg = new $String(_r$16);
-				_arg$1 = new $String(uid);
-				_r$17 = fmt.Sprintf("%s[uid='%s']", new sliceType$3([_arg, _arg$1])); /* */ $s = 50; case 50: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
-				sel = _r$17;
-				_r$18 = live.QuerySelector(sel); /* */ $s = 51; case 51: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
-				target = _r$18;
-				/* */ if ($interfaceIsEqual(target, $ifaceNil)) { $s = 52; continue; }
-				/* */ $s = 53; continue;
-				/* if ($interfaceIsEqual(target, $ifaceNil)) { */ case 52:
-					$r = live.AppendChild(node); /* */ $s = 54; case 54: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-					_i++;
-					/* continue patchloop; */ $s = 6; continue s;
-				/* } */ case 53:
-				_r$19 = elem.HasAttribute("haikuRemoved"); /* */ $s = 57; case 57: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
-				/* */ if (_r$19) { $s = 55; continue; }
-				/* */ $s = 56; continue;
-				/* if (_r$19) { */ case 55:
-					_r$20 = target.ParentNode(); /* */ $s = 58; case 58: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
-					$r = _r$20.RemoveChild(target); /* */ $s = 59; case 59: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-					_i++;
-					/* continue patchloop; */ $s = 6; continue s;
-				/* } */ case 56:
-				_r$21 = elem.ChildNodes(); /* */ $s = 62; case 62: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
-				/* */ if (_r$21.$length <= 0) { $s = 60; continue; }
-				/* */ $s = 61; continue;
-				/* if (_r$21.$length <= 0) { */ case 60:
-					$r = live.ReplaceChild(node, target); /* */ $s = 63; case 63: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-					_i++;
-					/* continue patchloop; */ $s = 6; continue s;
-				/* } */ case 61:
-				_r$22 = target.GetAttribute("hash"); /* */ $s = 66; case 66: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
-				/* */ if (_r$22 === hash) { $s = 64; continue; }
-				/* */ $s = 65; continue;
-				/* if (_r$22 === hash) { */ case 64:
-					_i++;
-					/* continue patchloop; */ $s = 6; continue s;
-				/* } */ case 65:
-				_r$23 = elem.Attributes(); /* */ $s = 67; case 67: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
-				attrs = _r$23;
-				_ref$2 = attrs;
-				_i$1 = 0;
-				_keys = $keys(_ref$2);
-				/* while (true) { */ case 68:
-					/* if (!(_i$1 < _keys.length)) { break; } */ if(!(_i$1 < _keys.length)) { $s = 69; continue; }
-					_entry = _ref$2[_keys[_i$1]];
-					if (_entry === undefined) {
-						_i$1++;
-						/* continue; */ $s = 68; continue;
-					}
-					key = _entry.k;
-					value = _entry.v;
-					$r = target.SetAttribute(key, value); /* */ $s = 70; case 70: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-					_i$1++;
-				/* } */ $s = 68; continue; case 69:
-				_r$24 = target.ChildNodes(); /* */ $s = 73; case 73: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
-				/* */ if (_r$24.$length <= 1) { $s = 71; continue; }
-				/* */ $s = 72; continue;
-				/* if (_r$24.$length <= 1) { */ case 71:
-					$r = target.SetInnerHTML(""); /* */ $s = 74; case 74: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-					_r$25 = elem.ChildNodes(); /* */ $s = 75; case 75: if($c) { $c = false; _r$25 = _r$25.$blk(); } if (_r$25 && _r$25.$blk !== undefined) { break s; }
-					_ref$3 = _r$25;
-					_i$2 = 0;
-					/* while (true) { */ case 76:
-						/* if (!(_i$2 < _ref$3.$length)) { break; } */ if(!(_i$2 < _ref$3.$length)) { $s = 77; continue; }
-						enode = ((_i$2 < 0 || _i$2 >= _ref$3.$length) ? $throwRuntimeError("index out of range") : _ref$3.$array[_ref$3.$offset + _i$2]);
-						$r = target.AppendChild(enode); /* */ $s = 78; case 78: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-						_i$2++;
-					/* } */ $s = 76; continue; case 77:
-					_i++;
-					/* continue patchloop; */ $s = 6; continue s;
-				/* } */ case 72:
-				$r = PatchTree(elem, target, 0); /* */ $s = 79; case 79: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$s = 10; continue;
-			/* } else { */ case 9:
-				$r = live.AppendChild(node); /* */ $s = 80; case 80: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* } */ case 10:
-			_i++;
-		/* } */ $s = 6; continue; case 7:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: PatchTree }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._entry = _entry; $f._i = _i; $f._i$1 = _i$1; $f._i$2 = _i$2; $f._keys = _keys; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f.attrs = attrs; $f.class$1 = class$1; $f.elem = elem; $f.enode = enode; $f.fragment = fragment; $f.hash = hash; $f.id = id; $f.key = key; $f.level = level; $f.live = live; $f.no = no; $f.no$1 = no$1; $f.node = node; $f.sel = sel; $f.shadowNodes = shadowNodes; $f.tagname = tagname; $f.target = target; $f.uid = uid; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.PatchTree = PatchTree;
 	allEmpty = function(s) {
 		var $ptr, _i, _ref, s, so, state;
 		state = true;
@@ -39780,7 +35544,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		var $ptr, _r$1, p, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; p = $f.p; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
-		_r$1 = fmt.Sprintf("%s%s", new sliceType$3([new $String(p.Path), new $String(p.Hash)])); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r$1 = fmt.Sprintf("%s%s", new sliceType$4([new $String(p.Path), new $String(p.Hash)])); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: PathSpec.ptr.prototype.String }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.p = p; $f.$s = $s; $f.$r = $r; return $f;
 	};
@@ -39868,7 +35632,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		var $ptr, path;
 		panicBrowserDetect();
 		if (!BrowserSupportsPushState()) {
-			return [ptrType$3.nil, $pkg.ErrNotSupported];
+			return [ptrType$4.nil, $pkg.ErrNotSupported];
 		}
 		path = Path();
 		$global.onpopstate = $externalize((function $b() {
@@ -39919,19 +35683,17 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	};
 	$pkg.NewPage = NewPage;
 	Pages.ptr.prototype.Mount = function(selector, addr, v) {
-		var $ptr, _r$1, _r$2, addr, n, p, selector, v, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; addr = $f.addr; n = $f.n; p = $f.p; selector = $f.selector; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, addr, n, p, selector, v, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; addr = $f.addr; n = $f.n; p = $f.p; selector = $f.selector; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
-		_r$1 = dom.GetWindow().Document(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		_r$2 = _r$1.QuerySelector(selector); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		n = _r$2;
-		if ($interfaceIsEqual(n, $ifaceNil)) {
+		n = jsutils.GetDocument().querySelector($externalize(selector, $String));
+		if (n === null || n === undefined) {
 			return $pkg.ErrBadSelector;
 		}
-		$r = p.AddView(addr, v); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = v.Mount(n); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = p.AddView(addr, v); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = v.Mount(n); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		return $ifaceNil;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Pages.ptr.prototype.Mount }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.addr = addr; $f.n = n; $f.p = p; $f.selector = selector; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Pages.ptr.prototype.Mount }; } $f.$ptr = $ptr; $f.addr = addr; $f.n = n; $f.p = p; $f.selector = selector; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Pages.prototype.Mount = function(selector, addr, v) { return this.$val.Mount(selector, addr, v); };
 	Pages.ptr.prototype.AddView = function(addr, v) {
@@ -39986,7 +35748,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	$pkg.BrowserSupportsPushState = BrowserSupportsPushState;
 	NewState = function() {
 		var $ptr, ns;
-		ns = new State.ptr(new $Int64(0, 0), $throwNilPointerError, $throwNilPointerError, $throwNilPointerError, ptrType$4.nil, new sync.Mutex.ptr(0, 0), new sync.Mutex.ptr(0, 0), new sync.Mutex.ptr(0, 0));
+		ns = new State.ptr(new $Int64(0, 0), $throwNilPointerError, $throwNilPointerError, $throwNilPointerError, ptrType$5.nil, new sync.Mutex.ptr(0, 0), new sync.Mutex.ptr(0, 0), new sync.Mutex.ptr(0, 0));
 		ns.engine = BuildStateEngine(ns);
 		return ns;
 	};
@@ -39994,7 +35756,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	State.ptr.prototype.Active = function() {
 		var $ptr, s, x;
 		s = this;
-		return (x = atomic.LoadInt64((s.$ptr_active || (s.$ptr_active = new ptrType$6(function() { return this.$target.active; }, function($v) { this.$target.active = $v; }, s)))), (x.$high === 0 && x.$low === 1));
+		return (x = atomic.LoadInt64((s.$ptr_active || (s.$ptr_active = new ptrType$7(function() { return this.$target.active; }, function($v) { this.$target.active = $v; }, s)))), (x.$high === 0 && x.$low === 1));
 	};
 	State.prototype.Active = function() { return this.$val.Active(); };
 	State.ptr.prototype.Engine = function() {
@@ -40043,7 +35805,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		if ((x = s.active, (x.$high > 0 || (x.$high === 0 && x.$low > 1)))) {
 			return;
 		}
-		atomic.StoreInt64((s.$ptr_active || (s.$ptr_active = new ptrType$6(function() { return this.$target.active; }, function($v) { this.$target.active = $v; }, s))), new $Int64(0, 1));
+		atomic.StoreInt64((s.$ptr_active || (s.$ptr_active = new ptrType$7(function() { return this.$target.active; }, function($v) { this.$target.active = $v; }, s))), new $Int64(0, 1));
 		_r$1 = s.engine.diffOnlySubs(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		subs = _r$1;
 		_ref = subs;
@@ -40071,7 +35833,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		if ((x = s.active, (x.$high < 0 || (x.$high === 0 && x.$low < 1)))) {
 			return;
 		}
-		atomic.StoreInt64((s.$ptr_active || (s.$ptr_active = new ptrType$6(function() { return this.$target.active; }, function($v) { this.$target.active = $v; }, s))), new $Int64(0, 0));
+		atomic.StoreInt64((s.$ptr_active || (s.$ptr_active = new ptrType$7(function() { return this.$target.active; }, function($v) { this.$target.active = $v; }, s))), new $Int64(0, 0));
 		$r = s.do$7.Lock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ if (!(s.deactivator === $throwNilPointerError)) { $s = 2; continue; }
 		/* */ $s = 3; continue;
@@ -40352,7 +36114,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; se = $f.se; subs = $f.subs; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		subs = [subs];
 		se = this;
-		subs[0] = sliceType$4.nil;
+		subs[0] = sliceType$5.nil;
 		$r = se.eachState((function(subs) { return function(so, addr, param) {
 			var $ptr, addr, param, so;
 			if (addr === ".") {
@@ -40369,7 +36131,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		nosubs = [nosubs];
 		subs = [subs];
 		se = this;
-		_tmp = sliceType$4.nil; _tmp$1 = sliceType$4.nil; nosubs[0] = _tmp; subs[0] = _tmp$1;
+		_tmp = sliceType$5.nil; _tmp$1 = sliceType$5.nil; nosubs[0] = _tmp; subs[0] = _tmp$1;
 		$r = se.eachState((function(nosubs, subs) { return function(so, addr, param) {
 			var $ptr, addr, param, so;
 			if (addr === ".") {
@@ -40426,20 +36188,20 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		var $ptr, _r$1, _r$2, _r$3, fx, vm, writer, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; fx = $f.fx; vm = $f.vm; writer = $f.writer; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		vm = [vm];
-		vm[0] = ptrType$7.nil;
-		vm[0] = new View.ptr(NewState(), flux.FlatAlways(vm[0]), new HideView.ptr(), new ShowView.ptr(), $ifaceNil, writer, events.NewEventManager(), fx, $ifaceNil, $ifaceNil);
+		vm[0] = ptrType$8.nil;
+		vm[0] = new View.ptr(NewState(), flux.FlatAlways(vm[0]), new HideView.ptr(), new ShowView.ptr(), $ifaceNil, writer, events.NewEventManager(), fx, null, $ifaceNil);
 		_r$1 = vm[0].Reactor.React((function(vm) { return function $b(r, param, param$1) {
-			var $ptr, _r$1, _r$2, html, param, param$1, r, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; html = $f.html; param = $f.param; param$1 = $f.param$1; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			/* */ if (!($interfaceIsEqual(vm[0].dom, $ifaceNil))) { $s = 1; continue; }
+			var $ptr, _r$1, html, param, param$1, r, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; html = $f.html; param = $f.param; param$1 = $f.param$1; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			/* */ if (!(vm[0].dom === null)) { $s = 1; continue; }
 			/* */ $s = 2; continue;
-			/* if (!($interfaceIsEqual(vm[0].dom, $ifaceNil))) { */ case 1:
+			/* if (!(vm[0].dom === null)) { */ case 1:
 				_r$1 = vm[0].RenderHTML(new sliceType$1([])); /* */ $s = 3; case 3: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 				html = _r$1;
-				_r$2 = CreateFragment(html); /* */ $s = 4; case 4: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-				$r = Patch(_r$2, vm[0].dom); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$r = log.Printf("will render markup: %s \n-------------------", new sliceType$4([new template.HTML(html)])); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$r = Patch(CreateFragment(html), vm[0].dom); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			/* } */ case 2:
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.html = html; $f.param = param; $f.param$1 = param$1; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.html = html; $f.param = param; $f.param$1 = param$1; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(vm), true); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$1;
 		_r$2 = vm[0].States.UseActivator((function(vm) { return function() {
@@ -40456,16 +36218,18 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: MakeView }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.fx = fx; $f.vm = vm; $f.writer = writer; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.MakeView = MakeView;
-	View.ptr.prototype.Mount = function(dom$1) {
-		var $ptr, dom$1, v, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; dom$1 = $f.dom$1; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+	View.ptr.prototype.Mount = function(dom) {
+		var $ptr, _r$1, dom, v, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; dom = $f.dom; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
-		v.dom = dom$1;
-		$r = v.events.LoadDOM(dom$1); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = v.Reactor.Send(new $Bool(true)); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: View.ptr.prototype.Mount }; } $f.$ptr = $ptr; $f.dom$1 = dom$1; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		v.dom = dom;
+		$r = v.events.OffloadDOM(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$1 = v.events.LoadDOM(dom); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r$1;
+		$r = v.Reactor.Send(new $Bool(true)); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: View.ptr.prototype.Mount }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.dom = dom; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	View.prototype.Mount = function(dom$1) { return this.$val.Mount(dom$1); };
+	View.prototype.Mount = function(dom) { return this.$val.Mount(dom); };
 	View.ptr.prototype.Show = function() {
 		var $ptr, v;
 		v = this;
@@ -40491,8 +36255,8 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	};
 	View.prototype.Events = function() { return this.$val.Events(); };
 	View.ptr.prototype.Render = function(m) {
-		var $ptr, _r$1, _r$2, _r$3, _r$4, _r$5, dom$1, m, v, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; dom$1 = $f.dom$1; m = $f.m; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, dom, m, v, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; dom = $f.dom; m = $f.m; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
 		if (m.$length <= 0) {
 			m = new sliceType$1(["."]);
@@ -40501,22 +36265,24 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		_r$2 = _r$1.All((0 >= m.$length ? $throwRuntimeError("index out of range") : m.$array[m.$offset + 0])); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$2;
 		_r$3 = v.fx(); /* */ $s = 3; case 3: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		dom$1 = _r$3;
-		/* */ if ($interfaceIsEqual(dom$1, $ifaceNil)) { $s = 4; continue; }
+		dom = _r$3;
+		/* */ if ($interfaceIsEqual(dom, $ifaceNil)) { $s = 4; continue; }
 		/* */ $s = 5; continue;
-		/* if ($interfaceIsEqual(dom$1, $ifaceNil)) { */ case 4:
-			_r$4 = elems.Div(new sliceType$5([])); /* */ $s = 6; case 6: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		/* if ($interfaceIsEqual(dom, $ifaceNil)) { */ case 4:
+			_r$4 = elems.Div(new sliceType$6([])); /* */ $s = 6; case 6: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 			return _r$4;
 		/* } */ case 5:
 		/* */ if (!($interfaceIsEqual(v.liveMarkup, $ifaceNil))) { $s = 7; continue; }
 		/* */ $s = 8; continue;
 		/* if (!($interfaceIsEqual(v.liveMarkup, $ifaceNil))) { */ case 7:
-			_r$5 = dom$1.Reconcile(v.liveMarkup); /* */ $s = 9; case 9: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+			_r$5 = dom.Reconcile(v.liveMarkup); /* */ $s = 9; case 9: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 			_r$5;
 		/* } */ case 8:
-		v.liveMarkup = dom$1;
-		return dom$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: View.ptr.prototype.Render }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f.dom$1 = dom$1; $f.m = m; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		_r$6 = dom.UseEventManager(v.events); /* */ $s = 10; case 10: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		_r$6;
+		v.liveMarkup = dom;
+		return dom;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: View.ptr.prototype.Render }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f.dom = dom; $f.m = m; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	View.prototype.Render = function(m) { return this.$val.Render(m); };
 	View.ptr.prototype.RenderHTML = function(m) {
@@ -40530,30 +36296,30 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: View.ptr.prototype.RenderHTML }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple = _tuple; $f.m = m; $f.ma = ma; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	View.prototype.RenderHTML = function(m) { return this.$val.RenderHTML(m); };
-	ptrType$10.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}];
-	ptrType$3.methods = [{prop: "Follow", name: "Follow", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "FollowSpec", name: "FollowSpec", pkg: "", typ: $funcType([PathSpec], [], false)}, {prop: "NotifyPage", name: "NotifyPage", pkg: "", typ: $funcType([ptrType$11], [], false)}, {prop: "NotifyPartialPage", name: "NotifyPartialPage", pkg: "", typ: $funcType([ptrType$11], [], false)}];
-	ptrType$5.methods = [{prop: "Go", name: "Go", pkg: "", typ: $funcType([$String], [], false)}];
-	ptrType$11.methods = [{prop: "Mount", name: "Mount", pkg: "", typ: $funcType([$String, $String, Views], [$error], false)}, {prop: "AddView", name: "AddView", pkg: "", typ: $funcType([$String, Views], [], false)}, {prop: "Address", name: "Address", pkg: "", typ: $funcType([], [$String, $String], false)}];
-	ptrType$12.methods = [{prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}];
-	ptrType$4.methods = [{prop: "AddState", name: "AddState", pkg: "", typ: $funcType([$String], [States], false)}, {prop: "UseState", name: "UseState", pkg: "", typ: $funcType([$String, States], [States], false)}, {prop: "ShallowState", name: "ShallowState", pkg: "", typ: $funcType([], [States], false)}, {prop: "State", name: "State", pkg: "", typ: $funcType([], [States], false)}, {prop: "Partial", name: "Partial", pkg: "", typ: $funcType([$String], [$error], false)}, {prop: "All", name: "All", pkg: "", typ: $funcType([$String], [$error], false)}, {prop: "DeactivateAll", name: "DeactivateAll", pkg: "", typ: $funcType([], [], false)}, {prop: "eachState", name: "eachState", pkg: "github.com/influx6/haiku/views", typ: $funcType([funcType$1], [], false)}, {prop: "getAddr", name: "getAddr", pkg: "github.com/influx6/haiku/views", typ: $funcType([States], [$String], false)}, {prop: "get", name: "get", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String], [States], false)}, {prop: "add", name: "add", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, States], [], false)}, {prop: "trajectory", name: "trajectory", pkg: "github.com/influx6/haiku/views", typ: $funcType([sliceType$1, $Bool], [$error], false)}, {prop: "prepare", name: "prepare", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String], [sliceType$1, $error], false)}, {prop: "diffOnlySubs", name: "diffOnlySubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$4], false)}, {prop: "diffOnlyNotSubs", name: "diffOnlyNotSubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$4], false)}, {prop: "diffSubs", name: "diffSubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$4, sliceType$4], false)}];
-	ptrType$13.methods = [{prop: "Render", name: "Render", pkg: "", typ: $funcType([trees.Markup], [], false)}];
+	ptrType$11.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}];
+	ptrType$4.methods = [{prop: "Follow", name: "Follow", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "FollowSpec", name: "FollowSpec", pkg: "", typ: $funcType([PathSpec], [], false)}, {prop: "NotifyPage", name: "NotifyPage", pkg: "", typ: $funcType([ptrType$12], [], false)}, {prop: "NotifyPartialPage", name: "NotifyPartialPage", pkg: "", typ: $funcType([ptrType$12], [], false)}];
+	ptrType$6.methods = [{prop: "Go", name: "Go", pkg: "", typ: $funcType([$String], [], false)}];
+	ptrType$12.methods = [{prop: "Mount", name: "Mount", pkg: "", typ: $funcType([$String, $String, Views], [$error], false)}, {prop: "AddView", name: "AddView", pkg: "", typ: $funcType([$String, Views], [], false)}, {prop: "Address", name: "Address", pkg: "", typ: $funcType([], [$String, $String], false)}];
+	ptrType$13.methods = [{prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}];
+	ptrType$5.methods = [{prop: "AddState", name: "AddState", pkg: "", typ: $funcType([$String], [States], false)}, {prop: "UseState", name: "UseState", pkg: "", typ: $funcType([$String, States], [States], false)}, {prop: "ShallowState", name: "ShallowState", pkg: "", typ: $funcType([], [States], false)}, {prop: "State", name: "State", pkg: "", typ: $funcType([], [States], false)}, {prop: "Partial", name: "Partial", pkg: "", typ: $funcType([$String], [$error], false)}, {prop: "All", name: "All", pkg: "", typ: $funcType([$String], [$error], false)}, {prop: "DeactivateAll", name: "DeactivateAll", pkg: "", typ: $funcType([], [], false)}, {prop: "eachState", name: "eachState", pkg: "github.com/influx6/haiku/views", typ: $funcType([funcType$1], [], false)}, {prop: "getAddr", name: "getAddr", pkg: "github.com/influx6/haiku/views", typ: $funcType([States], [$String], false)}, {prop: "get", name: "get", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String], [States], false)}, {prop: "add", name: "add", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, States], [], false)}, {prop: "trajectory", name: "trajectory", pkg: "github.com/influx6/haiku/views", typ: $funcType([sliceType$1, $Bool], [$error], false)}, {prop: "prepare", name: "prepare", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String], [sliceType$1, $error], false)}, {prop: "diffOnlySubs", name: "diffOnlySubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$5], false)}, {prop: "diffOnlyNotSubs", name: "diffOnlyNotSubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$5], false)}, {prop: "diffSubs", name: "diffSubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$5, sliceType$5], false)}];
 	ptrType$14.methods = [{prop: "Render", name: "Render", pkg: "", typ: $funcType([trees.Markup], [], false)}];
-	ptrType$7.methods = [{prop: "Mount", name: "Mount", pkg: "", typ: $funcType([dom.Element], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$8], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [template.HTML], true)}];
+	ptrType$15.methods = [{prop: "Render", name: "Render", pkg: "", typ: $funcType([trees.Markup], [], false)}];
+	ptrType$8.methods = [{prop: "Mount", name: "Mount", pkg: "", typ: $funcType([ptrType$3], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$9], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [template.HTML], true)}];
 	PathSpec.init([{prop: "Hash", name: "Hash", pkg: "", typ: $String, tag: ""}, {prop: "Path", name: "Path", pkg: "", typ: $String, tag: ""}, {prop: "Sequence", name: "Sequence", pkg: "", typ: $String, tag: ""}]);
 	PathObserver.init([{prop: "Reactor", name: "", pkg: "", typ: flux.Reactor, tag: ""}, {prop: "usingHash", name: "usingHash", pkg: "github.com/influx6/haiku/views", typ: $Bool, tag: ""}]);
-	HistoryProvider.init([{prop: "PathObserver", name: "", pkg: "", typ: ptrType$3, tag: ""}]);
-	Pages.init([{prop: "StateEngine", name: "", pkg: "", typ: ptrType$4, tag: ""}, {prop: "HistoryProvider", name: "", pkg: "", typ: ptrType$5, tag: ""}]);
+	HistoryProvider.init([{prop: "PathObserver", name: "", pkg: "", typ: ptrType$4, tag: ""}]);
+	Pages.init([{prop: "StateEngine", name: "", pkg: "", typ: ptrType$5, tag: ""}, {prop: "HistoryProvider", name: "", pkg: "", typ: ptrType$6, tag: ""}]);
 	StateResponse.init([], [], false);
 	StateValidator.init([$String, $String], [$Bool], false);
-	States.init([{prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}]);
-	State.init([{prop: "active", name: "active", pkg: "github.com/influx6/haiku/views", typ: $Int64, tag: ""}, {prop: "activator", name: "activator", pkg: "github.com/influx6/haiku/views", typ: StateResponse, tag: ""}, {prop: "deactivator", name: "deactivator", pkg: "github.com/influx6/haiku/views", typ: StateResponse, tag: ""}, {prop: "optionalValidator", name: "optionalValidator", pkg: "github.com/influx6/haiku/views", typ: StateValidator, tag: ""}, {prop: "engine", name: "engine", pkg: "github.com/influx6/haiku/views", typ: ptrType$4, tag: ""}, {prop: "vo", name: "vo", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}, {prop: "ro", name: "ro", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}, {prop: "do$7", name: "do", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}]);
+	States.init([{prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}]);
+	State.init([{prop: "active", name: "active", pkg: "github.com/influx6/haiku/views", typ: $Int64, tag: ""}, {prop: "activator", name: "activator", pkg: "github.com/influx6/haiku/views", typ: StateResponse, tag: ""}, {prop: "deactivator", name: "deactivator", pkg: "github.com/influx6/haiku/views", typ: StateResponse, tag: ""}, {prop: "optionalValidator", name: "optionalValidator", pkg: "github.com/influx6/haiku/views", typ: StateValidator, tag: ""}, {prop: "engine", name: "engine", pkg: "github.com/influx6/haiku/views", typ: ptrType$5, tag: ""}, {prop: "vo", name: "vo", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}, {prop: "ro", name: "ro", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}, {prop: "do$7", name: "do", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}]);
 	StateEngine.init([{prop: "rw", name: "rw", pkg: "github.com/influx6/haiku/views", typ: sync.RWMutex, tag: ""}, {prop: "states", name: "states", pkg: "github.com/influx6/haiku/views", typ: mapType, tag: ""}, {prop: "owner", name: "owner", pkg: "github.com/influx6/haiku/views", typ: States, tag: ""}, {prop: "curr", name: "curr", pkg: "github.com/influx6/haiku/views", typ: States, tag: ""}]);
-	Views.init([{prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([flux.Reactor, $Bool], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [$error], false)}, {prop: "CloseNotify", name: "CloseNotify", pkg: "", typ: $funcType([], [chanType], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$4], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$8], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Mount", name: "Mount", pkg: "", typ: $funcType([dom.Element], [], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "React", name: "React", pkg: "", typ: $funcType([flux.SignalMuxHandler, $Bool], [flux.Reactor], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [template.HTML], true)}, {prop: "Reply", name: "Reply", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "ReplyError", name: "ReplyError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Send", name: "Send", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "SendError", name: "SendError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseRoot", name: "UseRoot", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}]);
+	Views.init([{prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([flux.Reactor, $Bool], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [$error], false)}, {prop: "CloseNotify", name: "CloseNotify", pkg: "", typ: $funcType([], [chanType], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$9], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Mount", name: "Mount", pkg: "", typ: $funcType([ptrType$3], [], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "React", name: "React", pkg: "", typ: $funcType([flux.SignalMuxHandler, $Bool], [flux.Reactor], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [template.HTML], true)}, {prop: "Reply", name: "Reply", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "ReplyError", name: "ReplyError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Send", name: "Send", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "SendError", name: "SendError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseRoot", name: "UseRoot", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}]);
 	ViewStates.init([{prop: "Render", name: "Render", pkg: "", typ: $funcType([trees.Markup], [], false)}]);
 	HideView.init([]);
 	ShowView.init([]);
 	ViewMux.init([], [trees.Markup], false);
-	View.init([{prop: "States", name: "", pkg: "", typ: States, tag: ""}, {prop: "Reactor", name: "", pkg: "", typ: flux.Reactor, tag: ""}, {prop: "HideState", name: "HideState", pkg: "", typ: ViewStates, tag: ""}, {prop: "ShowState", name: "ShowState", pkg: "", typ: ViewStates, tag: ""}, {prop: "activeState", name: "activeState", pkg: "github.com/influx6/haiku/views", typ: ViewStates, tag: ""}, {prop: "encoder", name: "encoder", pkg: "github.com/influx6/haiku/views", typ: trees.MarkupWriter, tag: ""}, {prop: "events", name: "events", pkg: "github.com/influx6/haiku/views", typ: ptrType$8, tag: ""}, {prop: "fx", name: "fx", pkg: "github.com/influx6/haiku/views", typ: ViewMux, tag: ""}, {prop: "dom", name: "dom", pkg: "github.com/influx6/haiku/views", typ: dom.Element, tag: ""}, {prop: "liveMarkup", name: "liveMarkup", pkg: "github.com/influx6/haiku/views", typ: trees.Markup, tag: ""}]);
+	View.init([{prop: "States", name: "", pkg: "", typ: States, tag: ""}, {prop: "Reactor", name: "", pkg: "", typ: flux.Reactor, tag: ""}, {prop: "HideState", name: "HideState", pkg: "", typ: ViewStates, tag: ""}, {prop: "ShowState", name: "ShowState", pkg: "", typ: ViewStates, tag: ""}, {prop: "activeState", name: "activeState", pkg: "github.com/influx6/haiku/views", typ: ViewStates, tag: ""}, {prop: "encoder", name: "encoder", pkg: "github.com/influx6/haiku/views", typ: trees.MarkupWriter, tag: ""}, {prop: "events", name: "events", pkg: "github.com/influx6/haiku/views", typ: ptrType$9, tag: ""}, {prop: "fx", name: "fx", pkg: "github.com/influx6/haiku/views", typ: ViewMux, tag: ""}, {prop: "dom", name: "dom", pkg: "github.com/influx6/haiku/views", typ: ptrType$3, tag: ""}, {prop: "liveMarkup", name: "liveMarkup", pkg: "github.com/influx6/haiku/views", typ: trees.Markup, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -40562,20 +36328,21 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		$r = fmt.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = detect.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = js.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = dom.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = flux.$init(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = events.$init(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = flux.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = events.$init(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = jsutils.$init(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = trees.$init(); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = elems.$init(); /* */ $s = 10; case 10: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = template.$init(); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = regexp.$init(); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = strings.$init(); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = sync.$init(); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = atomic.$init(); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = log.$init(); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = regexp.$init(); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = strings.$init(); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = sync.$init(); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = atomic.$init(); /* */ $s = 16; case 16: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$pkg.ErrExists = errors.New("Tag already assigned");
 		$pkg.ErrNotSupported = errors.New("Feature not supported");
 		$pkg.ErrBadSelector = errors.New("Selector returned nil");
-		_r = regexp.MustCompile(".\\+"); /* */ $s = 16; case 16: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_r = regexp.MustCompile(".\\+"); /* */ $s = 17; case 17: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		excessStops = _r;
 		$pkg.ErrStateNotFound = errors.New("State Not Found");
 		$pkg.ErrInvalidStateAddr = errors.New("State Not Found");
@@ -40585,84 +36352,107 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	return $pkg;
 })();
 $packages["main"] = (function() {
-	var $pkg = {}, $init, trees, attrs, elems, views, time, sliceType, sliceType$1, sliceType$2, main;
+	var $pkg = {}, $init, js, events, trees, attrs, elems, events$1, views, log, time, sliceType, sliceType$1, sliceType$2, sliceType$3, main;
+	js = $packages["github.com/gopherjs/gopherjs/js"];
+	events = $packages["github.com/influx6/haiku/events"];
 	trees = $packages["github.com/influx6/haiku/trees"];
 	attrs = $packages["github.com/influx6/haiku/trees/attrs"];
 	elems = $packages["github.com/influx6/haiku/trees/elems"];
+	events$1 = $packages["github.com/influx6/haiku/trees/events"];
 	views = $packages["github.com/influx6/haiku/views"];
+	log = $packages["log"];
 	time = $packages["time"];
-	sliceType = $sliceType($String);
-	sliceType$1 = $sliceType(trees.Appliable);
-	sliceType$2 = $sliceType(trees.Markup);
+	sliceType = $sliceType($emptyInterface);
+	sliceType$1 = $sliceType($String);
+	sliceType$2 = $sliceType(trees.Appliable);
+	sliceType$3 = $sliceType(trees.Markup);
 	main = function() {
-		var $ptr, _r, _r$1, _r$2, menu, menuItem, page, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; menu = $f.menu; menuItem = $f.menuItem; page = $f.page; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _r, _r$1, _r$2, clickMe, menu, menuItem, page, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; clickMe = $f.clickMe; menu = $f.menu; menuItem = $f.menuItem; page = $f.page; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		clickMe = [clickMe];
 		menu = [menu];
 		menuItem = [menuItem];
 		_r = views.Page(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		page = _r;
-		menuItem[0] = new sliceType(["shops", "janitor", "booky", "drummer"]);
-		_r$1 = views.NewView((function(menu, menuItem) { return function $b() {
-			var $ptr, _arg, _arg$1, _arg$2, _arg$3, _i, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, div, mi, so, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _i = $f._i; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; div = $f.div; mi = $f.mi; so = $f.so; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		clickMe[0] = (function(clickMe, menu, menuItem) { return function $b(param) {
+			var $ptr, param, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; param = $f.param; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			$r = log.Printf("smark down!", new sliceType([])); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$global.alert($externalize("yay i got clicked!", $String));
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.param = param; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(clickMe, menu, menuItem);
+		menuItem[0] = new sliceType$1(["shops", "janitor", "booky", "drummer"]);
+		_r$1 = views.NewView((function(clickMe, menu, menuItem) { return function $b() {
+			var $ptr, _arg, _arg$1, _arg$2, _arg$3, _arg$4, _arg$5, _arg$6, _i, _r$1, _r$10, _r$11, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, div, mi, so, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _arg$4 = $f._arg$4; _arg$5 = $f._arg$5; _arg$6 = $f._arg$6; _i = $f._i; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; div = $f.div; mi = $f.mi; so = $f.so; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 			_r$1 = elems.Text("name"); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-			_r$2 = elems.Label(new sliceType$1([_r$1])); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+			_r$2 = elems.Label(new sliceType$2([_r$1])); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 			_arg = _r$2;
-			_r$3 = elems.Input(new sliceType$1([attrs.Type("text")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+			_r$3 = elems.Input(new sliceType$2([attrs.Type("text")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 			_arg$1 = _r$3;
-			_r$4 = elems.Paragraph(new sliceType$1([_arg, _arg$1])); /* */ $s = 4; case 4: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-			_r$5 = elems.Form(new sliceType$1([_r$4])); /* */ $s = 5; case 5: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+			_r$4 = elems.Paragraph(new sliceType$2([_arg, _arg$1])); /* */ $s = 4; case 4: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+			_r$5 = elems.Form(new sliceType$2([_r$4])); /* */ $s = 5; case 5: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 			div = _r$5;
-			_r$6 = elems.Select(new sliceType$1([])); /* */ $s = 6; case 6: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+			_r$6 = elems.Select(new sliceType$2([])); /* */ $s = 6; case 6: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 			so = _r$6;
 			_ref = menuItem[0];
 			_i = 0;
 			/* while (true) { */ case 7:
 				/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 8; continue; }
 				mi = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-				_arg$2 = attrs.Name(mi);
+				_arg$2 = events$1.Click(clickMe[0], "").PreventDefault();
+				_arg$3 = attrs.Href("#" + mi);
 				_r$7 = elems.Text(mi); /* */ $s = 9; case 9: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-				_arg$3 = _r$7;
-				_r$8 = elems.Option(new sliceType$1([_arg$2, _arg$3])); /* */ $s = 10; case 10: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
-				$r = so.Augment(new sliceType$2([_r$8])); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				_arg$4 = _r$7;
+				_r$8 = elems.Anchor(new sliceType$2([_arg$2, _arg$3, _arg$4])); /* */ $s = 10; case 10: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+				$r = _r$8.Apply(div); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				_arg$5 = attrs.Name(mi);
+				_r$9 = elems.Text(mi); /* */ $s = 12; case 12: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+				_arg$6 = _r$9;
+				_r$10 = elems.Option(new sliceType$2([_arg$5, _arg$6])); /* */ $s = 13; case 13: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+				$r = so.Augment(new sliceType$3([_r$10])); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 				_i++;
 			/* } */ $s = 7; continue; case 8:
-			_r$9 = elems.Paragraph(new sliceType$1([so])); /* */ $s = 12; case 12: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
-			$r = div.Augment(new sliceType$2([_r$9])); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_r$11 = elems.Paragraph(new sliceType$2([so])); /* */ $s = 15; case 15: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+			$r = div.Augment(new sliceType$3([_r$11])); /* */ $s = 16; case 16: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			return div;
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._i = _i; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f.div = div; $f.mi = mi; $f.so = so; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(menu, menuItem)); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._arg$4 = _arg$4; $f._arg$5 = _arg$5; $f._arg$6 = _arg$6; $f._i = _i; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f.div = div; $f.mi = mi; $f.so = so; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(clickMe, menu, menuItem)); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		menu[0] = _r$1;
 		_r$2 = page.Mount("body", ".", menu[0]); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$2;
-		$go((function(menu, menuItem) { return function $b() {
+		$go((function(clickMe, menu, menuItem) { return function $b() {
 			var $ptr, _r$3, _r$4, $s, $r;
 			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$3 = $f._r$3; _r$4 = $f._r$4; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			_r$3 = $recv(time.After(new time.Duration(0, 2000000000))); /* */ $s = 1; case 1: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+			_r$3 = $recv(time.After(new time.Duration(0, 3000000000))); /* */ $s = 1; case 1: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 			_r$3[0];
 			menuItem[0] = $subslice(menuItem[0], 1);
 			$r = menu[0].Reactor.Send(new $Bool(true)); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			_r$4 = $recv(time.After(new time.Duration(0, 2000000000))); /* */ $s = 3; case 3: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+			_r$4 = $recv(time.After(new time.Duration(1, 705032704))); /* */ $s = 3; case 3: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 			_r$4[0];
 			menuItem[0] = $append(menuItem[0], "border", "section", "chief");
 			$r = menu[0].Reactor.Send(new $Bool(true)); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(menu, menuItem), []);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.menu = menu; $f.menuItem = menuItem; $f.page = page; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(clickMe, menu, menuItem), []);
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.clickMe = clickMe; $f.menu = menu; $f.menuItem = menuItem; $f.page = page; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = trees.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = attrs.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = elems.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = views.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = time.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ if ($pkg === $mainPkg) { $s = 6; continue; }
-		/* */ $s = 7; continue;
-		/* if ($pkg === $mainPkg) { */ case 6:
-			$r = main(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* } */ case 7:
+		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = events.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = trees.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = attrs.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = elems.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = events$1.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = views.$init(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = log.$init(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = time.$init(); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ if ($pkg === $mainPkg) { $s = 10; continue; }
+		/* */ $s = 11; continue;
+		/* if ($pkg === $mainPkg) { */ case 10:
+			$r = main(); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* } */ case 11:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;

@@ -130,6 +130,10 @@ func TestMarkupReconciliation2(t *testing.T) {
 
 	var so = elems.Select()
 	for _, mi := range menuItem {
+		elems.Anchor(
+			// events.Click(clickMe, "").PreventDefault(),
+			attrs.Href("#"+mi),
+			elems.Text(mi)).Apply(div)
 		so.Augment(elems.Option(attrs.Name(mi), elems.Text(mi)))
 	}
 
@@ -140,6 +144,10 @@ func TestMarkupReconciliation2(t *testing.T) {
 
 	var sol = elems.Select()
 	for _, mi := range menuItem {
+		elems.Anchor(
+			// events.Click(clickMe, "").PreventDefault(),
+			attrs.Href("#"+mi),
+			elems.Text(mi)).Apply(divCl)
 		sol.Augment(elems.Option(attrs.Name(mi), elems.Text(mi)))
 	}
 

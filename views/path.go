@@ -8,8 +8,8 @@ import (
 	"github.com/go-humble/detect"
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/influx6/flux"
+	"github.com/influx6/haiku/jsutils"
 	//"honnef.co/go/js/dom"
-	"github.com/influx6/dom"
 )
 
 /*
@@ -163,11 +163,16 @@ func NewPage(p *HistoryProvider) *Pages {
 // Mount adds a component into the page for handling/managing of visiblity and
 // gets the dom referenced by the selector using QuerySelector and returns an error if selector gave no result
 func (p *Pages) Mount(selector, addr string, v Views) error {
-	n := dom.GetWindow().Document().QuerySelector(selector)
+	// n := dom.GetWindow().Document().QuerySelector(selector)
+	n := jsutils.GetDocument().Call("querySelector", selector)
 
-	if n == nil {
+	// log.Printf("we failed: %+s", n)
+
+	if n == nil || n == js.Undefined {
 		return ErrBadSelector
 	}
+
+	// log.Printf("no we did failed: %+s", n)
 
 	// p.views = append(p.views, v)
 	p.AddView(addr, v)

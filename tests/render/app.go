@@ -1,19 +1,26 @@
-// +build js
-
 package main
 
 import (
+	"log"
 	"time"
 
+	"github.com/gopherjs/gopherjs/js"
+	hevent "github.com/influx6/haiku/events"
 	"github.com/influx6/haiku/trees"
 	"github.com/influx6/haiku/trees/attrs"
 	"github.com/influx6/haiku/trees/elems"
+	"github.com/influx6/haiku/trees/events"
 	"github.com/influx6/haiku/views"
 )
 
 func main() {
 
 	page := views.Page()
+
+	var clickMe = func(hevent.Event) {
+		log.Printf("smark down!")
+		js.Global.Call("alert", "yay i got clicked!")
+	}
 
 	var menuItem = []string{"shops", "janitor", "booky", "drummer"}
 
@@ -22,6 +29,11 @@ func main() {
 
 		var so = elems.Select()
 		for _, mi := range menuItem {
+			elems.Anchor(
+				events.Click(clickMe, "").PreventDefault(),
+				attrs.Href("#"+mi),
+				elems.Text(mi)).Apply(div)
+
 			so.Augment(elems.Option(attrs.Name(mi), elems.Text(mi)))
 		}
 

@@ -47,7 +47,7 @@ func main() {
 		<-time.After(1 * time.Second)
 		menuItem = menuItem[1:]
 		menu.Send(true)
-		<-time.After(2 * time.Second)
+		<-time.After(1 * time.Second)
 		menuItem = append(menuItem, "border", "section", "chief")
 		menu.Send(true)
 	}()

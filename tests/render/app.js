@@ -36554,7 +36554,7 @@ $packages["main"] = (function() {
 			_r$3[0];
 			menuItem[0] = $subslice(menuItem[0], 1);
 			$r = menu[0].Reactor.Send(new $Bool(true)); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			_r$4 = $recv(time.After(new time.Duration(0, 2000000000))); /* */ $s = 3; case 3: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+			_r$4 = $recv(time.After(new time.Duration(0, 1000000000))); /* */ $s = 3; case 3: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 			_r$4[0];
 			menuItem[0] = $append(menuItem[0], "border", "section", "chief");
 			$r = menu[0].Reactor.Send(new $Bool(true)); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }

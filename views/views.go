@@ -22,6 +22,7 @@ type Views interface {
 	RenderHTML(...string) template.HTML
 	Mount(*js.Object)
 	UseMux(ViewMux)
+	BindView(Views)
 }
 
 // ViewStates defines the two possible behavioral state of a view's markup
@@ -108,6 +109,11 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 	})
 
 	return
+}
+
+// BindView binds the given views together,were the view provided as argument will notify this view of change and to act according
+func (v *View) BindView(vs Views) {
+	vs.Bind(v, true)
 }
 
 // UseMux lets you switch the markup generator

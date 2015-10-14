@@ -41,6 +41,10 @@ func main() {
 
 	page.Mount("body", ".", menu)
 
+	// window := dom.GetWindow()
+
+	// _ = window
+
 	go func() {
 		<-time.After(1 * time.Second)
 		menuItem = menuItem[1:]

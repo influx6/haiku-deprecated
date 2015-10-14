@@ -155,14 +155,20 @@ func NewElement(tag string, hasNoEndingTag bool) *Element {
 		allowChildren:   true,
 		allowStyles:     true,
 		allowAttributes: true,
+		allowEvents:     true,
 	}
 }
 
 // UseEventManager adds a eventmanager into the markup and if not available before automatically registers
 // the events with it,once an event manager is registered to it,it will and can not be changed
 func (e *Element) UseEventManager(man *events.EventManager) bool {
+	if man == nil {
+		return true
+	}
+
 	if e.eventManager != nil {
 		// e.eventManager.
+		man.AttachManager(e.eventManager)
 		return false
 	}
 
@@ -176,6 +182,7 @@ func (e *Element) UseEventManager(man *events.EventManager) bool {
 func (e *Element) LoadEvents() {
 	if e.eventManager != nil {
 		e.eventManager.DisconnectRemoved()
+		// log.Printf("will load events: %s %+s", e.Name(), e.events)
 
 		for _, ev := range e.events {
 			if es, _ := e.eventManager.NewEventMeta(ev.Meta); es != nil {
@@ -312,11 +319,6 @@ func (e *Element) Reconcile(em Markup) bool {
 	maxSize := len(newChildren)
 	oldMaxSize := len(oldChildren)
 
-	ReconcileEvents(e, em)
-	if e.eventManager != nil {
-		e.eventManager.DisconnectRemoved()
-	}
-
 	if maxSize <= 0 {
 		// if the element had no children too, swap hash
 		if oldMaxSize <= 0 {
@@ -349,6 +351,11 @@ func (e *Element) Reconcile(em Markup) bool {
 
 		och.Remove()
 		e.AddChild(och)
+	}
+
+	ReconcileEvents(e, em)
+	if e.eventManager != nil {
+		e.eventManager.DisconnectRemoved()
 	}
 
 	//if the sizes of the new node is more than the old node then ,we definitely changed
@@ -581,20 +588,31 @@ func ReconcileEvents(e, em Markup) {
 	oldevents := em.Events()
 	newevents := e.Events()
 
-	//set to equal as the logic will try to assert its falsiness
+	if len(oldevents) <= 0 && len(newevents) <= 0 {
+		return
+	}
 
-	for _, ev := range oldevents {
-		var found bool
+	if len(newevents) <= 0 && len(oldevents) > 0 {
+		for _, ev := range oldevents {
+			ev.Meta.Removed = true
+		}
+		return
+	}
 
-	innerfind:
+	checkOut := func(ev *Event) bool {
 		for _, evs := range newevents {
-			if evs.Meta.Type == ev.Meta.Type && evs.Meta.Target == ev.Meta.Target {
-				found = true
-				break innerfind
+			if evs.Meta.Type == ev.Meta.Type {
+				return true
 			}
 		}
+		return false
 
-		if found {
+	}
+	//set to equal as the logic will try to assert its falsiness
+
+	// outerfind:
+	for _, ev := range oldevents {
+		if checkOut(ev) {
 			continue
 		}
 

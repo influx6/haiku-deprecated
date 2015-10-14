@@ -89,20 +89,31 @@ func (e *EventSub) TriggerMatch(h Event) {
 	//get the current event target
 	target := h.Target()
 
+	// log.Printf("target -> %+s", target)
+
 	//get the targets parent
-	parent := target.Get("ParentElement")
+	// parent := target.Get("parentElement")
+	parent := e.dom
 
 	var match bool
 
-	parentObjects := parent.Call("querySelectorAll", e.EventSelector())
+	children := parent.Call("querySelectorAll", e.EventSelector())
+
+	if children == nil || children == js.Undefined {
+		return
+	}
+
+	// log.Printf("children -> %s  -> %t %t", children, children == nil, children == js.Undefined)
+
 	//get all possible matches of this query
 	// posis := parent.QuerySelectorAll(e.EventSelector())
-	posis := jsutils.DOMObjectToList(parentObjects)
+	posis := jsutils.DOMObjectToList(children)
 
-	// log.Printf("Checking: %s for %s", target, e.ID())
+	// log.Printf("Checking: %s for %s -> %+s", target, e.ID(), posis)
 
 	//is our target part of those that match the selector
 	for _, item := range posis {
+		// log.Printf("taget %+s and item %+s -> %t", target, item, target == item)
 		if item != target {
 			continue
 		}
@@ -369,14 +380,13 @@ func (em *EventManager) OffloadDOM() {
 	em.dom = nil
 }
 
-// LoadDOM passes down the dom element to all EventSub to initialize and listen for their respective events
-func (em *EventManager) LoadDOM(dom *js.Object) bool {
-	if em.dom != nil {
-		return false
+// LoadUpEvents registers the events into the dom object
+func (em *EventManager) LoadUpEvents() {
+	if em.dom == nil {
+		return
 	}
 
-	//replace the current dom node be used
-	em.dom = dom
+	dom := em.dom
 
 	// send the dom out to all registered event subs for loadup
 	em.EachEvent(func(es *EventSub) {
@@ -389,6 +399,18 @@ func (em *EventManager) LoadDOM(dom *js.Object) bool {
 	em.EachManager(func(ems *EventManager) {
 		ems.LoadDOM(dom)
 	})
+
+}
+
+// LoadDOM passes down the dom element to all EventSub to initialize and listen for their respective events
+func (em *EventManager) LoadDOM(dom *js.Object) bool {
+	if em.dom != nil {
+		return false
+	}
+
+	//replace the current dom node be used
+	em.dom = dom
+	em.LoadUpEvents()
 
 	return true
 }

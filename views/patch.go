@@ -14,10 +14,6 @@ func CreateFragment(html string) *js.Object {
 	//if we are not in a browser,panic
 	panicBrowserDetect()
 
-	//grab the document
-	// doc := hodom.GetWindow().Document()
-	// doc := jsutils.GetDocument()
-
 	//we need to use innerhtml but DocumentFragments dont have that so we use
 	//a discardable div
 
@@ -25,27 +21,21 @@ func CreateFragment(html string) *js.Object {
 	div := jsutils.CreateElement("div")
 
 	//build up the html right in the div
-	// div.SetInnerHTML(html)
 	jsutils.SetInnerHTML(div, html)
 
-	//create the document fragment
+	//unwrap all the special Text UnknownELement we are using
+	// jsutils.UnWrapSpecialTextElements(div)
 
-	// fragment := doc.CreateDocumentFragment()
+	//create the document fragment
 	fragment := jsutils.CreateDocumentFragment()
 
 	//add the nodes from the div into the fragment
-	// for _, node := range div.ChildNodes() {
-	// 	fragment.AppendChild(node)
-	// }
-
 	nodes := jsutils.ChildNodeList(div)
 
 	jsutils.AppendChild(fragment, nodes...)
-	// for _, node := range nodes {
-	// 	fragment.Call("appendChild", node)
-	// }
 
-	// log.Printf("fragments: %d", len(jsutils.DOMObjectToList(fragment.Get("childNodes"))))
+	//unwrap all the special Text UnknownELement we are using
+	jsutils.UnWrapSpecialTextElements(fragment)
 
 	return fragment
 }
@@ -77,8 +67,7 @@ func Patch(fragment, live *js.Object) {
 	if !live.Call("hasChildNodes").Bool() {
 		// if the live element is actually empty, then just append the fragment which
 		// actually appends the nodes within it efficiently
-		// live.AppendChild(fragment)
-		// log.Printf("adding straight")
+
 		jsutils.AppendChild(live, fragment)
 		return
 	}
@@ -102,12 +91,14 @@ patchloop:
 		// elem := node
 
 		if node.Get("constructor") == js.Global.Get("Text") {
+			// log.Printf("text %+s %s %s %d", node, node.Get("nodeName"), node.Get("innerText"), node.Get("nodeType").Int())
 			jsutils.AppendChild(live, node)
 			continue patchloop
 		}
 
 		//get the tagname
 		tagname := jsutils.GetTag(node)
+		// log.Printf("Working with tag %s -> %+s", tagname, nchildren)
 
 		// get the basic attrs
 		var id, hash, class, uid string
@@ -137,13 +128,16 @@ patchloop:
 
 		// if we have no id,class, uid or hash, we digress to bad approach of using Node.IsEqualNode
 		if allEmpty(id, hash, uid) {
+			// log.Printf("adding since hash,id,uid are empty")
 			AddNodeIfNone(live, node)
+			continue patchloop
 		}
 
 		// eliminate which ones are empty and try to use the non empty to get our target
 		if allEmpty(hash, uid) {
 			// is the id empty also then we know class is not or vise-versa
 			if allEmpty(id) {
+				log.Printf("adding since class")
 				// class is it and we only want those that match narrowing our set
 				no := jsutils.QuerySelectorAll(live, class)
 
@@ -157,6 +151,7 @@ patchloop:
 
 			} else {
 				// id is it and we only want one
+				log.Printf("adding since id")
 				no := jsutils.QuerySelector(live, fmt.Sprintf("#%s", id))
 
 				// if none found we add else we replace
@@ -170,11 +165,14 @@ patchloop:
 			continue patchloop
 		}
 
+		nchildren := jsutils.ChildNodeList(node)
 		// lets use our unique id to check for the element if it exists
 		sel := fmt.Sprintf(`%s[uid='%s']`, strings.ToLower(tagname), uid)
 
 		// we know hash and uid are not empty so we kick ass the easy way
 		target := jsutils.QuerySelector(live, sel)
+
+		// log.Printf("textElem %s -> %s -> %s : target -> %+s", node, node.Get("tagName"), sel, target)
 
 		// if we are nil then its a new node add it and return
 		if target == nil || target == js.Undefined {
@@ -184,13 +182,16 @@ patchloop:
 
 		//if we are to be removed then remove the target
 		if jsutils.HasAttribute(node, "haikuRemoved") {
-			log.Printf("removed node: %+s", node)
+			// log.Printf("removed node: %+s", node)
 			// target.ParentNode().RemoveChild(target)
 			jsutils.RemoveChild(target, target)
 			continue patchloop
 		}
 
-		nchildren := jsutils.ChildNodeList(node)
+		//cleanout all the targets text-nodes
+		// jsutils.CleanAllTextNode(target)
+
+		// log.Printf("Checking size of children %s %d", sel, len(nchildren))
 		//if the new node has no children, then just replace it
 		// if len(elem.ChildNodes()) <= 0 {
 		if len(nchildren) <= 0 {
@@ -218,6 +219,7 @@ patchloop:
 
 		children := jsutils.ChildNodeList(target)
 
+		// log.Printf("checking targets children %+s %d", target, len(children))
 		if len(children) <= 1 {
 			jsutils.SetInnerHTML(target, "")
 

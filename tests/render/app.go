@@ -44,17 +44,12 @@ func main() {
 	page.Mount("body", ".", menu)
 
 	go func() {
-		<-time.After(3 * time.Second)
+		<-time.After(1 * time.Second)
 		menuItem = menuItem[1:]
 		menu.Send(true)
-		<-time.After(5 * time.Second)
+		<-time.After(2 * time.Second)
 		menuItem = append(menuItem, "border", "section", "chief")
 		menu.Send(true)
 	}()
 
-	// window := dom.GetWindow()
-	// doc := window.Document()
-	// slug := doc.GetElementsByTagName("body")[0].GetElementsByTagName("text")[0]
-	//
-	// log.Printf("attrs %s and data %s", slug.Attributes(), slug.Dataset())
 }

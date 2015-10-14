@@ -2,7 +2,6 @@ package views
 
 import (
 	"html/template"
-	"log"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -22,7 +21,7 @@ type Views interface {
 	Render(...string) trees.Markup
 	RenderHTML(...string) template.HTML
 	Mount(*js.Object)
-	// UseFx(ViewMux)
+	UseMux(ViewMux)
 }
 
 // ViewStates defines the two possible behavioral state of a view's markup
@@ -97,7 +96,7 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 		// log.Printf("will render")
 		if vm.dom != nil {
 			html := vm.RenderHTML()
-			log.Printf("will render markup: %s \n-------------------", html)
+			// log.Printf("will render markup: %s \n-------------------", html)
 			// log.Printf("Sending to fragment: -> \n %s", html)
 			Patch(CreateFragment(string(html)), vm.dom)
 		}
@@ -114,10 +113,10 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 	return
 }
 
-// // UseMux lets you switch the markup generator
-// func (v *View) UseMux(fx ViewMux) {
-// 	v.fx=fx
-// }
+// UseMux lets you switch the markup generator
+func (v *View) UseMux(fx ViewMux) {
+	v.fx = fx
+}
 
 // Mount is to be called in the browser to loadup this view with a dom
 func (v *View) Mount(dom *js.Object) {
@@ -167,6 +166,7 @@ func (v *View) Render(m ...string) trees.Markup {
 	}
 
 	dom.UseEventManager(v.events)
+	v.events.LoadUpEvents()
 	v.liveMarkup = dom
 
 	return dom

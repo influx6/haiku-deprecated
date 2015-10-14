@@ -4,7 +4,7 @@ Reactive is based on the idea of FRP[1] and embodies two distinct but useful ide
 
 ##Install
 
-    ` go get github.com/influx6/reactive `
+    ` go get github.com/influx6/haiku/reactive `
 
 ##Examples
 

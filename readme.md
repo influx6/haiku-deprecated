@@ -2,7 +2,7 @@
 [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/influx6/haiku)
 [![Travis](https://travis-ci.org/influx6/haiku.svg?branch=master)](https://travis-ci.org/influx6/haiku)
 
-Haiku (although with a interesting name) actually is a component rendering framework that tries to use simple but effective approaches in the in how you render your components or views. Its combines virtual dom diffing and state machine driving views to provide a simple API that allows you render any where whether it be on the server or on the client.
+Haiku is a component rendering framework, that tries to use simple but effective approaches in how you render your components or views. It combines virtual DOM diffing and state machine driven views, to provide a simple API, that allows you render any where whether it be on the server or on the client.
 
 # Install
 

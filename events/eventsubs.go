@@ -8,27 +8,13 @@ import (
 
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/influx6/haiku/jsutils"
-
-	// hodom "honnef.co/go/js/dom"
-	// hodom "github.com/influx6/dom"
+	"github.com/influx6/haiku/types"
 )
-
-// EventMeta provides a basic information about the events and what its targets
-type EventMeta struct {
-	// Type is the event type to use
-	Type string
-	//Target is a selector value for matching a event
-	Target                   string
-	StopPropagation          bool
-	StopImmediatePropagation bool
-	PreventDefault           bool
-	Removed                  bool
-}
 
 // EventSub represent a single event configuration for dom.Elem objects
 // instance which allows chaining of events listeners like middleware
 type EventSub struct {
-	*EventMeta
+	*types.EventMeta
 	FlatChains
 	jslink JSEventMux
 	dom    *js.Object
@@ -37,13 +23,13 @@ type EventSub struct {
 // NewEventSub returns a new event element config
 func NewEventSub(evtype, evtarget string) *EventSub {
 	return &EventSub{
-		EventMeta:  &EventMeta{Type: evtype, Target: evtarget},
+		EventMeta:  &types.EventMeta{Type: evtype, Target: evtarget},
 		FlatChains: FlatChainIdentity(),
 	}
 }
 
 // MetaEventSub returns a new event using the supplied EventMeta
-func MetaEventSub(meta *EventMeta) *EventSub {
+func MetaEventSub(meta *types.EventMeta) *EventSub {
 	return &EventSub{
 		EventMeta:  meta,
 		FlatChains: FlatChainIdentity(),
@@ -73,14 +59,14 @@ func (e *EventSub) Offload() {
 
 // Trigger provides bypass for triggering this event sub by passing down an event
 // directly without matching target or selector
-func (e *EventSub) Trigger(h Event) {
+func (e *EventSub) Trigger(h types.Event) {
 	e.HandleContext(h)
 }
 
 // TriggerMatch check if the current event from a specific parent matches the
 // eventarget by using the eventsub selector,if the target is within the results for
 // that selector then it triggers the event subscribers
-func (e *EventSub) TriggerMatch(h Event) {
+func (e *EventSub) TriggerMatch(h types.Event) {
 	// if e.dom != nil
 	if strings.ToLower(h.Type()) != strings.ToLower(e.EventType()) {
 		return
@@ -158,7 +144,7 @@ func (e *EventSub) EventType() string {
 }
 
 // ErrEventNotFound is returned when an event is not found
-var ErrEventNotFound = errors.New("Event not found")
+var ErrEventNotFound = errors.New("types.Event not found")
 
 // *EventSubup defines a function type for the event setup code
 // type EventSetup func(*EventSub) bool
@@ -213,7 +199,7 @@ func (em *EventManager) GetEvent(event string) (*EventSub, error) {
 }
 
 // NewEventMeta allows the adding of event using string values
-func (em *EventManager) NewEventMeta(meta *EventMeta) (*EventSub, bool) {
+func (em *EventManager) NewEventMeta(meta *types.EventMeta) (*EventSub, bool) {
 	if meta.Removed {
 		return nil, false
 	}
@@ -306,7 +292,7 @@ func (em *EventManager) RemoveEvent(event string) {
 	em.wo.Unlock()
 }
 
-//AddEvent adds Event elements into the event manager if a
+//AddEvent adds types.Event elements into the event manager if a
 //event element is already matching that is the combination of selector#eventtype
 // then it returns false but if added then true
 func (em *EventManager) AddEvent(eo *EventSub) bool {

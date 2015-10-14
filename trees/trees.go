@@ -6,16 +6,17 @@ import (
 
 	"github.com/influx6/flux"
 	"github.com/influx6/haiku/events"
+	"github.com/influx6/haiku/types"
 )
 
-const (
-	//NoAction is the default reconcile response for markup reconcilation process
-	NoAction = iota
-	//ChangeHash determines if the old hash should be replaced
-	ChangeHash
-	//KeepHash determines the old hash should be kept
-	KeepHash
-)
+// const (
+// 	//NoAction is the default reconcile response for markup reconcilation process
+// 	NoAction = iota
+// 	//ChangeHash determines if the old hash should be replaced
+// 	ChangeHash
+// 	//KeepHash determines the old hash should be kept
+// 	KeepHash
+// )
 
 // Mutation defines the capability of an element to state its
 // state if mutation occured
@@ -436,14 +437,14 @@ type Events interface {
 // Event provide a meta registry for helps in registering events for dom markups
 // which is translated to the nodes themselves
 type Event struct {
-	Meta *events.EventMeta
-	Fx   events.NextHandler
+	Meta *types.EventMeta
+	Fx   types.EventHandler
 }
 
 // NewEvent returns a event object that allows registering events to eventlisteners
-func NewEvent(etype, eselector string, efx events.NextHandler) *Event {
+func NewEvent(etype, eselector string, efx types.EventHandler) *Event {
 	return &Event{
-		Meta: &events.EventMeta{Type: etype, Target: eselector},
+		Meta: &types.EventMeta{Type: etype, Target: eselector},
 		Fx:   efx,
 	}
 }
@@ -516,7 +517,7 @@ type Clonable interface {
 //Clone replicates the style into a unique instance
 func (e *Event) Clone() *Event {
 	return &Event{
-		Meta: &events.EventMeta{Type: e.Meta.Type, Target: e.Meta.Target},
+		Meta: &types.EventMeta{Type: e.Meta.Type, Target: e.Meta.Target},
 		Fx:   e.Fx,
 	}
 }

@@ -4,12 +4,11 @@ import (
 	"log"
 	"time"
 
-	"github.com/gopherjs/gopherjs/js"
-	hevent "github.com/influx6/haiku/events"
 	"github.com/influx6/haiku/trees"
 	"github.com/influx6/haiku/trees/attrs"
 	"github.com/influx6/haiku/trees/elems"
 	"github.com/influx6/haiku/trees/events"
+	"github.com/influx6/haiku/types"
 	"github.com/influx6/haiku/views"
 )
 
@@ -17,9 +16,8 @@ func main() {
 
 	page := views.Page()
 
-	var clickMe = func(hevent.Event) {
+	var clickMe = func(types.Event) {
 		log.Printf("smark down!")
-		js.Global.Call("alert", "yay i got clicked!")
 	}
 
 	var menuItem = []string{"shops", "janitor", "booky", "drummer"}

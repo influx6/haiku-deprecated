@@ -1,22 +1,21 @@
 package events
 
-import "sync"
+import (
+	"sync"
 
-// hodom "honnef.co/go/js/dom"
-
-// NextHandler provides next call for flat chains
-type NextHandler func(Event)
+	"github.com/influx6/haiku/types"
+)
 
 // FlatHandler provides a handler for flatchain
-type FlatHandler func(Event, NextHandler)
+type FlatHandler func(types.Event, types.EventHandler)
 
 //FlatChains define a simple flat chain
 type FlatChains interface {
-	HandleContext(Event)
+	HandleContext(types.Event)
 	Next(FlatHandler) FlatChains
 	Chain(FlatChains) FlatChains
 	NChain(FlatChains) FlatChains
-	Bind(rnx NextHandler) FlatChains
+	Bind(rnx types.EventHandler) FlatChains
 	useNext(FlatChains)
 	usePrev(FlatChains)
 	UnChain()
@@ -30,7 +29,7 @@ type FlatChain struct {
 
 //FlatChainIdentity returns a chain that calls the next automatically
 func FlatChainIdentity() FlatChains {
-	return NewFlatChain(func(c Event, nx NextHandler) {
+	return NewFlatChain(func(c types.Event, nx types.EventHandler) {
 		nx(c)
 	})
 }
@@ -57,8 +56,8 @@ func (r *FlatChain) UnChain() {
 }
 
 // Bind provides a wrapper over the Next binder function call
-func (r *FlatChain) Bind(rnx NextHandler) FlatChains {
-	return r.Next(func(ev Event, nx NextHandler) {
+func (r *FlatChain) Bind(rnx types.EventHandler) FlatChains {
+	return r.Next(func(ev types.Event, nx types.EventHandler) {
 		rnx(ev)
 		nx(ev)
 	})
@@ -92,8 +91,8 @@ func (r *FlatChain) NChain(rx FlatChains) FlatChains {
 }
 
 // HandleContext calls the next chain if any
-func (r *FlatChain) HandleContext(c Event) {
-	r.op(c, func(c Event) {
+func (r *FlatChain) HandleContext(c types.Event) {
+	r.op(c, func(c types.Event) {
 		if r.next != nil {
 			r.next.HandleContext(c)
 		}
@@ -121,7 +120,7 @@ func ChainFlats(mo FlatChains, so ...FlatChains) FlatChains {
 }
 
 //ElemEventMux represents a stanard callback function for dom events
-type ElemEventMux func(Event, func())
+type ElemEventMux func(types.Event, func())
 
 //ListenerStack provides addition of functions into a stack
 type ListenerStack struct {
@@ -187,7 +186,7 @@ func (f *ListenerStack) DeleteIndex(ind int) {
 }
 
 //Each runs through the function lists and executing with args
-func (f *ListenerStack) Each(d Event) {
+func (f *ListenerStack) Each(d types.Event) {
 	if f.Size() <= 0 {
 		return
 	}

@@ -65,34 +65,39 @@ func (m *StyleWriter) Print(s []*Style) string {
 	return strings.Join(css, " ")
 }
 
-// // TextWriter writes out the text element/node for the vdom into a string
-// type TextWriter struct{}
-//
-// // SimpleTextWriter provides a basic text writer
-// var SimpleTextWriter = &TextWriter{}
-//
-// // Print returns the string representation of the text object
-// func (m *TextWriter) Print(t *Text) string {
-// 	return t.Get()
-// }
+// TextPrinter defines a printer interface for writing out a text type markup into a string form
+type TextPrinter interface {
+	Print(Markup) string
+}
+
+// TextWriter writes out the text element/node for the vdom into a string
+type TextWriter struct{}
+
+// SimpleTextWriter provides a basic text writer
+var SimpleTextWriter = &TextWriter{}
+
+// Print returns the string representation of the text object
+func (m *TextWriter) Print(t Markup) string {
+	return t.TextContent()
+}
 
 // ElementWriter writes out the element out as a string matching the html tag rules
 type ElementWriter struct {
 	attrWriter   AttrPrinter
 	styleWriter  StylePrinter
+	text         TextPrinter
 	allowRemoved bool
-	// text        *TextWriter
 }
 
 // SimpleElementWriter provides a default writer using the basic attribute and style writers
-var SimpleElementWriter = NewElementWriter(SimpleAttrWriter, SimpleStyleWriter /*, SimpleTextWriter*/)
+var SimpleElementWriter = NewElementWriter(SimpleAttrWriter, SimpleStyleWriter, SimpleTextWriter)
 
 // NewElementWriter returns a new writer for Element objects
-func NewElementWriter(aw AttrPrinter, sw StylePrinter) *ElementWriter {
+func NewElementWriter(aw AttrPrinter, sw StylePrinter, tw TextPrinter) *ElementWriter {
 	return &ElementWriter{
 		attrWriter:  aw,
 		styleWriter: sw,
-		// text:        tw,
+		text:        tw,
 	}
 }
 
@@ -117,6 +122,11 @@ func (m *ElementWriter) Print(e *Element) string {
 		if e.Removed() && !m.allowRemoved {
 			return ""
 		}
+	}
+
+	//if we are dealing with a text type just return the content
+	if e.Name() == "text" {
+		return m.text.Print(e)
 	}
 
 	//collect uid and hash of the element so we can write them along
@@ -152,8 +162,9 @@ func (m *ElementWriter) Print(e *Element) string {
 	var children = []string{}
 
 	for _, ch := range e.Children() {
-		// if tch, ok := ch.(*Text); ok {
-		// 	children = append(children, m.text.Print(tch))
+		// if ch.Name() == "text" {
+		// 	children = append(children, m.text.Print(ch))
+		// 	continue
 		// }
 		if ech, ok := ch.(*Element); ok {
 			if ech == e {

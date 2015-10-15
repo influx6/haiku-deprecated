@@ -2,6 +2,7 @@
 package jsutils
 
 import (
+	"log"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -76,12 +77,24 @@ func CreateDocumentFragment() *js.Object {
 
 // var onlySpace = regexp
 
+// EmptyTextNode returns two bool values, the first indicating if its a text node and the second indicating if the text node is empty
+func EmptyTextNode(o *js.Object) (bool, bool) {
+	if o.Get("nodeType").Int() == 3 {
+		textContent := strings.TrimSpace(o.Get("textContent").String())
+		if textContent != "" {
+			return true, false
+		}
+		return true, true
+	}
+	return false, false
+}
+
 // CleanAllTextNode removes all texts nodes within the container root
 func CleanAllTextNode(o *js.Object) {
 	for _, to := range ChildNodeList(o) {
-		if to.Get("nodeType").Int() == 3 {
-			textContent := strings.TrimSpace(to.Get("textContent").String())
-			if textContent != "" {
+		if istx, isem := EmptyTextNode(to); istx {
+			if !isem {
+				// log.Printf("Cleaning Text Node: %s", to.Get("textContent").String())
 				o.Call("removeChild", to)
 			}
 		}
@@ -93,7 +106,7 @@ func UnWrapSpecialTextElements(o *js.Object) {
 	texts := QuerySelectorAll(o, "text")
 	// log.Printf("unwrap text nodes? -> %+s", texts)
 	for _, to := range texts {
-		// log.Printf("unwrap text node? -> %+s", to)
+		log.Printf("unwrap text node? -> %+s", to)
 		parent := to.Get("parentNode")
 		SpecialAppendChild(parent, to)
 		parent.Call("removeChild", to)
@@ -110,6 +123,11 @@ func SpecialAppendChild(o *js.Object, osets ...*js.Object) {
 		}
 		o.Call("appendChild", onode)
 	}
+}
+
+// InsertBefore inserts the inserto before the guage object with the target
+func InsertBefore(target, guage, inserto *js.Object) {
+	target.Call("insertBefore", inserto, guage)
 }
 
 // AppendChild takes a list of objects and calls appendNode on the given object

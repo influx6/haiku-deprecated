@@ -29,8 +29,8 @@ func TestMarkup(t *testing.T) {
 	flux.LogPassed(t, "Successfully asserted proper markup operation!")
 }
 
-var normalRender = `<div hash="901EZEzzkP"  uid="3exhgHR9" style=""><text hash="7LpjEzxUYJ"  uid="K7JcYkjP" style=" display:inline;">20</text></div>`
-var removedRender = `<div hash="aPFZXtl2eW"  uid="2pml1sB0" style=""><text hash="OsBtKTop5x"  uid="ZTcrqLpT" haikuRemoved="" style=" display:inline;">20</text></div>`
+var normalRender = `<div hash="901EZEzzkP"  uid="3exhgHR9" style="">20</div>`
+var removedRender = `<div hash="aPFZXtl2eW"  uid="2pml1sB0" style="">20</div>`
 var cleanRender = `<div hash="aPFZXtl2eW"  uid="2pml1sB0" style=""></div>`
 
 func TestMarkupRemoveRender(t *testing.T) {
@@ -48,7 +48,7 @@ func TestMarkupRemoveRender(t *testing.T) {
 		flux.FatalFailed(t, "Inaccurate size of clone's children, expected %d for %s", 1, len(div.Children()))
 	}
 
-	printer := trees.NewElementWriter(trees.SimpleAttrWriter, trees.SimpleStyleWriter)
+	printer := trees.NewElementWriter(trees.SimpleAttrWriter, trees.SimpleStyleWriter, trees.SimpleTextWriter)
 	printer.AllowRemoved()
 
 	if ds := printer.Print(div); len(ds) != len(normalRender) {
@@ -97,7 +97,7 @@ func TestMarkupReconciliation(t *testing.T) {
 	trees.ElementsWithTag(divCl, "text")[0].Remove()
 	divCl.CleanRemoved()
 
-	printer := trees.NewElementWriter(trees.SimpleAttrWriter, trees.SimpleStyleWriter)
+	printer := trees.NewElementWriter(trees.SimpleAttrWriter, trees.SimpleStyleWriter, trees.SimpleTextWriter)
 	printer.AllowRemoved()
 
 	nrender := printer.Print(div)
@@ -153,7 +153,7 @@ func TestMarkupReconciliation2(t *testing.T) {
 
 	divCl.Augment(elems.Paragraph(sol))
 
-	printer := trees.NewElementWriter(trees.SimpleAttrWriter, trees.SimpleStyleWriter)
+	printer := trees.NewElementWriter(trees.SimpleAttrWriter, trees.SimpleStyleWriter, trees.SimpleTextWriter)
 	printer.AllowRemoved()
 
 	nrender := printer.Print(div)

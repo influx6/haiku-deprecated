@@ -31965,8 +31965,9 @@ $packages["github.com/influx6/flux"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/jsutils"] = (function() {
-	var $pkg = {}, $init, js, strings, ptrType, sliceType, DOMObjectToList, ChildNodeList, Attributes, GetWindow, GetDocument, CreateElement, CreateDocumentFragment, CleanAllTextNode, UnWrapSpecialTextElements, SpecialAppendChild, AppendChild, RemoveChild, IsEqualNode, ReplaceNode, QuerySelectorAll, QuerySelector, GetTag, GetAttribute, HasAttribute, SetAttribute, SetInnerHTML;
+	var $pkg = {}, $init, js, log, strings, ptrType, sliceType, DOMObjectToList, ChildNodeList, Attributes, GetWindow, GetDocument, CreateElement, CreateDocumentFragment, EmptyTextNode, CleanAllTextNode, InsertBefore, AppendChild, RemoveChild, IsEqualNode, ReplaceNode, QuerySelectorAll, QuerySelector, GetTag, GetAttribute, HasAttribute, SetAttribute, SetInnerHTML;
 	js = $packages["github.com/gopherjs/gopherjs/js"];
+	log = $packages["log"];
 	strings = $packages["strings"];
 	ptrType = $ptrType(js.Object);
 	sliceType = $sliceType(ptrType);
@@ -32038,67 +32039,50 @@ $packages["github.com/influx6/haiku/jsutils"] = (function() {
 		return doc.createDocumentFragment();
 	};
 	$pkg.CreateDocumentFragment = CreateDocumentFragment;
+	EmptyTextNode = function(o) {
+		var $ptr, _r, o, textContent, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; o = $f.o; textContent = $f.textContent; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		/* */ if (($parseInt(o.nodeType) >> 0) === 3) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (($parseInt(o.nodeType) >> 0) === 3) { */ case 1:
+			_r = strings.TrimSpace($internalize(o.textContent, $String)); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			textContent = _r;
+			if (!(textContent === "")) {
+				return [true, false];
+			}
+			return [true, true];
+		/* } */ case 2:
+		return [false, false];
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EmptyTextNode }; } $f.$ptr = $ptr; $f._r = _r; $f.o = o; $f.textContent = textContent; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.EmptyTextNode = EmptyTextNode;
 	CleanAllTextNode = function(o) {
-		var $ptr, _i, _r, _ref, o, textContent, to, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; o = $f.o; textContent = $f.textContent; to = $f.to; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _i, _r, _ref, _tuple, isem, istx, o, to, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; _tuple = $f._tuple; isem = $f.isem; istx = $f.istx; o = $f.o; to = $f.to; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_ref = ChildNodeList(o);
 		_i = 0;
 		/* while (true) { */ case 1:
 			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 2; continue; }
 			to = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			/* */ if (($parseInt(to.nodeType) >> 0) === 3) { $s = 3; continue; }
-			/* */ $s = 4; continue;
-			/* if (($parseInt(to.nodeType) >> 0) === 3) { */ case 3:
-				_r = strings.TrimSpace($internalize(to.textContent, $String)); /* */ $s = 5; case 5: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-				textContent = _r;
-				if (!(textContent === "")) {
+			_r = EmptyTextNode(to); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_tuple = _r; istx = _tuple[0]; isem = _tuple[1];
+			/* */ if (istx) { $s = 4; continue; }
+			/* */ $s = 5; continue;
+			/* if (istx) { */ case 4:
+				if (!isem) {
 					o.removeChild(to);
 				}
-			/* } */ case 4:
+			/* } */ case 5:
 			_i++;
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: CleanAllTextNode }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.o = o; $f.textContent = textContent; $f.to = to; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: CleanAllTextNode }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f._tuple = _tuple; $f.isem = isem; $f.istx = istx; $f.o = o; $f.to = to; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.CleanAllTextNode = CleanAllTextNode;
-	UnWrapSpecialTextElements = function(o) {
-		var $ptr, _i, _ref, o, parent, texts, to, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _ref = $f._ref; o = $f.o; parent = $f.parent; texts = $f.texts; to = $f.to; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		texts = QuerySelectorAll(o, "text");
-		_ref = texts;
-		_i = 0;
-		/* while (true) { */ case 1:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 2; continue; }
-			to = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			parent = to.parentNode;
-			$r = SpecialAppendChild(parent, new sliceType([to])); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			parent.removeChild(to);
-			_i++;
-		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: UnWrapSpecialTextElements }; } $f.$ptr = $ptr; $f._i = _i; $f._ref = _ref; $f.o = o; $f.parent = parent; $f.texts = texts; $f.to = to; $f.$s = $s; $f.$r = $r; return $f;
+	InsertBefore = function(target, guage, inserto) {
+		var $ptr, guage, inserto, target;
+		target.insertBefore(inserto, guage);
 	};
-	$pkg.UnWrapSpecialTextElements = UnWrapSpecialTextElements;
-	SpecialAppendChild = function(o, osets) {
-		var $ptr, _i, _r, _ref, o, onode, osets, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; o = $f.o; onode = $f.onode; osets = $f.osets; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_ref = osets;
-		_i = 0;
-		/* while (true) { */ case 1:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 2; continue; }
-			onode = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			_r = strings.ToLower($internalize(onode.tagName, $String)); /* */ $s = 5; case 5: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-			/* */ if (_r === "text") { $s = 3; continue; }
-			/* */ $s = 4; continue;
-			/* if (_r === "text") { */ case 3:
-				$r = SpecialAppendChild(o, ChildNodeList(onode)); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				_i++;
-				/* continue; */ $s = 1; continue;
-			/* } */ case 4:
-			o.appendChild(onode);
-			_i++;
-		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: SpecialAppendChild }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.o = o; $f.onode = onode; $f.osets = osets; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.SpecialAppendChild = SpecialAppendChild;
+	$pkg.InsertBefore = InsertBefore;
 	AppendChild = function(o, osets) {
 		var $ptr, _i, _ref, o, onode, osets;
 		_ref = osets;
@@ -32175,7 +32159,8 @@ $packages["github.com/influx6/haiku/jsutils"] = (function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = strings.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = log.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = strings.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
@@ -32961,7 +32946,7 @@ $packages["github.com/influx6/haiku/events"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/influx6/haiku/trees"] = (function() {
-	var $pkg = {}, $init, errors, fmt, detect, flux, events, types, strings, AttrPrinter, AttrWriter, StylePrinter, StyleWriter, ElementWriter, MarkupWriter, markupWriter, Mutation, Markup, Mutable, Element, Style, Attribute, Event, Appliable, sliceType, sliceType$1, ptrType, sliceType$2, ptrType$1, ptrType$2, sliceType$3, ptrType$3, sliceType$4, sliceType$5, ptrType$4, ptrType$5, ptrType$6, ptrType$7, ptrType$8, ptrType$9, ptrType$10, ptrType$11, NewElementWriter, NewMarkupWriter, NewMutable, NewText, NewElement, NewEvent, ReconcileEvents, EqualAttributes, GetStyle, GetAttr;
+	var $pkg = {}, $init, errors, fmt, detect, flux, events, types, strings, AttrPrinter, AttrWriter, StylePrinter, StyleWriter, TextPrinter, TextWriter, ElementWriter, MarkupWriter, markupWriter, Mutation, Markup, Mutable, Element, Style, Attribute, Event, Appliable, sliceType, sliceType$1, ptrType, sliceType$2, ptrType$1, ptrType$2, sliceType$3, ptrType$3, sliceType$4, sliceType$5, ptrType$4, ptrType$5, ptrType$6, ptrType$7, ptrType$8, ptrType$9, ptrType$10, ptrType$11, ptrType$12, NewElementWriter, NewMarkupWriter, NewMutable, NewText, NewElement, NewEvent, ReconcileEvents, EqualAttributes, GetStyle, GetAttr;
 	errors = $packages["errors"];
 	fmt = $packages["fmt"];
 	detect = $packages["github.com/go-humble/detect"];
@@ -32983,23 +32968,32 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 			return;
 		}
 	});
-	ElementWriter = $pkg.ElementWriter = $newType(0, $kindStruct, "trees.ElementWriter", "ElementWriter", "github.com/influx6/haiku/trees", function(attrWriter_, styleWriter_, allowRemoved_) {
+	TextPrinter = $pkg.TextPrinter = $newType(8, $kindInterface, "trees.TextPrinter", "TextPrinter", "github.com/influx6/haiku/trees", null);
+	TextWriter = $pkg.TextWriter = $newType(0, $kindStruct, "trees.TextWriter", "TextWriter", "github.com/influx6/haiku/trees", function() {
+		this.$val = this;
+		if (arguments.length === 0) {
+			return;
+		}
+	});
+	ElementWriter = $pkg.ElementWriter = $newType(0, $kindStruct, "trees.ElementWriter", "ElementWriter", "github.com/influx6/haiku/trees", function(attrWriter_, styleWriter_, text_, allowRemoved_) {
 		this.$val = this;
 		if (arguments.length === 0) {
 			this.attrWriter = $ifaceNil;
 			this.styleWriter = $ifaceNil;
+			this.text = $ifaceNil;
 			this.allowRemoved = false;
 			return;
 		}
 		this.attrWriter = attrWriter_;
 		this.styleWriter = styleWriter_;
+		this.text = text_;
 		this.allowRemoved = allowRemoved_;
 	});
 	MarkupWriter = $pkg.MarkupWriter = $newType(8, $kindInterface, "trees.MarkupWriter", "MarkupWriter", "github.com/influx6/haiku/trees", null);
 	markupWriter = $pkg.markupWriter = $newType(0, $kindStruct, "trees.markupWriter", "markupWriter", "github.com/influx6/haiku/trees", function(ElementWriter_) {
 		this.$val = this;
 		if (arguments.length === 0) {
-			this.ElementWriter = ptrType$9.nil;
+			this.ElementWriter = ptrType$10.nil;
 			return;
 		}
 		this.ElementWriter = ElementWriter_;
@@ -33096,9 +33090,10 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	ptrType$6 = $ptrType(types.EventMeta);
 	ptrType$7 = $ptrType(AttrWriter);
 	ptrType$8 = $ptrType(StyleWriter);
-	ptrType$9 = $ptrType(ElementWriter);
-	ptrType$10 = $ptrType(markupWriter);
-	ptrType$11 = $ptrType(Mutable);
+	ptrType$9 = $ptrType(TextWriter);
+	ptrType$10 = $ptrType(ElementWriter);
+	ptrType$11 = $ptrType(markupWriter);
+	ptrType$12 = $ptrType(Mutable);
 	AttrWriter.ptr.prototype.Print = function(a) {
 		var $ptr, _i, _r, _ref, a, ar, attrs, m, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; a = $f.a; ar = $f.ar; attrs = $f.attrs; m = $f.m; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -33141,9 +33136,18 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StyleWriter.ptr.prototype.Print }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.cs = cs; $f.css = css; $f.m = m; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StyleWriter.prototype.Print = function(s) { return this.$val.Print(s); };
-	NewElementWriter = function(aw, sw) {
-		var $ptr, aw, sw;
-		return new ElementWriter.ptr(aw, sw, false);
+	TextWriter.ptr.prototype.Print = function(t) {
+		var $ptr, _r, m, t, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; m = $f.m; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		m = this;
+		_r = t.TextContent(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		return _r;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: TextWriter.ptr.prototype.Print }; } $f.$ptr = $ptr; $f._r = _r; $f.m = m; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	TextWriter.prototype.Print = function(t) { return this.$val.Print(t); };
+	NewElementWriter = function(aw, sw, tw) {
+		var $ptr, aw, sw, tw;
+		return new ElementWriter.ptr(aw, sw, tw, false);
 	};
 	$pkg.NewElementWriter = NewElementWriter;
 	ElementWriter.ptr.prototype.DisallowRemoved = function() {
@@ -33159,8 +33163,8 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	};
 	ElementWriter.prototype.AllowRemoved = function() { return this.$val.AllowRemoved(); };
 	ElementWriter.ptr.prototype.Print = function(e) {
-		var $ptr, _i, _r, _r$1, _r$10, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tuple, attrs, beginbrack, ch, children, closer, e, ech, hash, hashes, m, mido, ok, style, uid, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _tuple = $f._tuple; attrs = $f.attrs; beginbrack = $f.beginbrack; ch = $f.ch; children = $f.children; closer = $f.closer; e = $f.e; ech = $f.ech; hash = $f.hash; hashes = $f.hashes; m = $f.m; mido = $f.mido; ok = $f.ok; style = $f.style; uid = $f.uid; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _i, _r, _r$1, _r$10, _r$11, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tuple, attrs, beginbrack, ch, children, closer, e, ech, hash, hashes, m, mido, ok, style, uid, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _tuple = $f._tuple; attrs = $f.attrs; beginbrack = $f.beginbrack; ch = $f.ch; children = $f.children; closer = $f.closer; e = $f.e; ech = $f.ech; hash = $f.hash; hashes = $f.hashes; m = $f.m; mido = $f.mido; ok = $f.ok; style = $f.style; uid = $f.uid; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		m = this;
 		/* */ if (detect.IsServer()) { $s = 1; continue; }
 		/* */ $s = 2; continue;
@@ -33172,55 +33176,61 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 				return "";
 			/* } */ case 4:
 		/* } */ case 2:
-		_r$1 = e.Mutation.Hash(); /* */ $s = 6; case 6: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		hash = new Attribute.ptr("hash", _r$1);
-		_r$2 = e.Mutation.UID(); /* */ $s = 7; case 7: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		uid = new Attribute.ptr("uid", _r$2);
+		/* */ if (e.Name() === "text") { $s = 6; continue; }
+		/* */ $s = 7; continue;
+		/* if (e.Name() === "text") { */ case 6:
+			_r$1 = m.text.Print(e); /* */ $s = 8; case 8: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			return _r$1;
+		/* } */ case 7:
+		_r$2 = e.Mutation.Hash(); /* */ $s = 9; case 9: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		hash = new Attribute.ptr("hash", _r$2);
+		_r$3 = e.Mutation.UID(); /* */ $s = 10; case 10: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		uid = new Attribute.ptr("uid", _r$3);
 		mido = new sliceType$2([hash, uid]);
-		_r$3 = m.attrWriter.Print(mido); /* */ $s = 8; case 8: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		hashes = _r$3;
-		_r$4 = m.attrWriter.Print(e.Attributes()); /* */ $s = 9; case 9: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		attrs = _r$4;
-		_r$5 = m.styleWriter.Print(e.Styles()); /* */ $s = 10; case 10: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-		style = _r$5;
+		_r$4 = m.attrWriter.Print(mido); /* */ $s = 11; case 11: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		hashes = _r$4;
+		_r$5 = m.attrWriter.Print(e.Attributes()); /* */ $s = 12; case 12: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		attrs = _r$5;
+		_r$6 = m.styleWriter.Print(e.Styles()); /* */ $s = 13; case 13: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		style = _r$6;
 		closer = "";
 		beginbrack = "";
-		/* */ if (e.AutoClosed()) { $s = 11; continue; }
-		/* */ $s = 12; continue;
-		/* if (e.AutoClosed()) { */ case 11:
+		/* */ if (e.AutoClosed()) { $s = 14; continue; }
+		/* */ $s = 15; continue;
+		/* if (e.AutoClosed()) { */ case 14:
 			closer = "/>";
-			$s = 13; continue;
-		/* } else { */ case 12:
+			$s = 16; continue;
+		/* } else { */ case 15:
 			beginbrack = ">";
-			_r$6 = fmt.Sprintf("</%s>", new sliceType$1([new $String(e.Name())])); /* */ $s = 14; case 14: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-			closer = _r$6;
-		/* } */ case 13:
+			_r$7 = fmt.Sprintf("</%s>", new sliceType$1([new $String(e.Name())])); /* */ $s = 17; case 17: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+			closer = _r$7;
+		/* } */ case 16:
 		children = new sliceType([]);
 		_ref = e.Children();
 		_i = 0;
-		/* while (true) { */ case 15:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 16; continue; }
+		/* while (true) { */ case 18:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 19; continue; }
 			ch = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
 			_tuple = $assertType(ch, ptrType$1, true); ech = _tuple[0]; ok = _tuple[1];
-			/* */ if (ok) { $s = 17; continue; }
-			/* */ $s = 18; continue;
-			/* if (ok) { */ case 17:
-				/* */ if (ech === e) { $s = 19; continue; }
-				/* */ $s = 20; continue;
-				/* if (ech === e) { */ case 19:
+			/* */ if (ok) { $s = 20; continue; }
+			/* */ $s = 21; continue;
+			/* if (ok) { */ case 20:
+				/* */ if (ech === e) { $s = 22; continue; }
+				/* */ $s = 23; continue;
+				/* if (ech === e) { */ case 22:
 					_i++;
-					/* continue; */ $s = 15; continue;
-				/* } */ case 20:
-				_r$7 = m.Print(ech); /* */ $s = 21; case 21: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-				children = $append(children, _r$7);
-			/* } */ case 18:
+					/* continue; */ $s = 18; continue;
+				/* } */ case 23:
+				_r$8 = m.Print(ech); /* */ $s = 24; case 24: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+				children = $append(children, _r$8);
+			/* } */ case 21:
 			_i++;
-		/* } */ $s = 15; continue; case 16:
-		_r$8 = fmt.Sprintf("<%s", new sliceType$1([new $String(e.Name())])); /* */ $s = 22; case 22: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
-		_r$9 = fmt.Sprintf(" style=\"%s\"", new sliceType$1([new $String(style)])); /* */ $s = 23; case 23: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
-		_r$10 = strings.Join(new sliceType([_r$8, hashes, attrs, _r$9, beginbrack, e.textContent, strings.Join(children, "\n"), closer]), ""); /* */ $s = 24; case 24: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
-		return _r$10;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ElementWriter.ptr.prototype.Print }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f.attrs = attrs; $f.beginbrack = beginbrack; $f.ch = ch; $f.children = children; $f.closer = closer; $f.e = e; $f.ech = ech; $f.hash = hash; $f.hashes = hashes; $f.m = m; $f.mido = mido; $f.ok = ok; $f.style = style; $f.uid = uid; $f.$s = $s; $f.$r = $r; return $f;
+		/* } */ $s = 18; continue; case 19:
+		_r$9 = fmt.Sprintf("<%s", new sliceType$1([new $String(e.Name())])); /* */ $s = 25; case 25: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+		_r$10 = fmt.Sprintf(" style=\"%s\"", new sliceType$1([new $String(style)])); /* */ $s = 26; case 26: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+		_r$11 = strings.Join(new sliceType([_r$9, hashes, attrs, _r$10, beginbrack, e.textContent, strings.Join(children, "\n"), closer]), ""); /* */ $s = 27; case 27: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+		return _r$11;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ElementWriter.ptr.prototype.Print }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f.attrs = attrs; $f.beginbrack = beginbrack; $f.ch = ch; $f.children = children; $f.closer = closer; $f.e = e; $f.ech = ech; $f.hash = hash; $f.hashes = hashes; $f.m = m; $f.mido = mido; $f.ok = ok; $f.style = style; $f.uid = uid; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ElementWriter.prototype.Print = function(e) { return this.$val.Print(e); };
 	NewMarkupWriter = function(em) {
@@ -33918,9 +33928,10 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	$pkg.GetAttr = GetAttr;
 	ptrType$7.methods = [{prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$2], [$String], false)}];
 	ptrType$8.methods = [{prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$4], [$String], false)}];
-	ptrType$9.methods = [{prop: "DisallowRemoved", name: "DisallowRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "AllowRemoved", name: "AllowRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "Print", name: "Print", pkg: "", typ: $funcType([ptrType$1], [$String], false)}];
-	ptrType$10.methods = [{prop: "Write", name: "Write", pkg: "", typ: $funcType([Markup], [$String, $error], false)}];
-	ptrType$11.methods = [{prop: "UpdateHash", name: "UpdateHash", pkg: "", typ: $funcType([], [], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Removed", name: "Removed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Hash", name: "Hash", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UID", name: "UID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "swapHash", name: "swapHash", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}, {prop: "swapUID", name: "swapUID", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}];
+	ptrType$9.methods = [{prop: "Print", name: "Print", pkg: "", typ: $funcType([Markup], [$String], false)}];
+	ptrType$10.methods = [{prop: "DisallowRemoved", name: "DisallowRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "AllowRemoved", name: "AllowRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "Print", name: "Print", pkg: "", typ: $funcType([ptrType$1], [$String], false)}];
+	ptrType$11.methods = [{prop: "Write", name: "Write", pkg: "", typ: $funcType([Markup], [$String, $error], false)}];
+	ptrType$12.methods = [{prop: "UpdateHash", name: "UpdateHash", pkg: "", typ: $funcType([], [], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Removed", name: "Removed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Hash", name: "Hash", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UID", name: "UID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "swapHash", name: "swapHash", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}, {prop: "swapUID", name: "swapUID", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}];
 	ptrType$1.methods = [{prop: "UseEventManager", name: "UseEventManager", pkg: "", typ: $funcType([ptrType$4], [$Bool], false)}, {prop: "LoadEvents", name: "LoadEvents", pkg: "", typ: $funcType([], [], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Empty", name: "Empty", pkg: "", typ: $funcType([], [], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "CleanRemoved", name: "CleanRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "Augment", name: "Augment", pkg: "", typ: $funcType([sliceType$5], [], true)}, {prop: "AutoClosed", name: "AutoClosed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([Markup], [$Bool], false)}, {prop: "AddChild", name: "AddChild", pkg: "", typ: $funcType([Markup], [], false)}, {prop: "Children", name: "Children", pkg: "", typ: $funcType([], [sliceType$5], false)}, {prop: "Styles", name: "Styles", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [sliceType$3], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [Markup], false)}];
 	ptrType$3.methods = [{prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([ptrType$3], [$Bool], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [ptrType$3], false)}];
 	ptrType.methods = [{prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([ptrType], [$Bool], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [ptrType], false)}];
@@ -33929,9 +33940,11 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 	AttrWriter.init([]);
 	StylePrinter.init([{prop: "Print", name: "Print", pkg: "", typ: $funcType([sliceType$4], [$String], false)}]);
 	StyleWriter.init([]);
-	ElementWriter.init([{prop: "attrWriter", name: "attrWriter", pkg: "github.com/influx6/haiku/trees", typ: AttrPrinter, tag: ""}, {prop: "styleWriter", name: "styleWriter", pkg: "github.com/influx6/haiku/trees", typ: StylePrinter, tag: ""}, {prop: "allowRemoved", name: "allowRemoved", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}]);
+	TextPrinter.init([{prop: "Print", name: "Print", pkg: "", typ: $funcType([Markup], [$String], false)}]);
+	TextWriter.init([]);
+	ElementWriter.init([{prop: "attrWriter", name: "attrWriter", pkg: "github.com/influx6/haiku/trees", typ: AttrPrinter, tag: ""}, {prop: "styleWriter", name: "styleWriter", pkg: "github.com/influx6/haiku/trees", typ: StylePrinter, tag: ""}, {prop: "text", name: "text", pkg: "github.com/influx6/haiku/trees", typ: TextPrinter, tag: ""}, {prop: "allowRemoved", name: "allowRemoved", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}]);
 	MarkupWriter.init([{prop: "Write", name: "Write", pkg: "", typ: $funcType([Markup], [$String, $error], false)}]);
-	markupWriter.init([{prop: "ElementWriter", name: "", pkg: "", typ: ptrType$9, tag: ""}]);
+	markupWriter.init([{prop: "ElementWriter", name: "", pkg: "", typ: ptrType$10, tag: ""}]);
 	Mutation.init([{prop: "Hash", name: "Hash", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Removed", name: "Removed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "UID", name: "UID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UpdateHash", name: "UpdateHash", pkg: "", typ: $funcType([], [], false)}, {prop: "swapHash", name: "swapHash", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}, {prop: "swapUID", name: "swapUID", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}]);
 	Markup.init([{prop: "AddChild", name: "AddChild", pkg: "", typ: $funcType([Markup], [], false)}, {prop: "Apply", name: "Apply", pkg: "", typ: $funcType([ptrType$1], [], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "Augment", name: "Augment", pkg: "", typ: $funcType([sliceType$5], [], true)}, {prop: "AutoClosed", name: "AutoClosed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Children", name: "Children", pkg: "", typ: $funcType([], [sliceType$5], false)}, {prop: "CleanRemoved", name: "CleanRemoved", pkg: "", typ: $funcType([], [], false)}, {prop: "Clone", name: "Clone", pkg: "", typ: $funcType([], [Markup], false)}, {prop: "Empty", name: "Empty", pkg: "", typ: $funcType([], [], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [sliceType$3], false)}, {prop: "Hash", name: "Hash", pkg: "", typ: $funcType([], [$String], false)}, {prop: "LoadEvents", name: "LoadEvents", pkg: "", typ: $funcType([], [], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Reconcile", name: "Reconcile", pkg: "", typ: $funcType([Markup], [$Bool], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "Removed", name: "Removed", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Styles", name: "Styles", pkg: "", typ: $funcType([], [sliceType$4], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UID", name: "UID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UpdateHash", name: "UpdateHash", pkg: "", typ: $funcType([], [], false)}, {prop: "UseEventManager", name: "UseEventManager", pkg: "", typ: $funcType([ptrType$4], [$Bool], false)}, {prop: "swapHash", name: "swapHash", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}, {prop: "swapUID", name: "swapUID", pkg: "github.com/influx6/haiku/trees", typ: $funcType([$String], [], false)}]);
 	Mutable.init([{prop: "uid", name: "uid", pkg: "github.com/influx6/haiku/trees", typ: $String, tag: ""}, {prop: "hash", name: "hash", pkg: "github.com/influx6/haiku/trees", typ: $String, tag: ""}, {prop: "removed", name: "removed", pkg: "github.com/influx6/haiku/trees", typ: $Bool, tag: ""}]);
@@ -33958,7 +33971,8 @@ $packages["github.com/influx6/haiku/trees"] = (function() {
 		$pkg.ErrNotStyle = errors.New("Value type is not a Style type");
 		$pkg.SimpleAttrWriter = new AttrWriter.ptr();
 		$pkg.SimpleStyleWriter = new StyleWriter.ptr();
-		$pkg.SimpleElementWriter = NewElementWriter($pkg.SimpleAttrWriter, $pkg.SimpleStyleWriter);
+		$pkg.SimpleTextWriter = new TextWriter.ptr();
+		$pkg.SimpleElementWriter = NewElementWriter($pkg.SimpleAttrWriter, $pkg.SimpleStyleWriter, $pkg.SimpleTextWriter);
 		$pkg.SimpleMarkupWriter = NewMarkupWriter($pkg.SimpleElementWriter);
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
@@ -35475,17 +35489,14 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	ptrType$14 = $ptrType(HideView);
 	ptrType$15 = $ptrType(ShowView);
 	CreateFragment = function(html) {
-		var $ptr, div, fragment, html, nodes, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; div = $f.div; fragment = $f.fragment; html = $f.html; nodes = $f.nodes; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, div, fragment, html, nodes;
 		panicBrowserDetect();
 		div = jsutils.CreateElement("div");
 		jsutils.SetInnerHTML(div, html);
 		fragment = jsutils.CreateDocumentFragment();
 		nodes = jsutils.ChildNodeList(div);
 		jsutils.AppendChild(fragment, nodes);
-		$r = jsutils.UnWrapSpecialTextElements(fragment); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		return fragment;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: CreateFragment }; } $f.$ptr = $ptr; $f.div = div; $f.fragment = fragment; $f.html = html; $f.nodes = nodes; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.CreateFragment = CreateFragment;
 	AddNodeIfNone = function(dest, src) {
@@ -35511,17 +35522,19 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	};
 	$pkg.AddNodeIfNoneInList = AddNodeIfNoneInList;
 	Patch = function(fragment, live) {
-		var $ptr, _arg, _arg$1, _arg$2, _arg$3, _entry, _i, _i$1, _keys, _r$1, _r$2, _r$3, _r$4, _ref, _ref$1, _tmp, _tmp$1, _tmp$2, _tmp$3, attrs, children, class$1, fragment, hash, id, key, live, nchildren, no, no$1, node, sel, shadowNodes, tagname, target, uid, value, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _entry = $f._entry; _i = $f._i; _i$1 = $f._i$1; _keys = $f._keys; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _ref = $f._ref; _ref$1 = $f._ref$1; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; attrs = $f.attrs; children = $f.children; class$1 = $f.class$1; fragment = $f.fragment; hash = $f.hash; id = $f.id; key = $f.key; live = $f.live; nchildren = $f.nchildren; no = $f.no; no$1 = $f.no$1; node = $f.node; sel = $f.sel; shadowNodes = $f.shadowNodes; tagname = $f.tagname; target = $f.target; uid = $f.uid; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _arg, _arg$1, _arg$2, _arg$3, _entry, _i, _i$1, _keys, _r$1, _r$2, _r$3, _r$4, _r$5, _ref, _ref$1, _tmp, _tmp$1, _tmp$2, _tmp$3, _tuple, attrs, children, class$1, empty, fragment, hash, id, key, live, liveNodeAt, liveNodes, n, nchildren, no, no$1, node, sel, shadowNodes, tagname, target, uid, value, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _entry = $f._entry; _i = $f._i; _i$1 = $f._i$1; _keys = $f._keys; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _ref = $f._ref; _ref$1 = $f._ref$1; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tuple = $f._tuple; attrs = $f.attrs; children = $f.children; class$1 = $f.class$1; empty = $f.empty; fragment = $f.fragment; hash = $f.hash; id = $f.id; key = $f.key; live = $f.live; liveNodeAt = $f.liveNodeAt; liveNodes = $f.liveNodes; n = $f.n; nchildren = $f.nchildren; no = $f.no; no$1 = $f.no$1; node = $f.node; sel = $f.sel; shadowNodes = $f.shadowNodes; tagname = $f.tagname; target = $f.target; uid = $f.uid; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		if (!!!(live.hasChildNodes())) {
 			jsutils.AppendChild(live, new sliceType$3([fragment]));
 			return;
 		}
 		shadowNodes = jsutils.ChildNodeList(fragment);
+		liveNodes = jsutils.ChildNodeList(live);
 		_ref = shadowNodes;
 		_i = 0;
 		/* while (true) { */ case 1:
 			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 2; continue; }
+			n = _i;
 			node = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
 			/* */ if (node === null || node === undefined) { $s = 3; continue; }
 			/* */ $s = 4; continue;
@@ -35532,7 +35545,24 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 			/* */ if (node.constructor === $global.Text) { $s = 5; continue; }
 			/* */ $s = 6; continue;
 			/* if (node.constructor === $global.Text) { */ case 5:
-				jsutils.AppendChild(live, new sliceType$3([node]));
+				_r$1 = jsutils.EmptyTextNode(node); /* */ $s = 7; case 7: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+				_tuple = _r$1; empty = _tuple[1];
+				/* */ if (empty) { $s = 8; continue; }
+				/* */ $s = 9; continue;
+				/* if (empty) { */ case 8:
+					jsutils.AppendChild(live, new sliceType$3([node]));
+					_i++;
+					/* continue patchloop; */ $s = 1; continue s;
+				/* } */ case 9:
+				liveNodeAt = null;
+				if (n < liveNodes.$length) {
+					liveNodeAt = ((n < 0 || n >= liveNodes.$length) ? $throwRuntimeError("index out of range") : liveNodes.$array[liveNodes.$offset + n]);
+				}
+				if (liveNodeAt === null || liveNodeAt === undefined) {
+					jsutils.AppendChild(live, new sliceType$3([node]));
+				} else {
+					jsutils.InsertBefore(live, liveNodeAt, node);
+				}
 				_i++;
 				/* continue patchloop; */ $s = 1; continue s;
 			/* } */ case 6:
@@ -35550,78 +35580,76 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 			if (jsutils.HasAttribute(node, "uid")) {
 				uid = jsutils.GetAttribute(node, "uid");
 			}
-			/* */ if (allEmpty(new sliceType$1([id, hash, uid]))) { $s = 7; continue; }
-			/* */ $s = 8; continue;
-			/* if (allEmpty(new sliceType$1([id, hash, uid]))) { */ case 7:
+			/* */ if (allEmpty(new sliceType$1([id, hash, uid]))) { $s = 10; continue; }
+			/* */ $s = 11; continue;
+			/* if (allEmpty(new sliceType$1([id, hash, uid]))) { */ case 10:
 				AddNodeIfNone(live, node);
 				_i++;
 				/* continue patchloop; */ $s = 1; continue s;
-			/* } */ case 8:
-			/* */ if (allEmpty(new sliceType$1([hash, uid]))) { $s = 9; continue; }
-			/* */ $s = 10; continue;
-			/* if (allEmpty(new sliceType$1([hash, uid]))) { */ case 9:
-				/* */ if (allEmpty(new sliceType$1([id]))) { $s = 11; continue; }
-				/* */ $s = 12; continue;
-				/* if (allEmpty(new sliceType$1([id]))) { */ case 11:
-					$r = log.Printf("adding since class", new sliceType$4([])); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* } */ case 11:
+			/* */ if (allEmpty(new sliceType$1([hash, uid]))) { $s = 12; continue; }
+			/* */ $s = 13; continue;
+			/* if (allEmpty(new sliceType$1([hash, uid]))) { */ case 12:
+				/* */ if (allEmpty(new sliceType$1([id]))) { $s = 14; continue; }
+				/* */ $s = 15; continue;
+				/* if (allEmpty(new sliceType$1([id]))) { */ case 14:
 					no = jsutils.QuerySelectorAll(live, class$1);
 					if (no.$length <= 0) {
 						jsutils.AppendChild(live, new sliceType$3([node]));
 					} else {
 						AddNodeIfNoneInList(live, no, node);
 					}
-					$s = 13; continue;
-				/* } else { */ case 12:
-					$r = log.Printf("adding since id", new sliceType$4([])); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+					$s = 16; continue;
+				/* } else { */ case 15:
 					_arg = live;
-					_r$1 = fmt.Sprintf("#%s", new sliceType$4([new $String(id)])); /* */ $s = 16; case 16: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-					_arg$1 = _r$1;
-					_r$2 = jsutils.QuerySelector(_arg, _arg$1); /* */ $s = 17; case 17: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-					no$1 = _r$2;
+					_r$2 = fmt.Sprintf("#%s", new sliceType$4([new $String(id)])); /* */ $s = 17; case 17: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+					_arg$1 = _r$2;
+					_r$3 = jsutils.QuerySelector(_arg, _arg$1); /* */ $s = 18; case 18: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+					no$1 = _r$3;
 					if (no$1 === null || !(no$1 === undefined)) {
 						jsutils.AppendChild(live, new sliceType$3([node]));
 					} else {
 						jsutils.ReplaceNode(live, node, no$1);
 					}
-				/* } */ case 13:
+				/* } */ case 16:
 				_i++;
 				/* continue patchloop; */ $s = 1; continue s;
-			/* } */ case 10:
-			nchildren = jsutils.ChildNodeList(node);
-			_r$3 = strings.ToLower(tagname); /* */ $s = 18; case 18: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-			_arg$2 = new $String(_r$3);
+			/* } */ case 13:
+			_r$4 = strings.ToLower(tagname); /* */ $s = 19; case 19: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+			_arg$2 = new $String(_r$4);
 			_arg$3 = new $String(uid);
-			_r$4 = fmt.Sprintf("%s[uid='%s']", new sliceType$4([_arg$2, _arg$3])); /* */ $s = 19; case 19: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-			sel = _r$4;
+			_r$5 = fmt.Sprintf("%s[uid='%s']", new sliceType$4([_arg$2, _arg$3])); /* */ $s = 20; case 20: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+			sel = _r$5;
 			target = jsutils.QuerySelector(live, sel);
-			/* */ if (target === null || target === undefined) { $s = 20; continue; }
-			/* */ $s = 21; continue;
-			/* if (target === null || target === undefined) { */ case 20:
+			/* */ if (target === null || target === undefined) { $s = 21; continue; }
+			/* */ $s = 22; continue;
+			/* if (target === null || target === undefined) { */ case 21:
 				jsutils.AppendChild(live, new sliceType$3([node]));
 				_i++;
 				/* continue patchloop; */ $s = 1; continue s;
-			/* } */ case 21:
-			/* */ if (jsutils.HasAttribute(node, "haikuRemoved")) { $s = 22; continue; }
-			/* */ $s = 23; continue;
-			/* if (jsutils.HasAttribute(node, "haikuRemoved")) { */ case 22:
+			/* } */ case 22:
+			/* */ if (jsutils.HasAttribute(node, "haikuRemoved")) { $s = 23; continue; }
+			/* */ $s = 24; continue;
+			/* if (jsutils.HasAttribute(node, "haikuRemoved")) { */ case 23:
 				jsutils.RemoveChild(target, new sliceType$3([target]));
 				_i++;
 				/* continue patchloop; */ $s = 1; continue s;
-			/* } */ case 23:
-			/* */ if (nchildren.$length <= 0) { $s = 24; continue; }
-			/* */ $s = 25; continue;
-			/* if (nchildren.$length <= 0) { */ case 24:
+			/* } */ case 24:
+			nchildren = jsutils.ChildNodeList(node);
+			/* */ if (nchildren.$length <= 0) { $s = 25; continue; }
+			/* */ $s = 26; continue;
+			/* if (nchildren.$length <= 0) { */ case 25:
 				jsutils.ReplaceNode(live, node, target);
 				_i++;
 				/* continue patchloop; */ $s = 1; continue s;
-			/* } */ case 25:
-			/* */ if (jsutils.GetAttribute(target, "hash") === hash) { $s = 26; continue; }
-			/* */ $s = 27; continue;
-			/* if (jsutils.GetAttribute(target, "hash") === hash) { */ case 26:
+			/* } */ case 26:
+			/* */ if (jsutils.GetAttribute(target, "hash") === hash) { $s = 27; continue; }
+			/* */ $s = 28; continue;
+			/* if (jsutils.GetAttribute(target, "hash") === hash) { */ case 27:
 				_i++;
 				/* continue patchloop; */ $s = 1; continue s;
-			/* } */ case 27:
-			$r = jsutils.CleanAllTextNode(target); /* */ $s = 28; case 28: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* } */ case 28:
+			$r = jsutils.CleanAllTextNode(target); /* */ $s = 29; case 29: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			attrs = jsutils.Attributes(node);
 			_ref$1 = attrs;
 			_i$1 = 0;
@@ -35639,18 +35667,18 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 				_i$1++;
 			}
 			children = jsutils.ChildNodeList(target);
-			/* */ if (children.$length <= 1) { $s = 29; continue; }
-			/* */ $s = 30; continue;
-			/* if (children.$length <= 1) { */ case 29:
+			/* */ if (children.$length <= 1) { $s = 30; continue; }
+			/* */ $s = 31; continue;
+			/* if (children.$length <= 1) { */ case 30:
 				jsutils.SetInnerHTML(target, "");
 				jsutils.AppendChild(target, nchildren);
 				_i++;
 				/* continue patchloop; */ $s = 1; continue s;
-			/* } */ case 30:
-			$r = Patch(node, target); /* */ $s = 31; case 31: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* } */ case 31:
+			$r = Patch(node, target); /* */ $s = 32; case 32: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			_i++;
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Patch }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._entry = _entry; $f._i = _i; $f._i$1 = _i$1; $f._keys = _keys; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f.attrs = attrs; $f.children = children; $f.class$1 = class$1; $f.fragment = fragment; $f.hash = hash; $f.id = id; $f.key = key; $f.live = live; $f.nchildren = nchildren; $f.no = no; $f.no$1 = no$1; $f.node = node; $f.sel = sel; $f.shadowNodes = shadowNodes; $f.tagname = tagname; $f.target = target; $f.uid = uid; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Patch }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._entry = _entry; $f._i = _i; $f._i$1 = _i$1; $f._keys = _keys; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tuple = _tuple; $f.attrs = attrs; $f.children = children; $f.class$1 = class$1; $f.empty = empty; $f.fragment = fragment; $f.hash = hash; $f.id = id; $f.key = key; $f.live = live; $f.liveNodeAt = liveNodeAt; $f.liveNodes = liveNodes; $f.n = n; $f.nchildren = nchildren; $f.no = no; $f.no$1 = no$1; $f.node = node; $f.sel = sel; $f.shadowNodes = shadowNodes; $f.tagname = tagname; $f.target = target; $f.uid = uid; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.Patch = Patch;
 	allEmpty = function(s) {
@@ -36325,17 +36353,16 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		vm[0] = ptrType$8.nil;
 		vm[0] = new View.ptr(NewState(), flux.FlatAlways(vm[0]), new HideView.ptr(), new ShowView.ptr(), $ifaceNil, writer, events.NewEventManager(), fx, null, $ifaceNil);
 		_r$1 = vm[0].Reactor.React((function(vm) { return function $b(r, param, param$1) {
-			var $ptr, _r$1, _r$2, html, param, param$1, r, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; html = $f.html; param = $f.param; param$1 = $f.param$1; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			var $ptr, _r$1, html, param, param$1, r, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; html = $f.html; param = $f.param; param$1 = $f.param$1; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 			/* */ if (!(vm[0].dom === null)) { $s = 1; continue; }
 			/* */ $s = 2; continue;
 			/* if (!(vm[0].dom === null)) { */ case 1:
 				_r$1 = vm[0].RenderHTML(new sliceType$1([])); /* */ $s = 3; case 3: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 				html = _r$1;
-				_r$2 = CreateFragment(html); /* */ $s = 4; case 4: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-				$r = Patch(_r$2, vm[0].dom); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$r = Patch(CreateFragment(html), vm[0].dom); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			/* } */ case 2:
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.html = html; $f.param = param; $f.param$1 = param$1; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.html = html; $f.param = param; $f.param$1 = param$1; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(vm), true); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$1;
 		_r$2 = vm[0].States.UseActivator((function(vm) { return function() {
@@ -36352,6 +36379,14 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: MakeView }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.fx = fx; $f.vm = vm; $f.writer = writer; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.MakeView = MakeView;
+	View.ptr.prototype.BindView = function(vs) {
+		var $ptr, v, vs, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; v = $f.v; vs = $f.vs; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		v = this;
+		$r = vs.Bind(v, true); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: View.ptr.prototype.BindView }; } $f.$ptr = $ptr; $f.v = v; $f.vs = vs; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	View.prototype.BindView = function(vs) { return this.$val.BindView(vs); };
 	View.ptr.prototype.UseMux = function(fx) {
 		var $ptr, fx, v;
 		v = this;
@@ -36450,7 +36485,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	ptrType$5.methods = [{prop: "AddState", name: "AddState", pkg: "", typ: $funcType([$String], [States], false)}, {prop: "UseState", name: "UseState", pkg: "", typ: $funcType([$String, States], [States], false)}, {prop: "ShallowState", name: "ShallowState", pkg: "", typ: $funcType([], [States], false)}, {prop: "State", name: "State", pkg: "", typ: $funcType([], [States], false)}, {prop: "Partial", name: "Partial", pkg: "", typ: $funcType([$String], [$error], false)}, {prop: "All", name: "All", pkg: "", typ: $funcType([$String], [$error], false)}, {prop: "DeactivateAll", name: "DeactivateAll", pkg: "", typ: $funcType([], [], false)}, {prop: "eachState", name: "eachState", pkg: "github.com/influx6/haiku/views", typ: $funcType([funcType$1], [], false)}, {prop: "getAddr", name: "getAddr", pkg: "github.com/influx6/haiku/views", typ: $funcType([States], [$String], false)}, {prop: "get", name: "get", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String], [States], false)}, {prop: "add", name: "add", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, States], [], false)}, {prop: "trajectory", name: "trajectory", pkg: "github.com/influx6/haiku/views", typ: $funcType([sliceType$1, $Bool], [$error], false)}, {prop: "prepare", name: "prepare", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String], [sliceType$1, $error], false)}, {prop: "diffOnlySubs", name: "diffOnlySubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$5], false)}, {prop: "diffOnlyNotSubs", name: "diffOnlyNotSubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$5], false)}, {prop: "diffSubs", name: "diffSubs", pkg: "github.com/influx6/haiku/views", typ: $funcType([], [sliceType$5, sliceType$5], false)}];
 	ptrType$14.methods = [{prop: "Render", name: "Render", pkg: "", typ: $funcType([trees.Markup], [], false)}];
 	ptrType$15.methods = [{prop: "Render", name: "Render", pkg: "", typ: $funcType([trees.Markup], [], false)}];
-	ptrType$8.methods = [{prop: "UseMux", name: "UseMux", pkg: "", typ: $funcType([ViewMux], [], false)}, {prop: "Mount", name: "Mount", pkg: "", typ: $funcType([ptrType$3], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$9], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [template.HTML], true)}];
+	ptrType$8.methods = [{prop: "BindView", name: "BindView", pkg: "", typ: $funcType([Views], [], false)}, {prop: "UseMux", name: "UseMux", pkg: "", typ: $funcType([ViewMux], [], false)}, {prop: "Mount", name: "Mount", pkg: "", typ: $funcType([ptrType$3], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$9], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [template.HTML], true)}];
 	PathSpec.init([{prop: "Hash", name: "Hash", pkg: "", typ: $String, tag: ""}, {prop: "Path", name: "Path", pkg: "", typ: $String, tag: ""}, {prop: "Sequence", name: "Sequence", pkg: "", typ: $String, tag: ""}]);
 	PathObserver.init([{prop: "Reactor", name: "", pkg: "", typ: flux.Reactor, tag: ""}, {prop: "usingHash", name: "usingHash", pkg: "github.com/influx6/haiku/views", typ: $Bool, tag: ""}]);
 	HistoryProvider.init([{prop: "PathObserver", name: "", pkg: "", typ: ptrType$4, tag: ""}]);
@@ -36460,7 +36495,7 @@ $packages["github.com/influx6/haiku/views"] = (function() {
 	States.init([{prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}]);
 	State.init([{prop: "active", name: "active", pkg: "github.com/influx6/haiku/views", typ: $Int64, tag: ""}, {prop: "activator", name: "activator", pkg: "github.com/influx6/haiku/views", typ: StateResponse, tag: ""}, {prop: "deactivator", name: "deactivator", pkg: "github.com/influx6/haiku/views", typ: StateResponse, tag: ""}, {prop: "optionalValidator", name: "optionalValidator", pkg: "github.com/influx6/haiku/views", typ: StateValidator, tag: ""}, {prop: "engine", name: "engine", pkg: "github.com/influx6/haiku/views", typ: ptrType$5, tag: ""}, {prop: "vo", name: "vo", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}, {prop: "ro", name: "ro", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}, {prop: "do$7", name: "do", pkg: "github.com/influx6/haiku/views", typ: sync.Mutex, tag: ""}]);
 	StateEngine.init([{prop: "rw", name: "rw", pkg: "github.com/influx6/haiku/views", typ: sync.RWMutex, tag: ""}, {prop: "states", name: "states", pkg: "github.com/influx6/haiku/views", typ: mapType, tag: ""}, {prop: "owner", name: "owner", pkg: "github.com/influx6/haiku/views", typ: States, tag: ""}, {prop: "curr", name: "curr", pkg: "github.com/influx6/haiku/views", typ: States, tag: ""}]);
-	Views.init([{prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([flux.Reactor, $Bool], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [$error], false)}, {prop: "CloseNotify", name: "CloseNotify", pkg: "", typ: $funcType([], [chanType], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$9], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Mount", name: "Mount", pkg: "", typ: $funcType([ptrType$3], [], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "React", name: "React", pkg: "", typ: $funcType([flux.SignalMuxHandler, $Bool], [flux.Reactor], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [template.HTML], true)}, {prop: "Reply", name: "Reply", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "ReplyError", name: "ReplyError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Send", name: "Send", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "SendError", name: "SendError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseMux", name: "UseMux", pkg: "", typ: $funcType([ViewMux], [], false)}, {prop: "UseRoot", name: "UseRoot", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}]);
+	Views.init([{prop: "Activate", name: "Activate", pkg: "", typ: $funcType([], [], false)}, {prop: "Active", name: "Active", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Bind", name: "Bind", pkg: "", typ: $funcType([flux.Reactor, $Bool], [], false)}, {prop: "BindView", name: "BindView", pkg: "", typ: $funcType([Views], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [$error], false)}, {prop: "CloseNotify", name: "CloseNotify", pkg: "", typ: $funcType([], [chanType], false)}, {prop: "Deactivate", name: "Deactivate", pkg: "", typ: $funcType([], [], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "Engine", name: "Engine", pkg: "", typ: $funcType([], [ptrType$5], false)}, {prop: "Events", name: "Events", pkg: "", typ: $funcType([], [ptrType$9], false)}, {prop: "Hide", name: "Hide", pkg: "", typ: $funcType([], [], false)}, {prop: "Mount", name: "Mount", pkg: "", typ: $funcType([ptrType$3], [], false)}, {prop: "OverrideValidator", name: "OverrideValidator", pkg: "", typ: $funcType([StateValidator], [States], false)}, {prop: "React", name: "React", pkg: "", typ: $funcType([flux.SignalMuxHandler, $Bool], [flux.Reactor], false)}, {prop: "Render", name: "Render", pkg: "", typ: $funcType([sliceType$1], [trees.Markup], true)}, {prop: "RenderHTML", name: "RenderHTML", pkg: "", typ: $funcType([sliceType$1], [template.HTML], true)}, {prop: "Reply", name: "Reply", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "ReplyError", name: "ReplyError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Send", name: "Send", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "SendError", name: "SendError", pkg: "", typ: $funcType([$error], [], false)}, {prop: "Show", name: "Show", pkg: "", typ: $funcType([], [], false)}, {prop: "UseActivator", name: "UseActivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseDeactivator", name: "UseDeactivator", pkg: "", typ: $funcType([StateResponse], [States], false)}, {prop: "UseMux", name: "UseMux", pkg: "", typ: $funcType([ViewMux], [], false)}, {prop: "UseRoot", name: "UseRoot", pkg: "", typ: $funcType([flux.Reactor], [], false)}, {prop: "acceptable", name: "acceptable", pkg: "github.com/influx6/haiku/views", typ: $funcType([$String, $String], [$Bool], false)}]);
 	ViewStates.init([{prop: "Render", name: "Render", pkg: "", typ: $funcType([trees.Markup], [], false)}]);
 	HideView.init([]);
 	ShowView.init([]);

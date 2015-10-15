@@ -2,7 +2,6 @@ package views
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -35,7 +34,7 @@ func CreateFragment(html string) *js.Object {
 	jsutils.AppendChild(fragment, nodes...)
 
 	//unwrap all the special Text UnknownELement we are using
-	jsutils.UnWrapSpecialTextElements(fragment)
+	// jsutils.UnWrapSpecialTextElements(fragment)
 
 	return fragment
 }
@@ -76,13 +75,14 @@ func Patch(fragment, live *js.Object) {
 	// shadowNodes := fragment.ChildNodes()
 
 	shadowNodes := jsutils.ChildNodeList(fragment)
+	liveNodes := jsutils.ChildNodeList(live)
 
 	// FIXED: instead of going through the children which may be many,
 	// liveNodes := fragment.ChildNodes()
 	// log.Printf("patchtree will now add: \n%+s", shadowNodes)
 
 patchloop:
-	for _, node := range shadowNodes {
+	for n, node := range shadowNodes {
 		if node == nil || node == js.Undefined {
 			continue
 		}
@@ -92,7 +92,24 @@ patchloop:
 
 		if node.Get("constructor") == js.Global.Get("Text") {
 			// log.Printf("text %+s %s %s %d", node, node.Get("nodeName"), node.Get("innerText"), node.Get("nodeType").Int())
-			jsutils.AppendChild(live, node)
+
+			if _, empty := jsutils.EmptyTextNode(node); empty {
+				jsutils.AppendChild(live, node)
+				continue patchloop
+			}
+
+			var liveNodeAt *js.Object
+
+			if n < len(liveNodes) {
+				liveNodeAt = liveNodes[n]
+			}
+
+			if liveNodeAt == nil || liveNodeAt == js.Undefined {
+				jsutils.AppendChild(live, node)
+			} else {
+				jsutils.InsertBefore(live, liveNodeAt, node)
+			}
+
 			continue patchloop
 		}
 
@@ -137,7 +154,7 @@ patchloop:
 		if allEmpty(hash, uid) {
 			// is the id empty also then we know class is not or vise-versa
 			if allEmpty(id) {
-				log.Printf("adding since class")
+				// log.Printf("adding since class")
 				// class is it and we only want those that match narrowing our set
 				no := jsutils.QuerySelectorAll(live, class)
 
@@ -151,7 +168,7 @@ patchloop:
 
 			} else {
 				// id is it and we only want one
-				log.Printf("adding since id")
+				// log.Printf("adding since id")
 				no := jsutils.QuerySelector(live, fmt.Sprintf("#%s", id))
 
 				// if none found we add else we replace
@@ -165,7 +182,6 @@ patchloop:
 			continue patchloop
 		}
 
-		nchildren := jsutils.ChildNodeList(node)
 		// lets use our unique id to check for the element if it exists
 		sel := fmt.Sprintf(`%s[uid='%s']`, strings.ToLower(tagname), uid)
 
@@ -188,6 +204,7 @@ patchloop:
 			continue patchloop
 		}
 
+		nchildren := jsutils.ChildNodeList(node)
 		// log.Printf("Checking size of children %s %d", sel, len(nchildren))
 		//if the new node has no children, then just replace it
 		// if len(elem.ChildNodes()) <= 0 {

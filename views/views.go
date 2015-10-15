@@ -96,6 +96,7 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 		//if we are not domless then patch
 		if vm.dom != nil {
 			html := vm.RenderHTML()
+			// log.Printf("NewRender: \n %s\n-------------------------------", html)
 			Patch(CreateFragment(string(html)), vm.dom)
 		}
 	}, true)

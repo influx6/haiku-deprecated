@@ -3,7 +3,6 @@ package views
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/go-humble/detect"
@@ -58,9 +57,9 @@ func (p *PathObserver) FollowSpec(ps PathSpec) {
 func (p *PathObserver) NotifyPage(pg *Pages) {
 	p.React(func(r flux.Reactor, _ error, d interface{}) {
 		// if err != nil { r.SendError(err) }
-		log.Printf("will Sequence: %s", d)
+		// log.Printf("will Sequence: %s", d)
 		if ps, ok := d.(PathSpec); ok {
-			log.Printf("Sequence: %s", ps.Sequence)
+			// log.Printf("Sequence: %s", ps.Sequence)
 			pg.All(ps.Sequence)
 		}
 	}, true)

@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/influx6/flux"
 	"github.com/influx6/haiku/events"
+	"github.com/influx6/haiku/pub"
 	"github.com/influx6/haiku/trees"
 	"github.com/influx6/haiku/trees/elems"
 )
@@ -18,7 +18,7 @@ type Renderable interface {
 
 // ReactiveRenderable provides a interface for a reactive renderable type.
 type ReactiveRenderable interface {
-	flux.Reactor
+	pub.Publisher
 	Renderable
 }
 
@@ -30,7 +30,7 @@ type Behaviour interface {
 
 // Views define a Haiku Component
 type Views interface {
-	flux.Reactor
+	pub.Publisher
 	States
 	Behaviour
 
@@ -73,7 +73,7 @@ func (v *ShowView) Render(m trees.Markup) {
 // View represent a basic Haiku view
 type View struct {
 	States
-	flux.Reactor
+	pub.Publisher
 	HideState   ViewStates
 	ShowState   ViewStates
 	activeState ViewStates
@@ -93,7 +93,7 @@ func NewView(view Renderable) *View {
 // MakeView returns a Components style
 func MakeView(writer trees.MarkupWriter, vw Renderable) (vm *View) {
 	vm = &View{
-		Reactor:   flux.FlatAlways(vm),
+		Publisher: pub.Always(vm),
 		States:    NewState(),
 		HideState: &HideView{},
 		ShowState: &ShowView{},
@@ -108,7 +108,7 @@ func MakeView(writer trees.MarkupWriter, vw Renderable) (vm *View) {
 	}
 
 	//set up the reaction chain, if we have node attach then render to it
-	vm.React(func(r flux.Reactor, _ error, _ interface{}) {
+	vm.React(func(r pub.Publisher, _ error, _ interface{}) {
 		//if we are not domless then patch
 		if vm.dom != nil {
 			html := vm.RenderHTML()

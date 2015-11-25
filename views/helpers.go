@@ -5,8 +5,6 @@ import (
 	"html/template"
 )
 
-// Renderables are objects capable of rendering out themselves as strings using any variety of methods but most importantly do cache that last render for returning when desired to do so
-
 // TemplateRenderable defines a basic example of a Renderable
 type TemplateRenderable struct {
 	tmpl  *template.Template

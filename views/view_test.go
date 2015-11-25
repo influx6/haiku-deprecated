@@ -3,7 +3,6 @@ package views
 import (
 	"testing"
 
-	"github.com/influx6/flux"
 	"github.com/influx6/haiku/trees"
 	"github.com/influx6/haiku/trees/attrs"
 	"github.com/influx6/haiku/trees/elems"
@@ -41,8 +40,8 @@ func TestReactiveView(t *testing.T) {
 	bo := videos.RenderHTML()
 
 	if len(bo) != treeRenderlen {
-		flux.FatalFailed(t, "Rendered result with invalid length, expected %d but got %d -> \n %s", treeRenderlen, len(bo), bo)
+		fatalFailed(t, "Rendered result with invalid length, expected %d but got %d -> \n %s", treeRenderlen, len(bo), bo)
 	}
 
-	flux.LogPassed(t, "Rendered result accurated with length %d", treeRenderlen)
+	logPassed(t, "Rendered result accurated with length %d", treeRenderlen)
 }

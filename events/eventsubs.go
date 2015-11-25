@@ -15,7 +15,7 @@ import (
 // instance which allows chaining of events listeners like middleware
 type EventSub struct {
 	*types.EventMeta
-	FlatChains
+	Chains
 	jslink JSEventMux
 	dom    *js.Object
 }
@@ -23,16 +23,16 @@ type EventSub struct {
 // NewEventSub returns a new event element config
 func NewEventSub(evtype, evtarget string) *EventSub {
 	return &EventSub{
-		EventMeta:  &types.EventMeta{Type: evtype, Target: evtarget},
-		FlatChains: FlatChainIdentity(),
+		EventMeta: &types.EventMeta{Type: evtype, Target: evtarget},
+		Chains:    ChainIdentity(),
 	}
 }
 
 // MetaEventSub returns a new event using the supplied EventMeta
 func MetaEventSub(meta *types.EventMeta) *EventSub {
 	return &EventSub{
-		EventMeta:  meta,
-		FlatChains: FlatChainIdentity(),
+		EventMeta: meta,
+		Chains:    ChainIdentity(),
 	}
 }
 

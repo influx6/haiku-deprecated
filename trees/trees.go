@@ -4,24 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/influx6/flux"
 	"github.com/influx6/haiku/events"
 	"github.com/influx6/haiku/types"
 )
 
-// const (
-// 	//NoAction is the default reconcile response for markup reconcilation process
-// 	NoAction = iota
-// 	//ChangeHash determines if the old hash should be replaced
-// 	ChangeHash
-// 	//KeepHash determines the old hash should be kept
-// 	KeepHash
-// )
-
 // Mutation defines the capability of an element to state its
 // state if mutation occured
 type Mutation interface {
-	// flux.Reactor
 	UID() string
 	Hash() string
 	swapHash(string)
@@ -64,8 +53,8 @@ type Mutable struct {
 // NewMutable returns a new mutable instance
 func NewMutable() *Mutable {
 	m := &Mutable{
-		uid:  flux.RandString(8),
-		hash: flux.RandString(10),
+		uid:  randString(8),
+		hash: randString(10),
 	}
 
 	// m.Reactor = flux.Reactive(func(r flux.Reactor, err error, d interface{}) {
@@ -81,7 +70,7 @@ func NewMutable() *Mutable {
 
 // UpdateHash updates the mutable hash value
 func (m *Mutable) UpdateHash() {
-	m.hash = flux.RandString(10)
+	m.hash = randString(10)
 }
 
 // Remove marks this mutable as removed making this irreversible

@@ -6,43 +6,43 @@ import (
 	"github.com/influx6/haiku/types"
 )
 
-// FlatHandler provides a handler for flatchain
-type FlatHandler func(types.Event, types.EventHandler)
+// Handler provides a handler for Chain
+type Handler func(types.Event, types.EventHandler)
 
-//FlatChains define a simple flat chain
-type FlatChains interface {
+//Chains define a simple  chain
+type Chains interface {
 	HandleContext(types.Event)
-	Next(FlatHandler) FlatChains
-	Chain(FlatChains) FlatChains
-	NChain(FlatChains) FlatChains
-	Bind(rnx types.EventHandler) FlatChains
-	useNext(FlatChains)
-	usePrev(FlatChains)
+	Next(Handler) Chains
+	Chain(Chains) Chains
+	NChain(Chains) Chains
+	Bind(rnx types.EventHandler) Chains
+	useNext(Chains)
+	usePrev(Chains)
 	UnChain()
 }
 
-// FlatChain provides a simple middleware like
-type FlatChain struct {
-	op         FlatHandler
-	prev, next FlatChains
+// Chain provides a simple middleware like
+type Chain struct {
+	op         Handler
+	prev, next Chains
 }
 
-//FlatChainIdentity returns a chain that calls the next automatically
-func FlatChainIdentity() FlatChains {
-	return NewFlatChain(func(c types.Event, nx types.EventHandler) {
+//ChainIdentity returns a chain that calls the next automatically
+func ChainIdentity() Chains {
+	return NewChain(func(c types.Event, nx types.EventHandler) {
 		nx(c)
 	})
 }
 
-//NewFlatChain returns a new flatchain instance
-func NewFlatChain(fx FlatHandler) *FlatChain {
-	return &FlatChain{
+//NewChain returns a new Chain instance
+func NewChain(fx Handler) *Chain {
+	return &Chain{
 		op: fx,
 	}
 }
 
 // UnChain unlinks the current chain from the set and reconnects the others
-func (r *FlatChain) UnChain() {
+func (r *Chain) UnChain() {
 	prev := r.prev
 	next := r.next
 
@@ -56,21 +56,21 @@ func (r *FlatChain) UnChain() {
 }
 
 // Bind provides a wrapper over the Next binder function call
-func (r *FlatChain) Bind(rnx types.EventHandler) FlatChains {
+func (r *Chain) Bind(rnx types.EventHandler) Chains {
 	return r.Next(func(ev types.Event, nx types.EventHandler) {
 		rnx(ev)
 		nx(ev)
 	})
 }
 
-// Next allows the chain of the function as a FlatHandler
-func (r *FlatChain) Next(rnx FlatHandler) FlatChains {
-	nx := NewFlatChain(rnx)
+// Next allows the chain of the function as a Handler
+func (r *Chain) Next(rnx Handler) Chains {
+	nx := NewChain(rnx)
 	return r.NChain(nx)
 }
 
-// Chain sets the next flat chains else passes it down to the last chain to set as next chain,returning itself
-func (r *FlatChain) Chain(rx FlatChains) FlatChains {
+// Chain sets the next  chains else passes it down to the last chain to set as next chain,returning itself
+func (r *Chain) Chain(rx Chains) Chains {
 	if r.next == nil {
 		rx.usePrev(r)
 		r.useNext(rx)
@@ -80,8 +80,8 @@ func (r *FlatChain) Chain(rx FlatChains) FlatChains {
 	return r
 }
 
-// NChain sets the next flat chains else passes it down to the last chain to set as next chain,returning the the supplied chain
-func (r *FlatChain) NChain(rx FlatChains) FlatChains {
+// NChain sets the next  chains else passes it down to the last chain to set as next chain,returning the the supplied chain
+func (r *Chain) NChain(rx Chains) Chains {
 	if r.next == nil {
 		r.useNext(rx)
 		return rx
@@ -91,7 +91,7 @@ func (r *FlatChain) NChain(rx FlatChains) FlatChains {
 }
 
 // HandleContext calls the next chain if any
-func (r *FlatChain) HandleContext(c types.Event) {
+func (r *Chain) HandleContext(c types.Event) {
 	r.op(c, func(c types.Event) {
 		if r.next != nil {
 			r.next.HandleContext(c)
@@ -100,19 +100,19 @@ func (r *FlatChain) HandleContext(c types.Event) {
 }
 
 // useNext swaps the next chain with the supplied
-func (r *FlatChain) useNext(fl FlatChains) {
+func (r *Chain) useNext(fl Chains) {
 	r.next = fl
 }
 
 // usePrev swaps the previous chain with the supplied
-func (r *FlatChain) usePrev(fl FlatChains) {
+func (r *Chain) usePrev(fl Chains) {
 	r.prev = fl
 }
 
-//ChainFlats chains second flats to the first flatchain and returns the first flatchain
-func ChainFlats(mo FlatChains, so ...FlatChains) FlatChains {
+//Connect chains second set to the first Chain and returns the first Chain
+func Connect(mo Chains, so ...Chains) Chains {
 	for _, sof := range so {
-		func(do FlatChains) {
+		func(do Chains) {
 			mo.Chain(do)
 		}(sof)
 	}

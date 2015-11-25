@@ -7,9 +7,8 @@ import (
 
 	"github.com/go-humble/detect"
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/influx6/flux"
 	"github.com/influx6/haiku/jsutils"
-	//"honnef.co/go/js/dom"
+	"github.com/influx6/haiku/pub"
 )
 
 /*
@@ -30,14 +29,14 @@ func (p *PathSpec) String() string {
 
 // PathObserver represent any continouse changing route path by the browser
 type PathObserver struct {
-	flux.Reactor
+	pub.Publisher
 	usingHash bool
 }
 
 // Path returns a new PathObserver instance
 func Path() *PathObserver {
 	return &PathObserver{
-		Reactor: flux.ReactIdentity(),
+		Publisher: pub.Identity(),
 	}
 }
 
@@ -55,7 +54,7 @@ func (p *PathObserver) FollowSpec(ps PathSpec) {
 
 // NotifyPage is used to notify a page of
 func (p *PathObserver) NotifyPage(pg *Pages) {
-	p.React(func(r flux.Reactor, _ error, d interface{}) {
+	p.React(func(r pub.Publisher, _ error, d interface{}) {
 		// if err != nil { r.SendError(err) }
 		// log.Printf("will Sequence: %s", d)
 		if ps, ok := d.(PathSpec); ok {
@@ -67,7 +66,7 @@ func (p *PathObserver) NotifyPage(pg *Pages) {
 
 // NotifyPartialPage is used to notify a Page using the page engine's Partial() activator
 func (p *PathObserver) NotifyPartialPage(pg *Pages) {
-	p.React(func(r flux.Reactor, _ error, d interface{}) {
+	p.React(func(r pub.Publisher, _ error, d interface{}) {
 		// if err != nil { r.SendError(err) }
 		if ps, ok := d.(PathSpec); ok {
 			pg.Partial(ps.Sequence)

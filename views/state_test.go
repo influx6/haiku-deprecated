@@ -1,10 +1,15 @@
 package views
 
 import (
+	"fmt"
 	"testing"
-
-	"github.com/influx6/flux"
 )
+
+// succeedMark is the Unicode codepoint for a check mark.
+const succeedMark = "\u2713"
+
+// failedMark is the Unicode codepoint for an X mark.
+const failedMark = "\u2717"
 
 func TestStateEngineAll(t *testing.T) {
 	var engine = NewStateEngine()
@@ -13,21 +18,21 @@ func TestStateEngineAll(t *testing.T) {
 	home := engine.AddState("home")
 
 	home.UseActivator(func() {
-		flux.LogPassed(t, "Sucessfully activated Home")
+		logPassed(t, "Sucessfully activated Home")
 	})
 
 	home.Engine().AddState(".").UseActivator(func() {
-		flux.LogPassed(t, "Sucessfully activated border")
+		logPassed(t, "Sucessfully activated border")
 	})
 
 	home.Engine().AddState("swatch").UseActivator(func() {
-		flux.LogPassed(t, "Sucessfully activated swatch")
+		logPassed(t, "Sucessfully activated swatch")
 	})
 
 	err := engine.All(".home.swatch")
 
 	if err != nil {
-		flux.FatalFailed(t, "Unable to run full state: %s", err)
+		fatalFailed(t, "Unable to run full state: %s", err)
 	}
 
 }
@@ -38,21 +43,21 @@ func TestStateEnginePartial(t *testing.T) {
 	home := engine.AddState("home")
 
 	home.UseActivator(func() {
-		flux.FatalFailed(t, "Should not have activated home")
+		fatalFailed(t, "Should not have activated home")
 	})
 
 	home.Engine().AddState(".").UseActivator(func() {
-		flux.FatalFailed(t, "Should not have activated border")
+		fatalFailed(t, "Should not have activated border")
 	})
 
 	home.Engine().AddState("swatch").UseActivator(func() {
-		flux.LogPassed(t, "Sucessfully activated swatch")
+		logPassed(t, "Sucessfully activated swatch")
 	})
 
 	err := engine.Partial(".home.swatch")
 
 	if err != nil {
-		flux.FatalFailed(t, "Unable to run partial state: %s", err)
+		fatalFailed(t, "Unable to run partial state: %s", err)
 	}
 
 }
@@ -63,25 +68,25 @@ func TestStateEngineDeactivate(t *testing.T) {
 	home := engine.AddState("home")
 
 	home.UseActivator(func() {
-		flux.LogPassed(t, "Sucessfully activated home")
+		logPassed(t, "Sucessfully activated home")
 	})
 
 	home.Engine().AddState("swatch").UseActivator(func() {
-		flux.LogPassed(t, "Sucessfully activated swatch")
+		logPassed(t, "Sucessfully activated swatch")
 	}).UseDeactivator(func() {
-		flux.LogPassed(t, "Sucessfully deactivated swatch")
+		logPassed(t, "Sucessfully deactivated swatch")
 	})
 
 	err := engine.All(".home.swatch")
 
 	if err != nil {
-		flux.FatalFailed(t, "Unable to run full state: %s", err)
+		fatalFailed(t, "Unable to run full state: %s", err)
 	}
 
 	err = engine.All(".home")
 
 	if err != nil {
-		flux.FatalFailed(t, "Unable to run deactivate state: %s", err)
+		fatalFailed(t, "Unable to run deactivate state: %s", err)
 	}
 
 }
@@ -92,18 +97,26 @@ func TestStateEngineRoot(t *testing.T) {
 	home := engine.AddState(".")
 
 	home.UseActivator(func() {
-		flux.LogPassed(t, "Sucessfully activated home")
+		logPassed(t, "Sucessfully activated home")
 	})
 
 	home.Engine().AddState(".").UseActivator(func() {
-		flux.LogPassed(t, "Sucessfully activated swatch")
+		logPassed(t, "Sucessfully activated swatch")
 	}).UseDeactivator(func() {
-		flux.LogPassed(t, "Sucessfully deactivated swatch")
+		logPassed(t, "Sucessfully deactivated swatch")
 	})
 
 	err := engine.All(".")
 
 	if err != nil {
-		flux.FatalFailed(t, "Unable to run full state: %s", err)
+		fatalFailed(t, "Unable to run full state: %s", err)
 	}
+}
+
+func logPassed(t *testing.T, msg string, data ...interface{}) {
+	t.Logf("%s %s", fmt.Sprintf(msg, data...), succeedMark)
+}
+
+func fatalFailed(t *testing.T, msg string, data ...interface{}) {
+	t.Errorf("%s %s", fmt.Sprintf(msg, data...), failedMark)
 }

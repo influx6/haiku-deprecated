@@ -67,16 +67,15 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
 
 
 ## Goals
-  - Create simple go idiomatic view.
-  - Create simple reactive views capable of plugging into each other for notification of change.
-  - Work either on the server or the client with minimal change (atleast on the view-code side).
+  - Create simple and go idiomatic views.
+  - Render on the server or client with minimal code change.
   - Be fast and efficient even when compiled down with [Gopherjs](https://github.com/gopherjs/gopherjs).
 
 ## Current Features
-  - State based view management using a state machine to react to address changes
-  - Pure string rendering of views using custom markup system
-  - DOM rendering using custom virtual dom and patching/diffing mechanism
-  - Server side rendering of views markup embedded within standard go templates
+  - State based view management using a state machines.
+  - Pure string rendering of views with custom markup structures.
+  - DOM Patching/Diffing mechanism
+  - Server-side rendering even within standard go templates
 
 ## Future Features
   - Allow server side synchronization of views using dehydration and hydration of data

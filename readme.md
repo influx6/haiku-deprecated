@@ -1,4 +1,4 @@
-# Haiku [[Haiku-ui](https://github.com/influx6/haiku-ui)]
+# Haiku [Haiku-ui](https://github.com/influx6/haiku-ui)
 [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/influx6/haiku)
 [![Travis](https://travis-ci.org/influx6/haiku.svg?branch=master)](https://travis-ci.org/influx6/haiku)
 

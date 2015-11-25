@@ -9,31 +9,34 @@ import (
 	"github.com/influx6/haiku/trees/elems"
 )
 
-//videoData to be rendered
-var videoData = []map[string]string{
-	map[string]string{
-		"src":  "https://youtube.com/xF5R32YF4",
-		"name": "Joyride Lewis!",
-	},
-	map[string]string{
-		"src":  "https://youtube.com/dox32YF4",
-		"name": "Wonderlust Bombs!",
-	},
+var treeRenderlen = 273
+
+type videoList struct {
+	lists []map[string]string
 }
 
-var treeRenderlen = 246
+func (v *videoList) Render(m ...string) trees.Markup {
+	dom := elems.Div()
+	for _, data := range v.lists {
+		dom.Augment(elems.Video(
+			attrs.Src(data["src"]),
+			elems.Text(data["name"]),
+		))
+	}
+	return dom
+}
 
 func TestReactiveView(t *testing.T) {
-	videos := NewView(func() trees.Markup {
-		dom := elems.Div()
-		for _, data := range videoData {
-			dom.Augment(elems.Video(
-				attrs.Src(data["src"]),
-				elems.Text(data["name"]),
-			))
-		}
-		return dom
-	})
+	videos := NewView(&videoList{[]map[string]string{
+		map[string]string{
+			"src":  "https://youtube.com/xF5R32YF4",
+			"name": "Joyride Lewis!",
+		},
+		map[string]string{
+			"src":  "https://youtube.com/dox32YF4",
+			"name": "Wonderlust Bombs!",
+		},
+	}})
 
 	bo := videos.RenderHTML()
 

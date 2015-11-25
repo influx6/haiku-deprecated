@@ -30,11 +30,6 @@ type Observer struct {
 	data Immutable
 }
 
-//ObserveTransform returns a new Reactive instance from an interface
-// func ObserveTransform(m interface{}, chain bool) *Observer {
-// 	return Reactive(StrictAtom(m, chain))
-// }
-
 //ObserveAtom returns a new observer instance from an interface
 func ObserveAtom(m interface{}, chain bool) *Observer {
 	// return Reactive(StrictAtom(m, chain))

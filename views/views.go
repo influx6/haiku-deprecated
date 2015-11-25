@@ -11,17 +11,31 @@ import (
 	"github.com/influx6/haiku/trees/elems"
 )
 
+// Renderable provides a interface for a renderable type.
+type Renderable interface {
+	Render(...string) trees.Markup
+}
+
+// ReactiveRenderable provides a interface for a reactive renderable type.
+type ReactiveRenderable interface {
+	flux.Reactor
+	Renderable
+}
+
+// Behaviour provides a state changers for haiku.
+type Behaviour interface {
+	Hide()
+	Show()
+}
+
 // Views define a Haiku Component
 type Views interface {
 	flux.Reactor
 	States
-	Show()
+	Behaviour
+
 	Events() *events.EventManager
-	Hide()
-	Render(...string) trees.Markup
-	RenderHTML(...string) template.HTML
 	Mount(*js.Object)
-	UseMux(ViewMux)
 	BindView(Views)
 }
 
@@ -56,9 +70,6 @@ func (v *ShowView) Render(m trees.Markup) {
 	}
 }
 
-// ViewMux defines a markup generating function for view
-type ViewMux func(Views) trees.Markup
-
 // View represent a basic Haiku view
 type View struct {
 	States
@@ -68,19 +79,19 @@ type View struct {
 	activeState ViewStates
 	encoder     trees.MarkupWriter
 	events      *events.EventManager
-	fx          ViewMux
 	dom         *js.Object
+	rview       Renderable
 	//liveMarkup represent the current rendered markup
 	liveMarkup trees.Markup
 }
 
 // NewView returns a basic view
-func NewView(fx ViewMux) *View {
-	return MakeView(trees.SimpleMarkupWriter, fx)
+func NewView(view Renderable) *View {
+	return MakeView(trees.SimpleMarkupWriter, view)
 }
 
 // MakeView returns a Components style
-func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
+func MakeView(writer trees.MarkupWriter, vw Renderable) (vm *View) {
 	vm = &View{
 		Reactor:   flux.FlatAlways(vm),
 		States:    NewState(),
@@ -88,7 +99,12 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 		ShowState: &ShowView{},
 		events:    events.NewEventManager(),
 		encoder:   writer,
-		fx:        fx,
+		rview:     vw,
+	}
+
+	// If its a ReactiveRenderable type then bind the view
+	if rxv, ok := vw.(ReactiveRenderable); ok {
+		rxv.Bind(vm, true)
 	}
 
 	//set up the reaction chain, if we have node attach then render to it
@@ -96,7 +112,6 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 		//if we are not domless then patch
 		if vm.dom != nil {
 			html := vm.RenderHTML()
-			// log.Printf("NewRender: \n %s\n-------------------------------", html)
 			Patch(CreateFragment(string(html)), vm.dom)
 		}
 	}, true)
@@ -115,11 +130,6 @@ func MakeView(writer trees.MarkupWriter, fx ViewMux) (vm *View) {
 // BindView binds the given views together,were the view provided as argument will notify this view of change and to act according
 func (v *View) BindView(vs Views) {
 	vs.Bind(v, true)
-}
-
-// UseMux lets you switch the markup generator
-func (v *View) UseMux(fx ViewMux) {
-	v.fx = fx
 }
 
 // Mount is to be called in the browser to loadup this view with a dom
@@ -159,11 +169,7 @@ func (v *View) Render(m ...string) trees.Markup {
 
 	v.Engine().All(m[0])
 
-	var dom trees.Markup
-
-	if v.fx != nil {
-		dom = v.fx(v)
-	}
+	dom := v.rview.Render(m...)
 
 	if dom == nil {
 		return elems.Div()

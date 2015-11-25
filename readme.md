@@ -77,8 +77,5 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
   - DOM Patching/Diffing mechanism
   - Server-side rendering even within standard go templates
 
-## Future Features
-  - Allow server side synchronization of views using dehydration and hydration of data
-
 ## Dev
 - Go Version: 1.5

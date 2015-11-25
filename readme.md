@@ -25,13 +25,11 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
     	"github.com/influx6/haiku/trees/elems"
     )
 
-    type videoList struct {
-    	lists []map[string]string
-    }
+    type videoList []map[string]string
 
-    func (v *videoList) Render(m ...string) trees.Markup {
+    func (v videoList) Render(m ...string) trees.Markup {
     	dom := elems.Div()
-    	for _, data := range v.lists {
+    	for _, data := range v {
     		dom.Augment(elems.Video(
     			attrs.Src(data["src"]),
     			elems.Text(data["name"]),
@@ -42,7 +40,7 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
 
     func main() {
 
-    	videos := NewView(&videoList{[]map[string]string{
+    	videos := NewView(videoList([]map[string]string{
     		map[string]string{
     			"src":  "https://youtube.com/xF5R32YF4",
     			"name": "Joyride Lewis!",
@@ -51,7 +49,7 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
     			"src":  "https://youtube.com/dox32YF4",
     			"name": "Wonderlust Bombs!",
     		},
-    	}})
+    	}))
 
     	videos.RenderHTML() /* =>
 

@@ -10,8 +10,6 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
 
     go get -u github.com/influx6/haiku/...
 
-## Usage
-  See [Haiku-ui](https://github.com/influx6/haiku-ui) for a more in depth examples and approaches in using Haiku.
 
 ## Example
 
@@ -64,6 +62,9 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
       */
 
   ```
+
+  See [Haiku-ui](https://github.com/influx6/haiku-ui) for a more in depth examples and approaches in using Haiku.
+
 
 ## Goals
   - Create simple go idiomatic view.

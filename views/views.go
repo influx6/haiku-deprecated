@@ -11,6 +11,12 @@ import (
 	"github.com/influx6/haiku/trees/elems"
 )
 
+// MarkupRenderer provides a interface for a types capable of rendering dom markup.
+type MarkupRenderer interface {
+	Render(...string) trees.Markup
+	RenderHTML(...string) template.HTML
+}
+
 // Renderable provides a interface for a renderable type.
 type Renderable interface {
 	Render(...string) trees.Markup
@@ -33,6 +39,7 @@ type Views interface {
 	pub.Publisher
 	States
 	Behaviour
+	MarkupRenderer
 
 	Events() *events.EventManager
 	Mount(*js.Object)
@@ -168,6 +175,10 @@ func (v *View) Render(m ...string) trees.Markup {
 	}
 
 	v.Engine().All(m[0])
+
+	if v.rview == nil {
+		return elems.Div()
+	}
 
 	dom := v.rview.Render(m...)
 

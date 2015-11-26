@@ -6,23 +6,6 @@ import "github.com/gopherjs/gopherjs/js"
 // using AddEventListeners and is used for removals with RemoveEventListeners
 type JSEventMux func(*js.Object)
 
-// This has been moved into Hiaku.Types package
-// // Event defines the base interface for browser events and defines the basic interface methods they must provide
-// type Event interface {
-// 	Bubbles() bool
-// 	Cancelable() bool
-// 	CurrentTarget() *js.Object
-// 	DefaultPrevented() bool
-// 	EventPhase() int
-// 	Target() *js.Object
-// 	Timestamp() int
-// 	Type() string
-// 	PreventDefault()
-// 	StopImmediatePropagation()
-// 	StopPropagation()
-// 	Core() *js.Object
-// }
-
 // EventObject implements the Event interface and is embedded by
 // concrete event types.
 type EventObject struct{ *js.Object }

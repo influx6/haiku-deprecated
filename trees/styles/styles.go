@@ -24,6 +24,11 @@ func Height(size Size) *trees.Style {
 	return &trees.Style{Name: "height", Value: string(size)}
 }
 
+// Padding provides the margin style value
+func Padding(size Size) *trees.Style {
+	return &trees.Style{Name: "padding", Value: string(size)}
+}
+
 // Margin provides the margin style value
 func Margin(size Size) *trees.Style {
 	return &trees.Style{Name: "margin", Value: string(size)}

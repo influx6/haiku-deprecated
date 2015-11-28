@@ -1,4 +1,6 @@
-# [Haiku](https://github.com/influx6/haiku-ui)
+# Haiku 
+Website [Haiku-ui](https://haiku-ui.herokuapp.com/)
+
 [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/influx6/haiku)
 
 [Haiku](https://github.com/influx6/haiku-ui) is a view rendering framework(the V in MVC), built to render on the browser
@@ -63,7 +65,7 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
 
   ```
 
-  See [Haiku-ui](https://github.com/influx6/haiku-ui) for a more in depth examples and approaches in using Haiku.
+  See [Haiku-ui](https://haiku-ui.herokuapp.com/) for a more in depth examples and approaches in using Haiku.
 
 
 ## Goals

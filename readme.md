@@ -1,9 +1,7 @@
-# Haiku 
-Website [Haiku-ui](https://haiku-ui.herokuapp.com/)
-
+# [Haiku](https://github.com/influx6/haiku-ui)
 [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/influx6/haiku)
 
-[Haiku](https://github.com/influx6/haiku-ui) is a view rendering framework(the V in MVC), built to render on the browser
+[Haiku](https://haiku-ui.herokuapp.com/) is a view rendering framework(the V in MVC), built to render on the browser
 or server with little code changes as possible. Built on the solid foundation that [Gopherjs](https://github.com/gopherjs/gopherjs) provides.
 Haiku combines a virtual diffing system to ensure the minimum work done in updating rendered elements and allows the freedom to decide how your data gets into the view.
 
@@ -65,7 +63,7 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
 
   ```
 
-  See [Haiku-ui](https://haiku-ui.herokuapp.com/) for a more in depth examples and approaches in using Haiku.
+  See [Haiku-ui](https://github.com/influx6/haiku-ui) for a more in depth examples and approaches in using Haiku.
 
 
 ## Goals

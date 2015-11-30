@@ -1,4 +1,4 @@
-// Package types contain interface types which are heavily used across packages and allow a central place for access and usage without messingup the api import paths
+// Package types contain interface types which are heavily used across packages.
 package types
 
 // This package is meant to consolidate highly used interface types across the haiku package to reduce

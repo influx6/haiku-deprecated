@@ -182,7 +182,7 @@ func (m *ElementWriter) Print(e *Element) string {
 		fmt.Sprintf(` style="%s"`, style),
 		beginbrack,
 		e.textContent,
-		strings.Join(children, "\n"),
+		strings.Join(children, ""),
 		closer,
 	}, "")
 }

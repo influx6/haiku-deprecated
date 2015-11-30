@@ -2,7 +2,8 @@ package types
 
 import "github.com/gopherjs/gopherjs/js"
 
-// EventHandler provides next call for flat chains
+// EventHandler provides the function type for event callbacks when subscribing
+// to events in Haiku.
 type EventHandler func(Event)
 
 // Event defines the base interface for browser events and defines the basic interface methods they must provide

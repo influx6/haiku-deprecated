@@ -63,6 +63,12 @@ func TestElementPrinter(t *testing.T) {
 	attrs.ClassName("grid col1").Apply(elem)
 	elems.Div(trees.NewText("thunder")).Apply(elem)
 
+	classes := &trees.ClassList{}
+	classes.Add("x-icon")
+	classes.Add("x-lock")
+
+	classes.Apply(elem)
+
 	res := trees.SimpleElementWriter.Print(elem)
 
 	tests.Truthy(t, "Contains '<bench'", strings.Contains(res, "<bench"))

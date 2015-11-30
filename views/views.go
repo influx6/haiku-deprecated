@@ -8,6 +8,7 @@ import (
 	"github.com/influx6/haiku/events"
 	"github.com/influx6/haiku/pub"
 	"github.com/influx6/haiku/trees"
+	"github.com/influx6/haiku/trees/attrs"
 	"github.com/influx6/haiku/trees/elems"
 )
 
@@ -95,6 +96,11 @@ type View struct {
 // NewView returns a basic view
 func NewView(view Renderable) *View {
 	return MakeView(trees.SimpleMarkupWriter, view)
+}
+
+// SequenceView returns a new  View instance rendered through a sequence renderer.
+func SequenceView(meta SequenceMeta, rs ...Renderable) *View {
+	return NewView(Sequence(meta, rs...))
 }
 
 // MakeView returns a Components style
@@ -201,4 +207,46 @@ func (v *View) Render(m ...string) trees.Markup {
 func (v *View) RenderHTML(m ...string) template.HTML {
 	ma, _ := v.encoder.Write(v.Render(m...))
 	return template.HTML(ma)
+}
+
+// SequenceMeta  provides a configuration object for SequenceRenderer.
+type SequenceMeta struct {
+	Tag   string   // Name of the root tag
+	ID    string   // Id of the root tag
+	Class []string // Class list of the root tag
+}
+
+// SequenceRenderer provides a rendering lists of Renderables to be rendered in
+// their added sequence/order.
+type SequenceRenderer struct {
+	*SequenceMeta
+	stack []Renderable
+}
+
+// Sequence returns a new sequence renderer instance.
+func Sequence(meta SequenceMeta, r ...Renderable) *SequenceRenderer {
+	if meta.Tag == "" {
+		meta.Tag = "div"
+	}
+
+	s := SequenceRenderer{
+		SequenceMeta: &meta,
+		stack:        r,
+	}
+
+	return &s
+}
+
+// Render renders the giving giving lists of views.
+func (s *SequenceRenderer) Render(m ...string) trees.Markup {
+	root := trees.NewElement(s.Tag, false)
+
+	attrs.Class(strings.Join(s.Class, " ")).Apply(root)
+	attrs.Id(s.ID).Apply(root)
+
+	for _, st := range s.stack {
+		st.Render(m...).Apply(root)
+	}
+
+	return root
 }

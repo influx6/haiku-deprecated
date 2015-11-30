@@ -245,7 +245,30 @@ type Reconcilable interface {
 	Reconcile(Markup) bool
 }
 
-// Reconcile checks if the attribute matches and upgrades its value if matched
+// Reconcile checks each item against the given lists
+// and replaces/add any missing item.
+func (c *ClassList) Reconcile(m *ClassList) bool {
+	var added bool
+	maxlen := len(c.list)
+	for ind, val := range m.list {
+		if ind >= maxlen {
+			added = true
+			c.list = append(c.list, val)
+			continue
+		}
+
+		if c.list[ind] == val {
+			continue
+		}
+
+		added = true
+		c.list[ind] = val
+	}
+
+	return added
+}
+
+// Reconcile checks if the attribute matches then upgrades its value.
 func (a *Attribute) Reconcile(m *Attribute) bool {
 	if strings.TrimSpace(a.Name) == strings.TrimSpace(m.Name) {
 		a.Value = m.Value
@@ -254,7 +277,7 @@ func (a *Attribute) Reconcile(m *Attribute) bool {
 	return false
 }
 
-// Reconcile checks if the style matches and upgrades its value if matched
+// Reconcile checks if the style matches then upgrades its value.
 func (s *Style) Reconcile(m *Style) bool {
 	if strings.TrimSpace(s.Name) == strings.TrimSpace(m.Name) {
 		s.Value = m.Value
@@ -386,6 +409,34 @@ func (e *Element) Children() []Markup {
 	return e.children
 }
 
+// ClassList defines the struct for a lists of classes.
+type ClassList struct {
+	list []string
+}
+
+// Remove removes a class from into the lists.
+func (c *ClassList) Remove(class string) {
+	var index = -1
+	var val string
+
+	for index, val = range c.list {
+		if val == class {
+			break
+		}
+	}
+
+	if index < 0 {
+		return
+	}
+
+	c.list = append(c.list[:index], c.list[index:]...)
+}
+
+// Add adds a class name into the lists.
+func (c *ClassList) Add(class string) {
+	c.list = append(c.list, class)
+}
+
 // Style define the style specification for element styles
 type Style struct {
 	Name  string
@@ -466,6 +517,33 @@ type Appliable interface {
 	Apply(*Element)
 }
 
+// Apply checks for a class attribute
+func (c *ClassList) Apply(e *Element) {
+	if len(c.list) == 0 {
+		return
+	}
+
+	list := strings.Join(c.list, " ")
+
+	a, err := GetAttr(e, "class")
+
+	if err != nil {
+		(&Attribute{Name: "class", Value: "list"}).Apply(e)
+		return
+	}
+
+	// TODO: should we make Apply smarter?
+	// // lets do some hypothesis check?
+	// // do we have the first item in this list added?
+	// // if its we probabl
+	// first := c.list[0]
+	// if strings.Contains(a.Value, first) {
+	//  a.Value = list
+	// }
+
+	a.Value = fmt.Sprintf("%s %s", a.Value, list)
+}
+
 //Apply adds the giving element into the current elements children tree
 func (e *Element) Apply(em *Element) {
 	if em.allowChildren {
@@ -509,6 +587,15 @@ func (e *Event) Clone() *Event {
 		Meta: &types.EventMeta{Type: e.Meta.Type, Target: e.Meta.Target},
 		Fx:   e.Fx,
 	}
+}
+
+// Clone replicates the lists of classnames.
+func (c *ClassList) Clone() *ClassList {
+	cl := ClassList{
+		list: append([]string{}, c.list...),
+	}
+
+	return &cl
 }
 
 //Clone replicates the style into a unique instance

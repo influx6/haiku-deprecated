@@ -23,7 +23,7 @@ var ErrPublisherClosed = errors.New("Publisher is Closed")
 */
 type Handler func(Publisher Publisher, failure error, signal interface{})
 
-// Publisher provides an interface definition for the Publisher type to allow compatibility by future extenders when composing with other structs.
+// Publisher provides an interface definition for the Publisher type, to allow compatibility by future extenders when composing with other structs.
 type Publisher interface {
 	io.Closer
 	CloseIndicator
@@ -35,7 +35,7 @@ type Publisher interface {
 	UseRoot(Publisher)
 }
 
-// Pub provides a pure functional Publisher which uses an internal wait group to ensure if close is called that call values where delivered
+// Pub provides a pure functional Publisher, which uses an internal wait group to ensure if close is called that call values where delivered
 type Pub struct {
 	op Handler
 	// root,next Publisher
@@ -64,22 +64,23 @@ func NewPub(op Handler) *Pub {
 	return &fr
 }
 
-// Identity returns Pub that resends its inputs as outputs with no changes
+// Identity returns Pub that resends its inputs as outputs with no changes.
 func Identity() *Pub {
 	return NewPub(IdentityMuxer())
 }
 
-// Simple returns a Publisher using the SimpleMuxer as a mux generator
+// Simple returns a Publisher using the SimpleMuxer as a mux generator.
 func Simple(fx func(Publisher, interface{})) Publisher {
 	return NewPub(SimpleMuxer(fx))
 }
 
-// Always returns a Publisher with consistently returns the provided value
+// Always returns a Publisher which consistently returns one value
+// i.e (the supplied argument).
 func Always(v interface{}) Publisher {
 	return NewPub(IdentityValueMuxer(v))
 }
 
-// UseRoot Adds this Publisher as a root of the called Publisher
+// UseRoot adds this Publisher as a root Publisher.
 func (f *Pub) UseRoot(rx Publisher) {
 	f.roots.Add(rx)
 }

@@ -1,6 +1,8 @@
 package views
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/influx6/haiku/trees"
@@ -8,7 +10,10 @@ import (
 	"github.com/influx6/haiku/trees/elems"
 )
 
-var treeRenderlen = 273
+var success = "\u2713"
+var failed = "\u2717"
+
+var treeRenderlen = 272
 
 type videoList []map[string]string
 
@@ -23,7 +28,7 @@ func (v videoList) Render(m ...string) trees.Markup {
 	return dom
 }
 
-func TestReactiveView(t *testing.T) {
+func TestView(t *testing.T) {
 	videos := NewView(videoList([]map[string]string{
 		map[string]string{
 			"src":  "https://youtube.com/xF5R32YF4",
@@ -42,4 +47,30 @@ func TestReactiveView(t *testing.T) {
 	}
 
 	logPassed(t, "Rendered result accurated with length %d", treeRenderlen)
+}
+
+type item string
+
+func (i item) Render(m ...string) trees.Markup {
+	return elems.Span(elems.Text(fmt.Sprintf("+ %s", i)))
+}
+
+func TestSequenceView(t *testing.T) {
+	items := SequenceView(SequenceMeta{Tag: "div"}, item("Book"), item("Funch"), item("Fudder"))
+
+	out := string(items.RenderHTML())
+
+	if !strings.Contains(out, "+ Book") {
+		t.Errorf("\t%s\tShould contain %q inside rendered output", failed, "+ Book")
+	}
+
+	if !strings.Contains(out, "+ Book") {
+		t.Errorf("\t%s\tShould contain %q inside rendered output", failed, "+ Funch")
+	}
+
+	if !strings.Contains(out, "+ Book") {
+		t.Errorf("\t%s\tShould contain %q inside rendered output", failed, "+ Fudder")
+	}
+
+	t.Logf("\t%s\tShould contain %q inside rendered output", success, []string{"+ Book", "+ Funch", "+ Fudder"})
 }

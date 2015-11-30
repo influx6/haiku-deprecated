@@ -211,14 +211,18 @@ func (v *View) RenderHTML(m ...string) template.HTML {
 
 // SequenceMeta  provides a configuration object for SequenceRenderer.
 type SequenceMeta struct {
-	Tag   string   // Name of the root tag
-	ID    string   // Id of the root tag
-	Class []string // Class list of the root tag
+	Tag      string   // Name of the root tag.
+	ID       string   // Id of the root tag.
+	Class    []string // Class list of the root tag.
+	AutoBind bool     // AutoBind determines if auto-binding with ReactiveRenderable is allowed.
 }
 
 // SequenceRenderer provides a rendering lists of Renderables to be rendered in
-// their added sequence/order.
+// their added sequence/order. SequenceRenderer embedds pub.Publisher and will
+// automatically bind with any ReactiveRenderable being added if its `Bind` is
+// set to true.
 type SequenceRenderer struct {
+	pub.Publisher
 	*SequenceMeta
 	stack []Renderable
 }
@@ -230,11 +234,23 @@ func Sequence(meta SequenceMeta, r ...Renderable) *SequenceRenderer {
 	}
 
 	s := SequenceRenderer{
+		Publisher:    pub.Identity(),
 		SequenceMeta: &meta,
-		stack:        r,
 	}
 
 	return &s
+}
+
+// Add adds new renders into the publisher lists.
+func (s *SequenceRenderer) Add(r ...Renderable) {
+	for _, rm := range r {
+		if s.AutoBind {
+			if rx, ok := rm.(ReactiveRenderable); ok {
+				rx.Bind(s, true)
+			}
+		}
+		s.stack = append(s.stack, rm)
+	}
 }
 
 // Render renders the giving giving lists of views.

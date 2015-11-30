@@ -137,7 +137,7 @@ func NewText(txt string) *Element {
 func NewElement(tag string, hasNoEndingTag bool) *Element {
 	return &Element{
 		Mutation:        NewMutable(),
-		tagname:         strings.TrimSpace(tag),
+		tagname:         strings.ToLower(strings.TrimSpace(tag)),
 		children:        make([]Markup, 0),
 		styles:          make([]*Style, 0),
 		attrs:           make([]*Attribute, 0),

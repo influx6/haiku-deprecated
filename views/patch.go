@@ -62,7 +62,7 @@ func AddNodeIfNoneInList(dest *js.Object, against []*js.Object, with *js.Object)
 
 // Patch takes a dom string and creates a documentfragment from it and patches a existing dom element that is supplied. This algorithim only ever goes one-level deep, its not performant
 // WARNING: this method is specifically geared to dealing with the haiku.Tree dom generation
-func Patch(fragment, live *js.Object) {
+func Patch(fragment, live *js.Object, onlyReplace bool) {
 	if !live.Call("hasChildNodes").Bool() {
 		// if the live element is actually empty, then just append the fragment which
 		// actually appends the nodes within it efficiently
@@ -196,6 +196,11 @@ patchloop:
 			continue patchloop
 		}
 
+		if onlyReplace {
+			jsutils.ReplaceNode(live, node, target)
+			continue patchloop
+		}
+
 		//if we are to be removed then remove the target
 		if jsutils.HasAttribute(node, "haikuRemoved") {
 			// log.Printf("removed node: %+s", node)
@@ -249,7 +254,7 @@ patchloop:
 			continue patchloop
 		}
 
-		Patch(node, target)
+		Patch(node, target, onlyReplace)
 		// }
 
 		// default:

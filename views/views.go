@@ -3,10 +3,12 @@ package views
 import (
 	"html/template"
 	"strings"
+	"sync/atomic"
 
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/influx6/haiku/events"
 	"github.com/influx6/haiku/pub"
+	"github.com/influx6/haiku/shared"
 	"github.com/influx6/haiku/trees"
 	"github.com/influx6/haiku/trees/attrs"
 	"github.com/influx6/haiku/trees/elems"
@@ -89,22 +91,39 @@ type View struct {
 	events      *events.EventManager
 	dom         *js.Object
 	rview       Renderable
-	//liveMarkup represent the current rendered markup
-	liveMarkup trees.Markup
+	liveMarkup  trees.Markup //liveMarkup represent the current rendered markup
+	backdoor    trees.MutableBackdoor
+	loaded      int32
+	uid         string
 }
 
-// NewView returns a basic view
+// NewView returns a View instance. The view is giving a empty uid string,
+// which it will generate itself. Use NewScopedView for more control especially
+// when rendering from server.
 func NewView(view Renderable) *View {
-	return MakeView(trees.SimpleMarkupWriter, view)
+	return MakeView("", trees.SimpleMarkupWriter, view)
+}
+
+// NewScopedView returns a View instance with a custom UID.
+// These allows managing effective transisitions from rendering on the backends
+// to rendering on the frontend. The uid provides a unchanging identification
+// of the server-rendered dom node the view is concerned about and it loads off
+// that dom node on the client side to ensure correct transition.
+func NewScopedView(uid string, view Renderable) *View {
+	return MakeView(uid, trees.SimpleMarkupWriter, view)
 }
 
 // SequenceView returns a new  View instance rendered through a sequence renderer.
 func SequenceView(meta SequenceMeta, rs ...Renderable) *View {
-	return NewView(Sequence(meta, rs...))
+	return MakeView(meta.UID, trees.SimpleMarkupWriter, Sequence(meta, rs...))
 }
 
 // MakeView returns a Components style
-func MakeView(writer trees.MarkupWriter, vw Renderable) (vm *View) {
+func MakeView(uid string, writer trees.MarkupWriter, vw Renderable) (vm *View) {
+	if uid == "" {
+		uid = shared.RandString(8)
+	}
+
 	vm = &View{
 		Publisher: pub.Always(vm),
 		States:    NewState(),
@@ -113,6 +132,7 @@ func MakeView(writer trees.MarkupWriter, vw Renderable) (vm *View) {
 		events:    events.NewEventManager(),
 		encoder:   writer,
 		rview:     vw,
+		uid:       uid,
 	}
 
 	// If its a ReactiveRenderable type then bind the view
@@ -124,8 +144,9 @@ func MakeView(writer trees.MarkupWriter, vw Renderable) (vm *View) {
 	vm.React(func(r pub.Publisher, _ error, _ interface{}) {
 		//if we are not domless then patch
 		if vm.dom != nil {
+			replaceOnly := atomic.LoadInt32(&vm.loaded) == 0
 			html := vm.RenderHTML()
-			Patch(CreateFragment(string(html)), vm.dom)
+			Patch(CreateFragment(string(html)), vm.dom, replaceOnly)
 		}
 	}, true)
 
@@ -151,6 +172,7 @@ func (v *View) Mount(dom *js.Object) {
 	v.events.OffloadDOM()
 	v.events.LoadDOM(dom)
 	v.Send(true)
+	atomic.StoreInt32(&v.loaded, 1)
 }
 
 // Show activates the view to generate a visible markup
@@ -192,6 +214,12 @@ func (v *View) Render(m ...string) trees.Markup {
 		return elems.Div()
 	}
 
+	// // swap the uid for the new dom
+	// // to ensure we keep the sync between backend and frontend in sync.
+	v.backdoor.M = dom
+	v.backdoor.SwapUID(v.uid)
+	v.backdoor.M = nil
+
 	if v.liveMarkup != nil {
 		dom.Reconcile(v.liveMarkup)
 	}
@@ -211,10 +239,10 @@ func (v *View) RenderHTML(m ...string) template.HTML {
 
 // SequenceMeta  provides a configuration object for SequenceRenderer.
 type SequenceMeta struct {
-	Tag      string   // Name of the root tag.
-	ID       string   // Id of the root tag.
-	Class    []string // Class list of the root tag.
-	AutoBind bool     // AutoBind determines if auto-binding with ReactiveRenderable is allowed.
+	Tag   string   // Name of the root tag.
+	UID   string   // Custom UID of the root dom tag.
+	ID    string   // Id of the root tag.
+	Class []string // Class list of the root tag.
 }
 
 // SequenceRenderer provides a rendering lists of Renderables to be rendered in
@@ -238,16 +266,16 @@ func Sequence(meta SequenceMeta, r ...Renderable) *SequenceRenderer {
 		SequenceMeta: &meta,
 	}
 
+	s.Add(r...)
+
 	return &s
 }
 
 // Add adds new renders into the publisher lists.
 func (s *SequenceRenderer) Add(r ...Renderable) {
 	for _, rm := range r {
-		if s.AutoBind {
-			if rx, ok := rm.(ReactiveRenderable); ok {
-				rx.Bind(s, true)
-			}
+		if rx, ok := rm.(ReactiveRenderable); ok {
+			rx.Bind(s, true)
 		}
 		s.stack = append(s.stack, rm)
 	}

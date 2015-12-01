@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/influx6/haiku/events"
+	"github.com/influx6/haiku/shared"
 	"github.com/influx6/haiku/types"
 )
 
@@ -44,33 +45,38 @@ type Markup interface {
 
 // Mutable is a base implementation of the Mutation interface{}
 type Mutable struct {
-	// flux.Reactor
 	uid     string
 	hash    string
 	removed bool
 }
 
+// MutableBackdoor grants access to a mutable swapUID and swapHash methods.
+type MutableBackdoor struct {
+	M Mutation
+}
+
+// SwapUID swaps the uid of the internal mutable.
+func (m MutableBackdoor) SwapUID(uid string) {
+	m.M.swapUID(uid)
+}
+
+// SwapHash swaps the hash of the internal mutable.
+func (m MutableBackdoor) SwapHash(hash string) {
+	m.M.swapHash(hash)
+}
+
 // NewMutable returns a new mutable instance
 func NewMutable() *Mutable {
 	m := &Mutable{
-		uid:  randString(8),
-		hash: randString(10),
+		uid:  shared.RandString(8),
+		hash: shared.RandString(10),
 	}
-
-	// m.Reactor = flux.Reactive(func(r flux.Reactor, err error, d interface{}) {
-	// 	if err != nil {
-	// 		r.ReplyError(err)
-	// 	} else {
-	// 		r.Reply(d)
-	// 	}
-	// })
-
 	return m
 }
 
 // UpdateHash updates the mutable hash value
 func (m *Mutable) UpdateHash() {
-	m.hash = randString(10)
+	m.hash = shared.RandString(10)
 }
 
 // Remove marks this mutable as removed making this irreversible
@@ -443,10 +449,22 @@ type Style struct {
 	Value string
 }
 
+// NewStyle returns a new style instance
+func NewStyle(name, val string) *Style {
+	s := Style{Name: name, Value: val}
+	return &s
+}
+
 // Attribute define the struct  for attributes
 type Attribute struct {
 	Name  string
 	Value string
+}
+
+// NewAttr returns a new attribute instance
+func NewAttr(name, val string) *Attribute {
+	a := Attribute{Name: name, Value: val}
+	return &a
 }
 
 // Styles interface defines a type that has Styles

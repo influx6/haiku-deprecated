@@ -11,10 +11,6 @@ import (
 	"github.com/influx6/haiku/pub"
 )
 
-/*
-  Path reactors dont try to be smart,they are simple, dum and do their best at what they do type of system, they simply report to you when certain change occurs with the system they are watching in the browser dom and api. They produce continous stream of events when changes occur
-*/
-
 // PathSpec represent the current path and hash values
 type PathSpec struct {
 	Hash     string
@@ -27,24 +23,44 @@ func (p *PathSpec) String() string {
 	return fmt.Sprintf("%s%s", p.Path, p.Hash)
 }
 
+// PathSequencer provides a function to convert either the path/hash into a
+// dot seperated sequence string for use with States.
+type PathSequencer func(path string, hash string) string
+
+// HashSequencer provides a PathSequencer that returns the hash part of a url,
+// as the path sequence.
+func HashSequencer(path, hash string) string {
+	cleanHash := strings.Replace(hash, "#", ".", -1)
+	return strings.Replace(cleanHash, "/", ".", -1)
+}
+
+// URLPathSequencer provides a PathSequencer that returns the path part of a url,
+// as the path sequence.
+func URLPathSequencer(path, hash string) string {
+	return strings.Replace(path, "/", ".", -1)
+}
+
 // PathObserver represent any continouse changing route path by the browser
 type PathObserver struct {
 	pub.Publisher
 	usingHash bool
+	sequencer PathSequencer
 }
 
 // Path returns a new PathObserver instance
-func Path() *PathObserver {
+func Path(ps PathSequencer) *PathObserver {
+	if ps == nil {
+		ps = HashSequencer
+	}
 	return &PathObserver{
 		Publisher: pub.Identity(),
+		sequencer: ps,
 	}
 }
 
 // Follow creates a Pathspec from the hash and path and sends it
 func (p *PathObserver) Follow(path, hash string) {
-	cleanHash := strings.Replace(hash, "#", ".", -1)
-	cleanHash = strings.Replace(cleanHash, "/", ".", -1)
-	p.FollowSpec(PathSpec{Hash: hash, Path: path, Sequence: cleanHash})
+	p.FollowSpec(PathSpec{Hash: hash, Path: path, Sequence: p.sequencer(path, hash)})
 }
 
 // FollowSpec just passes down the Pathspec
@@ -55,10 +71,7 @@ func (p *PathObserver) FollowSpec(ps PathSpec) {
 // NotifyPage is used to notify a page of
 func (p *PathObserver) NotifyPage(pg *Pages) {
 	p.React(func(r pub.Publisher, _ error, d interface{}) {
-		// if err != nil { r.SendError(err) }
-		// log.Printf("will Sequence: %s", d)
 		if ps, ok := d.(PathSpec); ok {
-			// log.Printf("Sequence: %s", ps.Sequence)
 			pg.All(ps.Sequence)
 		}
 	}, true)
@@ -75,9 +88,9 @@ func (p *PathObserver) NotifyPartialPage(pg *Pages) {
 }
 
 // HashChangePath returns a path observer path changes
-func HashChangePath() *PathObserver {
+func HashChangePath(ps PathSequencer) *PathObserver {
 	panicBrowserDetect()
-	path := Path()
+	path := Path(ps)
 	path.usingHash = true
 
 	js.Global.Set("onhashchange", func() {
@@ -91,14 +104,14 @@ func HashChangePath() *PathObserver {
 var ErrNotSupported = errors.New("Feature not supported")
 
 // PopStatePath returns a path observer path changes
-func PopStatePath() (*PathObserver, error) {
+func PopStatePath(ps PathSequencer) (*PathObserver, error) {
 	panicBrowserDetect()
 
 	if !BrowserSupportsPushState() {
 		return nil, ErrNotSupported
 	}
 
-	path := Path()
+	path := Path(ps)
 
 	js.Global.Set("onpopstate", func() {
 		path.Follow(GetLocation())
@@ -115,11 +128,11 @@ type HistoryProvider struct {
 
 // History returns a new PathObserver and depending on browser support will either use the
 // popState or HashChange
-func History() *HistoryProvider {
-	pop, err := PopStatePath()
+func History(ps PathSequencer) *HistoryProvider {
+	pop, err := PopStatePath(ps)
 
 	if err != nil {
-		pop = HashChangePath()
+		pop = HashChangePath(ps)
 	}
 
 	return &HistoryProvider{pop}
@@ -148,8 +161,8 @@ type Pages struct {
 }
 
 // Page returns the new state engine powered page
-func Page() *Pages {
-	return NewPage(History())
+func Page(ps PathSequencer) *Pages {
+	return NewPage(History(ps))
 }
 
 // NewPage returns the new state engine powered page
@@ -167,18 +180,12 @@ func NewPage(p *HistoryProvider) *Pages {
 // Mount adds a component into the page for handling/managing of visiblity and
 // gets the dom referenced by the selector using QuerySelector and returns an error if selector gave no result
 func (p *Pages) Mount(selector, addr string, v Views) error {
-	// n := dom.GetWindow().Document().QuerySelector(selector)
 	n := jsutils.GetDocument().Call("querySelector", selector)
-
-	// log.Printf("we failed: %+s", n)
 
 	if n == nil || n == js.Undefined {
 		return ErrBadSelector
 	}
 
-	// log.Printf("no we did failed: %+s", n)
-
-	// p.views = append(p.views, v)
 	p.AddView(addr, v)
 	v.Mount(n)
 	return nil
@@ -186,6 +193,7 @@ func (p *Pages) Mount(selector, addr string, v Views) error {
 
 // AddView adds a view to the page
 func (p *Pages) AddView(addr string, v Views) {
+	v.UseHistory(p.HistoryProvider)
 	p.UseState(addr, v)
 }
 

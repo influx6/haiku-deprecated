@@ -1,6 +1,7 @@
 package views
 
 import (
+	"errors"
 	"html/template"
 	"strings"
 	"sync/atomic"
@@ -47,6 +48,8 @@ type Views interface {
 	Events() *events.EventManager
 	Mount(*js.Object)
 	BindView(Views)
+	UseHistory(*HistoryProvider)
+	History() (*HistoryProvider, error)
 }
 
 // ViewStates defines the two possible behavioral state of a view's markup
@@ -87,6 +90,7 @@ type View struct {
 	HideState   ViewStates
 	ShowState   ViewStates
 	activeState ViewStates
+	history     *HistoryProvider
 	encoder     trees.MarkupWriter
 	events      *events.EventManager
 	dom         *js.Object
@@ -159,6 +163,19 @@ func MakeView(uid string, writer trees.MarkupWriter, vw Renderable) (vm *View) {
 	})
 
 	return
+}
+
+// UseHistory sets the views HistoryProvider to effect navigation change.
+func (v *View) UseHistory(hs *HistoryProvider) {
+	v.history = hs
+}
+
+// History returns the views current history provider.
+func (v *View) History(hs *HistoryProvider) (*HistoryProvider, error) {
+	if v.history == nil {
+		return nil, errors.New("No HistoryProvider")
+	}
+	return v.history, nil
 }
 
 // BindView binds the given views together,were the view provided as argument will notify this view of change and to act according

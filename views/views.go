@@ -303,7 +303,7 @@ func (s *SequenceRenderer) Render(m ...string) trees.Markup {
 	root := trees.NewElement(s.Tag, false)
 
 	attrs.Class(strings.Join(s.Class, " ")).Apply(root)
-	attrs.Id(s.ID).Apply(root)
+	attrs.ID(s.ID).Apply(root)
 
 	for _, st := range s.stack {
 		st.Render(m...).Apply(root)

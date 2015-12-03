@@ -149,7 +149,7 @@ package events
 
 import (
 	"github.com/influx6/haiku/trees"
-	"github.com/influx6/haiku/types"
+	"github.com/influx6/haiku/base"
 )
 `)
 
@@ -161,7 +161,7 @@ import (
 // https://developer.mozilla.org%s
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func %s(fx types.EventHandler,selectorOverride string) *trees.Event {
+func %s(fx base.EventHandler,selectorOverride string) *trees.Event {
 	return trees.NewEvent("%s",selectorOverride,fx)
 }
 `, name, e.Desc, e.Link[6:], name, e.Name)

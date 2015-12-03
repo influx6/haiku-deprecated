@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/influx6/haiku/events"
+	"github.com/influx6/haiku/base"
 	"github.com/influx6/haiku/shared"
-	"github.com/influx6/haiku/types"
 )
 
 // Mutation defines the capability of an element to state its
@@ -39,7 +38,7 @@ type Markup interface {
 	AutoClosed() bool
 	TextContent() string
 	Empty()
-	UseEventManager(*events.EventManager) bool
+	UseEventManager(base.EventManagers) bool
 	LoadEvents()
 }
 
@@ -123,7 +122,7 @@ type Element struct {
 	allowChildren   bool
 	allowStyles     bool
 	allowAttributes bool
-	eventManager    *events.EventManager
+	eventManager    base.EventManagers
 }
 
 // NewText returns a new Text instance element
@@ -157,7 +156,7 @@ func NewElement(tag string, hasNoEndingTag bool) *Element {
 
 // UseEventManager adds a eventmanager into the markup and if not available before automatically registers
 // the events with it,once an event manager is registered to it,it will and can not be changed
-func (e *Element) UseEventManager(man *events.EventManager) bool {
+func (e *Element) UseEventManager(man base.EventManagers) bool {
 	if man == nil {
 		return true
 	}
@@ -495,33 +494,33 @@ type Events interface {
 // Event provide a meta registry for helps in registering events for dom markups
 // which is translated to the nodes themselves
 type Event struct {
-	Meta *types.EventMeta
-	Fx   types.EventHandler
+	Meta *base.EventMetable
+	Fx   base.EventHandler
 }
 
 // NewEvent returns a event object that allows registering events to eventlisteners
-func NewEvent(etype, eselector string, efx types.EventHandler) *Event {
+func NewEvent(etype, eselector string, efx base.EventHandler) *Event {
 	return &Event{
-		Meta: &types.EventMeta{Type: etype, Target: eselector},
+		Meta: &base.EventMetable{EventType: etype, EventTarget: eselector},
 		Fx:   efx,
 	}
 }
 
 // StopImmediatePropagation will return itself and set StopPropagation to true
 func (e *Event) StopImmediatePropagation() *Event {
-	e.Meta.StopImmediatePropagation = true
+	e.Meta.ShouldStopImmediatePropagation = true
 	return e
 }
 
 // StopPropagation will return itself and set StopPropagation to true
 func (e *Event) StopPropagation() *Event {
-	e.Meta.StopPropagation = true
+	e.Meta.ShouldStopPropagation = true
 	return e
 }
 
 // PreventDefault will return itself and set PreventDefault to true
 func (e *Event) PreventDefault() *Event {
-	e.Meta.PreventDefault = true
+	e.Meta.ShouldPreventDefault = true
 	return e
 }
 
@@ -587,8 +586,8 @@ func (s *Style) Apply(e *Element) {
 // Apply adds the event into the elements events lists
 func (e *Event) Apply(em *Element) {
 	if em.allowEvents {
-		if e.Meta.Target == "" {
-			e.Meta.Target = fmt.Sprintf("%s[uid='%s']", strings.ToLower(em.Name()), em.UID())
+		if e.Meta.EventTarget == "" {
+			e.Meta.EventTarget = fmt.Sprintf("%s[uid='%s']", strings.ToLower(em.Name()), em.UID())
 		}
 		em.events = append(em.events, e)
 	}
@@ -602,7 +601,7 @@ type Clonable interface {
 //Clone replicates the style into a unique instance
 func (e *Event) Clone() *Event {
 	return &Event{
-		Meta: &types.EventMeta{Type: e.Meta.Type, Target: e.Meta.Target},
+		Meta: &base.EventMetable{EventType: e.Meta.EventType, EventTarget: e.Meta.EventTarget},
 		Fx:   e.Fx,
 	}
 }
@@ -689,14 +688,14 @@ func ReconcileEvents(e, em Markup) {
 
 	if len(newevents) <= 0 && len(oldevents) > 0 {
 		for _, ev := range oldevents {
-			ev.Meta.Removed = true
+			ev.Meta.Remove()
 		}
 		return
 	}
 
 	checkOut := func(ev *Event) bool {
 		for _, evs := range newevents {
-			if evs.Meta.Type == ev.Meta.Type {
+			if evs.Meta.EventType == ev.Meta.EventType {
 				return true
 			}
 		}
@@ -711,7 +710,7 @@ func ReconcileEvents(e, em Markup) {
 			continue
 		}
 
-		ev.Meta.Removed = true
+		ev.Meta.Remove()
 	}
 
 }

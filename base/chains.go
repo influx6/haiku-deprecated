@@ -1,41 +1,37 @@
-package events
+package base
 
-import (
-	"sync"
+import "sync"
 
-	"github.com/influx6/haiku/types"
-)
-
-// Handler provides a handler for Chain
-type Handler func(types.Event, types.EventHandler)
+// ChainHandler provides a handler for event chain types.
+type ChainHandler func(Event, EventHandler)
 
 //Chains define a simple  chain
 type Chains interface {
-	HandleContext(types.Event)
-	Next(Handler) Chains
+	HandleContext(Event)
+	Next(ChainHandler) Chains
 	Chain(Chains) Chains
 	NChain(Chains) Chains
-	Bind(rnx types.EventHandler) Chains
-	useNext(Chains)
-	usePrev(Chains)
+	Bind(EventHandler) Chains
+	UseNext(Chains)
+	UsePrev(Chains)
 	UnChain()
 }
 
 // Chain provides a simple middleware like
 type Chain struct {
-	op         Handler
+	op         ChainHandler
 	prev, next Chains
 }
 
 //ChainIdentity returns a chain that calls the next automatically
 func ChainIdentity() Chains {
-	return NewChain(func(c types.Event, nx types.EventHandler) {
+	return NewChain(func(c Event, nx EventHandler) {
 		nx(c)
 	})
 }
 
 //NewChain returns a new Chain instance
-func NewChain(fx Handler) *Chain {
+func NewChain(fx ChainHandler) *Chain {
 	return &Chain{
 		op: fx,
 	}
@@ -47,24 +43,24 @@ func (r *Chain) UnChain() {
 	next := r.next
 
 	if prev != nil && next != nil {
-		prev.useNext(next)
-		next.usePrev(prev)
+		prev.UseNext(next)
+		next.UsePrev(prev)
 		return
 	}
 
-	prev.useNext(nil)
+	prev.UseNext(nil)
 }
 
 // Bind provides a wrapper over the Next binder function call
-func (r *Chain) Bind(rnx types.EventHandler) Chains {
-	return r.Next(func(ev types.Event, nx types.EventHandler) {
+func (r *Chain) Bind(rnx EventHandler) Chains {
+	return r.Next(func(ev Event, nx EventHandler) {
 		rnx(ev)
 		nx(ev)
 	})
 }
 
 // Next allows the chain of the function as a Handler
-func (r *Chain) Next(rnx Handler) Chains {
+func (r *Chain) Next(rnx ChainHandler) Chains {
 	nx := NewChain(rnx)
 	return r.NChain(nx)
 }
@@ -72,8 +68,8 @@ func (r *Chain) Next(rnx Handler) Chains {
 // Chain sets the next  chains else passes it down to the last chain to set as next chain,returning itself
 func (r *Chain) Chain(rx Chains) Chains {
 	if r.next == nil {
-		rx.usePrev(r)
-		r.useNext(rx)
+		rx.UsePrev(r)
+		r.UseNext(rx)
 	} else {
 		r.next.Chain(rx)
 	}
@@ -83,7 +79,7 @@ func (r *Chain) Chain(rx Chains) Chains {
 // NChain sets the next  chains else passes it down to the last chain to set as next chain,returning the the supplied chain
 func (r *Chain) NChain(rx Chains) Chains {
 	if r.next == nil {
-		r.useNext(rx)
+		r.UseNext(rx)
 		return rx
 	}
 
@@ -91,21 +87,21 @@ func (r *Chain) NChain(rx Chains) Chains {
 }
 
 // HandleContext calls the next chain if any
-func (r *Chain) HandleContext(c types.Event) {
-	r.op(c, func(c types.Event) {
+func (r *Chain) HandleContext(c Event) {
+	r.op(c, func(c Event) {
 		if r.next != nil {
 			r.next.HandleContext(c)
 		}
 	})
 }
 
-// useNext swaps the next chain with the supplied
-func (r *Chain) useNext(fl Chains) {
+// UseNext swaps the next chain with the supplied
+func (r *Chain) UseNext(fl Chains) {
 	r.next = fl
 }
 
-// usePrev swaps the previous chain with the supplied
-func (r *Chain) usePrev(fl Chains) {
+// UsePrev swaps the previous chain with the supplied
+func (r *Chain) UsePrev(fl Chains) {
 	r.prev = fl
 }
 
@@ -120,7 +116,7 @@ func Connect(mo Chains, so ...Chains) Chains {
 }
 
 //ElemEventMux represents a stanard callback function for dom events
-type ElemEventMux func(types.Event, func())
+type ElemEventMux func(Event, func())
 
 //ListenerStack provides addition of functions into a stack
 type ListenerStack struct {
@@ -186,7 +182,7 @@ func (f *ListenerStack) DeleteIndex(ind int) {
 }
 
 //Each runs through the function lists and executing with args
-func (f *ListenerStack) Each(d types.Event) {
+func (f *ListenerStack) Each(d Event) {
 	if f.Size() <= 0 {
 		return
 	}

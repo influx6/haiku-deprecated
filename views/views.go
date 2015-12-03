@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/influx6/haiku/events"
+	"github.com/influx6/haiku/base"
 	"github.com/influx6/haiku/pub"
 	"github.com/influx6/haiku/shared"
 	"github.com/influx6/haiku/trees"
@@ -45,7 +45,7 @@ type Views interface {
 	Behaviour
 	MarkupRenderer
 
-	Events() *events.EventManager
+	Events() base.EventManagers
 	Mount(*js.Object)
 	BindView(Views)
 	UseHistory(*HistoryProvider)
@@ -92,7 +92,7 @@ type View struct {
 	activeState ViewStates
 	history     *HistoryProvider
 	encoder     trees.MarkupWriter
-	events      *events.EventManager
+	events      base.EventManagers
 	dom         *js.Object
 	rview       Renderable
 	liveMarkup  trees.Markup //liveMarkup represent the current rendered markup
@@ -133,7 +133,7 @@ func MakeView(uid string, writer trees.MarkupWriter, vw Renderable) (vm *View) {
 		States:    NewState(),
 		HideState: &HideView{},
 		ShowState: &ShowView{},
-		events:    events.NewEventManager(),
+		events:    base.NewEventManager(),
 		encoder:   writer,
 		rview:     vw,
 		uid:       uid,
@@ -209,7 +209,7 @@ func (v *View) Hide() {
 }
 
 // Events returns the views events manager
-func (v *View) Events() *events.EventManager {
+func (v *View) Events() base.EventManagers {
 	return v.events
 }
 

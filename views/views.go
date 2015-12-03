@@ -171,7 +171,7 @@ func (v *View) UseHistory(hs *HistoryProvider) {
 }
 
 // History returns the views current history provider.
-func (v *View) History(hs *HistoryProvider) (*HistoryProvider, error) {
+func (v *View) History() (*HistoryProvider, error) {
 	if v.history == nil {
 		return nil, errors.New("No HistoryProvider")
 	}

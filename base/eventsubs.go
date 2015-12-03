@@ -254,7 +254,7 @@ type EventManager struct {
 }
 
 // NewEventManager returns a new event manager instance
-func NewEventManager() *EventManager {
+func NewEventManager() EventManagers {
 	em := EventManager{
 		events:   make(map[string]EventSubs),
 		attaches: make(map[EventManagers]bool),

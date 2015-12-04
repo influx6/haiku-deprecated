@@ -20,6 +20,13 @@ type Mutation interface {
 	UpdateHash()
 }
 
+// Eventers provide an interface type for elements able to register and load
+// event managers.
+type Eventers interface {
+	LoadEvents()
+	UseEventManager(base.EventManagers) bool
+}
+
 // Markup provide a basic specification type of how a element resolves its content
 type Markup interface {
 	Appliable
@@ -30,16 +37,18 @@ type Markup interface {
 	Clonable
 	MarkupChildren
 	Reconcilable
+	Eventers
 
-	Name() string
-	Augment(...Markup)
-
-	CleanRemoved()
 	AutoClosed() bool
 	TextContent() string
+
+	Name() string
+	EventID() string
+	Augment(...Markup)
+
 	Empty()
-	UseEventManager(base.EventManagers) bool
-	LoadEvents()
+
+	CleanRemoved()
 }
 
 // Mutable is a base implementation of the Mutation interface{}
@@ -129,7 +138,6 @@ type Element struct {
 // TODO: should we allow styles here ?
 func NewText(txt string) *Element {
 	em := NewElement("text", false)
-	(&Style{"display", "inline"}).Apply(em)
 	em.allowChildren = false
 	em.allowAttributes = false
 	em.allowStyles = false
@@ -193,6 +201,11 @@ func (e *Element) LoadEvents() {
 			ech.LoadEvents()
 		}
 	}
+}
+
+// EventID returns the selector used for tagging events for a markup.
+func (e *Element) EventID() string {
+	return fmt.Sprintf("%s[uid='%s']", strings.ToLower(e.Name()), e.UID())
 }
 
 // Remove sets the markup as removable and adds a 'haikuRemoved' attribute to it
@@ -578,7 +591,6 @@ func (c *ClassList) Apply(e *Element) {
 func (e *Element) Apply(em *Element) {
 	if em.allowChildren {
 		em.AddChild(e)
-		// e.Bind(em, false)
 	}
 }
 
@@ -600,7 +612,7 @@ func (s *Style) Apply(e *Element) {
 func (e *Event) Apply(em *Element) {
 	if em.allowEvents {
 		if e.Meta.EventTarget == "" {
-			e.Meta.EventTarget = fmt.Sprintf("%s[uid='%s']", strings.ToLower(em.Name()), em.UID())
+			e.Meta.EventTarget = em.EventID()
 		}
 		e.tree = em
 		em.events = append(em.events, e)

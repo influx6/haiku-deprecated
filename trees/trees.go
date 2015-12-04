@@ -496,14 +496,27 @@ type Events interface {
 type Event struct {
 	Meta *base.EventMetable
 	Fx   base.EventHandler
+	tree Markup
 }
 
+// EventHandler provides a custom event handler which allows access to the
+// markup producing the event.
+type EventHandler func(base.Event, Markup)
+
 // NewEvent returns a event object that allows registering events to eventlisteners
-func NewEvent(etype, eselector string, efx base.EventHandler) *Event {
-	return &Event{
+func NewEvent(etype, eselector string, efx EventHandler) *Event {
+	ex := Event{
 		Meta: &base.EventMetable{EventType: etype, EventTarget: eselector},
-		Fx:   efx,
 	}
+
+	// wireup the function to get the ev and tree.
+	ex.Fx = func(ev base.Event) {
+		if efx != nil {
+			efx(ev, ex.tree)
+		}
+	}
+
+	return &ex
 }
 
 // StopImmediatePropagation will return itself and set StopPropagation to true
@@ -589,6 +602,7 @@ func (e *Event) Apply(em *Element) {
 		if e.Meta.EventTarget == "" {
 			e.Meta.EventTarget = fmt.Sprintf("%s[uid='%s']", strings.ToLower(em.Name()), em.UID())
 		}
+		e.tree = em
 		em.events = append(em.events, e)
 	}
 }

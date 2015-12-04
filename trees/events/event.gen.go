@@ -8,7 +8,6 @@
 package events
 
 import (
-	"github.com/influx6/haiku/base"
 	"github.com/influx6/haiku/trees"
 )
 
@@ -17,7 +16,7 @@ import (
 // https://developer.mozilla.org/docs/Web/Reference/Events/abort_indexedDB
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Abort(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Abort(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("abort", selectorOverride, fx)
 }
 
@@ -26,7 +25,7 @@ func Abort(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/afterprint
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func AfterPrint(fx base.EventHandler, selectorOverride string) *trees.Event {
+func AfterPrint(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("afterprint", selectorOverride, fx)
 }
 
@@ -35,7 +34,7 @@ func AfterPrint(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/animationend
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func AnimationEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
+func AnimationEnd(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("animationend", selectorOverride, fx)
 }
 
@@ -44,7 +43,7 @@ func AnimationEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/animationiteration
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func AnimationIteration(fx base.EventHandler, selectorOverride string) *trees.Event {
+func AnimationIteration(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("animationiteration", selectorOverride, fx)
 }
 
@@ -53,7 +52,7 @@ func AnimationIteration(fx base.EventHandler, selectorOverride string) *trees.Ev
 // https://developer.mozilla.org/docs/Web/Events/animationstart
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func AnimationStart(fx base.EventHandler, selectorOverride string) *trees.Event {
+func AnimationStart(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("animationstart", selectorOverride, fx)
 }
 
@@ -62,7 +61,7 @@ func AnimationStart(fx base.EventHandler, selectorOverride string) *trees.Event 
 // https://developer.mozilla.org/docs/Web/Events/audioprocess
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func AudioProcess(fx base.EventHandler, selectorOverride string) *trees.Event {
+func AudioProcess(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("audioprocess", selectorOverride, fx)
 }
 
@@ -71,7 +70,7 @@ func AudioProcess(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/audioend
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Audioend(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Audioend(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("audioend", selectorOverride, fx)
 }
 
@@ -80,7 +79,7 @@ func Audioend(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/audiostart
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Audiostart(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Audiostart(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("audiostart", selectorOverride, fx)
 }
 
@@ -89,7 +88,7 @@ func Audiostart(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/beforeprint
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func BeforePrint(fx base.EventHandler, selectorOverride string) *trees.Event {
+func BeforePrint(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("beforeprint", selectorOverride, fx)
 }
 
@@ -98,7 +97,7 @@ func BeforePrint(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/beforeunload
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func BeforeUnload(fx base.EventHandler, selectorOverride string) *trees.Event {
+func BeforeUnload(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("beforeunload", selectorOverride, fx)
 }
 
@@ -107,7 +106,7 @@ func BeforeUnload(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/beginEvent
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func BeginEvent(fx base.EventHandler, selectorOverride string) *trees.Event {
+func BeginEvent(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("beginEvent", selectorOverride, fx)
 }
 
@@ -116,7 +115,7 @@ func BeginEvent(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Reference/Events/blocked_indexedDB
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Blocked(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Blocked(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("blocked", selectorOverride, fx)
 }
 
@@ -125,7 +124,7 @@ func Blocked(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/blur
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Blur(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Blur(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("blur", selectorOverride, fx)
 }
 
@@ -134,7 +133,7 @@ func Blur(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/boundary
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Boundary(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Boundary(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("boundary", selectorOverride, fx)
 }
 
@@ -143,7 +142,7 @@ func Boundary(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/cached
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Cached(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Cached(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("cached", selectorOverride, fx)
 }
 
@@ -152,7 +151,7 @@ func Cached(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/canplay
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func CanPlay(fx base.EventHandler, selectorOverride string) *trees.Event {
+func CanPlay(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("canplay", selectorOverride, fx)
 }
 
@@ -161,7 +160,7 @@ func CanPlay(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/canplaythrough
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func CanPlayThrough(fx base.EventHandler, selectorOverride string) *trees.Event {
+func CanPlayThrough(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("canplaythrough", selectorOverride, fx)
 }
 
@@ -170,7 +169,7 @@ func CanPlayThrough(fx base.EventHandler, selectorOverride string) *trees.Event 
 // https://developer.mozilla.org/docs/Web/Events/change
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Change(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Change(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("change", selectorOverride, fx)
 }
 
@@ -179,7 +178,7 @@ func Change(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/chargingchange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func ChargingChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func ChargingChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("chargingchange", selectorOverride, fx)
 }
 
@@ -188,7 +187,7 @@ func ChargingChange(fx base.EventHandler, selectorOverride string) *trees.Event 
 // https://developer.mozilla.org/docs/Web/Events/chargingtimechange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func ChargingTimeChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func ChargingTimeChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("chargingtimechange", selectorOverride, fx)
 }
 
@@ -197,7 +196,7 @@ func ChargingTimeChange(fx base.EventHandler, selectorOverride string) *trees.Ev
 // https://developer.mozilla.org/docs/Web/Events/checking
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Checking(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Checking(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("checking", selectorOverride, fx)
 }
 
@@ -206,7 +205,7 @@ func Checking(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/click
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Click(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Click(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("click", selectorOverride, fx)
 }
 
@@ -215,7 +214,7 @@ func Click(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Reference/Events/close_websocket
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Close(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Close(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("close", selectorOverride, fx)
 }
 
@@ -224,7 +223,7 @@ func Close(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/complete
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Complete(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Complete(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("complete", selectorOverride, fx)
 }
 
@@ -233,7 +232,7 @@ func Complete(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/compositionend
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func CompositionEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
+func CompositionEnd(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("compositionend", selectorOverride, fx)
 }
 
@@ -242,7 +241,7 @@ func CompositionEnd(fx base.EventHandler, selectorOverride string) *trees.Event 
 // https://developer.mozilla.org/docs/Web/Events/compositionstart
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func CompositionStart(fx base.EventHandler, selectorOverride string) *trees.Event {
+func CompositionStart(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("compositionstart", selectorOverride, fx)
 }
 
@@ -251,7 +250,7 @@ func CompositionStart(fx base.EventHandler, selectorOverride string) *trees.Even
 // https://developer.mozilla.org/docs/Web/Events/compositionupdate
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func CompositionUpdate(fx base.EventHandler, selectorOverride string) *trees.Event {
+func CompositionUpdate(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("compositionupdate", selectorOverride, fx)
 }
 
@@ -260,7 +259,7 @@ func CompositionUpdate(fx base.EventHandler, selectorOverride string) *trees.Eve
 // https://developer.mozilla.org/docs/Web/Events/contextmenu
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func ContextMenu(fx base.EventHandler, selectorOverride string) *trees.Event {
+func ContextMenu(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("contextmenu", selectorOverride, fx)
 }
 
@@ -269,7 +268,7 @@ func ContextMenu(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/copy
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Copy(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Copy(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("copy", selectorOverride, fx)
 }
 
@@ -278,7 +277,7 @@ func Copy(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/cut
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Cut(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Cut(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("cut", selectorOverride, fx)
 }
 
@@ -287,7 +286,7 @@ func Cut(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/DOMContentLoaded
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DOMContentLoaded(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DOMContentLoaded(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("DOMContentLoaded", selectorOverride, fx)
 }
 
@@ -296,7 +295,7 @@ func DOMContentLoaded(fx base.EventHandler, selectorOverride string) *trees.Even
 // https://developer.mozilla.org/docs/Web/Events/dblclick
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DblClick(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DblClick(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("dblclick", selectorOverride, fx)
 }
 
@@ -305,7 +304,7 @@ func DblClick(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/devicelight
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DeviceLight(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DeviceLight(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("devicelight", selectorOverride, fx)
 }
 
@@ -314,7 +313,7 @@ func DeviceLight(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/devicemotion
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DeviceMotion(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DeviceMotion(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("devicemotion", selectorOverride, fx)
 }
 
@@ -323,7 +322,7 @@ func DeviceMotion(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/deviceorientation
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DeviceOrientation(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DeviceOrientation(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("deviceorientation", selectorOverride, fx)
 }
 
@@ -332,7 +331,7 @@ func DeviceOrientation(fx base.EventHandler, selectorOverride string) *trees.Eve
 // https://developer.mozilla.org/docs/Web/Events/deviceproximity
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DeviceProximity(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DeviceProximity(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("deviceproximity", selectorOverride, fx)
 }
 
@@ -341,7 +340,7 @@ func DeviceProximity(fx base.EventHandler, selectorOverride string) *trees.Event
 // https://developer.mozilla.org/docs/Web/Events/dischargingtimechange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DischargingTimeChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DischargingTimeChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("dischargingtimechange", selectorOverride, fx)
 }
 
@@ -350,7 +349,7 @@ func DischargingTimeChange(fx base.EventHandler, selectorOverride string) *trees
 // https://developer.mozilla.org/docs/Web/Events/downloading
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Downloading(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Downloading(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("downloading", selectorOverride, fx)
 }
 
@@ -359,7 +358,7 @@ func Downloading(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/drag
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Drag(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Drag(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("drag", selectorOverride, fx)
 }
 
@@ -368,7 +367,7 @@ func Drag(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/dragend
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DragEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DragEnd(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("dragend", selectorOverride, fx)
 }
 
@@ -377,7 +376,7 @@ func DragEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/dragenter
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DragEnter(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DragEnter(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("dragenter", selectorOverride, fx)
 }
 
@@ -386,7 +385,7 @@ func DragEnter(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/dragleave
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DragLeave(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DragLeave(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("dragleave", selectorOverride, fx)
 }
 
@@ -395,7 +394,7 @@ func DragLeave(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/dragover
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DragOver(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DragOver(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("dragover", selectorOverride, fx)
 }
 
@@ -404,7 +403,7 @@ func DragOver(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/dragstart
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DragStart(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DragStart(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("dragstart", selectorOverride, fx)
 }
 
@@ -413,7 +412,7 @@ func DragStart(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/drop
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Drop(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Drop(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("drop", selectorOverride, fx)
 }
 
@@ -422,7 +421,7 @@ func Drop(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/durationchange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func DurationChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func DurationChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("durationchange", selectorOverride, fx)
 }
 
@@ -431,7 +430,7 @@ func DurationChange(fx base.EventHandler, selectorOverride string) *trees.Event 
 // https://developer.mozilla.org/docs/Web/Events/emptied
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Emptied(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Emptied(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("emptied", selectorOverride, fx)
 }
 
@@ -440,7 +439,7 @@ func Emptied(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/end_(SpeechSynthesis)
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func End(fx base.EventHandler, selectorOverride string) *trees.Event {
+func End(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("end", selectorOverride, fx)
 }
 
@@ -449,7 +448,7 @@ func End(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/endEvent
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func EndEvent(fx base.EventHandler, selectorOverride string) *trees.Event {
+func EndEvent(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("endEvent", selectorOverride, fx)
 }
 
@@ -458,7 +457,7 @@ func EndEvent(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/ended_(Web_Audio)
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Ended(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Ended(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("ended", selectorOverride, fx)
 }
 
@@ -467,7 +466,7 @@ func Ended(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/error_(SpeechSynthesisError)
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Error(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Error(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("error", selectorOverride, fx)
 }
 
@@ -476,7 +475,7 @@ func Error(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/focus
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Focus(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Focus(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("focus", selectorOverride, fx)
 }
 
@@ -485,7 +484,7 @@ func Focus(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/focusin
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func FocusIn(fx base.EventHandler, selectorOverride string) *trees.Event {
+func FocusIn(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("focusin", selectorOverride, fx)
 }
 
@@ -494,7 +493,7 @@ func FocusIn(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/focusout
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func FocusOut(fx base.EventHandler, selectorOverride string) *trees.Event {
+func FocusOut(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("focusout", selectorOverride, fx)
 }
 
@@ -503,7 +502,7 @@ func FocusOut(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/fullscreenchange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func FullScreenChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func FullScreenChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("fullscreenchange", selectorOverride, fx)
 }
 
@@ -512,7 +511,7 @@ func FullScreenChange(fx base.EventHandler, selectorOverride string) *trees.Even
 // https://developer.mozilla.org/docs/Web/Events/fullscreenerror
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func FullScreenError(fx base.EventHandler, selectorOverride string) *trees.Event {
+func FullScreenError(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("fullscreenerror", selectorOverride, fx)
 }
 
@@ -521,7 +520,7 @@ func FullScreenError(fx base.EventHandler, selectorOverride string) *trees.Event
 // https://developer.mozilla.org/docs/Web/Events/gamepadconnected
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func GamepadConnected(fx base.EventHandler, selectorOverride string) *trees.Event {
+func GamepadConnected(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("gamepadconnected", selectorOverride, fx)
 }
 
@@ -530,7 +529,7 @@ func GamepadConnected(fx base.EventHandler, selectorOverride string) *trees.Even
 // https://developer.mozilla.org/docs/Web/Events/gamepaddisconnected
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func GamepadDisconnected(fx base.EventHandler, selectorOverride string) *trees.Event {
+func GamepadDisconnected(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("gamepaddisconnected", selectorOverride, fx)
 }
 
@@ -539,7 +538,7 @@ func GamepadDisconnected(fx base.EventHandler, selectorOverride string) *trees.E
 // https://developer.mozilla.org/docs/Web/Events/gotpointercapture
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Gotpointercapture(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Gotpointercapture(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("gotpointercapture", selectorOverride, fx)
 }
 
@@ -548,7 +547,7 @@ func Gotpointercapture(fx base.EventHandler, selectorOverride string) *trees.Eve
 // https://developer.mozilla.org/docs/Web/Events/hashchange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func HashChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func HashChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("hashchange", selectorOverride, fx)
 }
 
@@ -557,7 +556,7 @@ func HashChange(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/input
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Input(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Input(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("input", selectorOverride, fx)
 }
 
@@ -566,7 +565,7 @@ func Input(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/invalid
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Invalid(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Invalid(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("invalid", selectorOverride, fx)
 }
 
@@ -575,7 +574,7 @@ func Invalid(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/keydown
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func KeyDown(fx base.EventHandler, selectorOverride string) *trees.Event {
+func KeyDown(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("keydown", selectorOverride, fx)
 }
 
@@ -584,7 +583,7 @@ func KeyDown(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/keypress
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func KeyPress(fx base.EventHandler, selectorOverride string) *trees.Event {
+func KeyPress(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("keypress", selectorOverride, fx)
 }
 
@@ -593,7 +592,7 @@ func KeyPress(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/keyup
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func KeyUp(fx base.EventHandler, selectorOverride string) *trees.Event {
+func KeyUp(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("keyup", selectorOverride, fx)
 }
 
@@ -602,7 +601,7 @@ func KeyUp(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/languagechange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func LanguageChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func LanguageChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("languagechange", selectorOverride, fx)
 }
 
@@ -611,7 +610,7 @@ func LanguageChange(fx base.EventHandler, selectorOverride string) *trees.Event 
 // https://developer.mozilla.org/docs/Web/Events/levelchange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func LevelChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func LevelChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("levelchange", selectorOverride, fx)
 }
 
@@ -620,7 +619,7 @@ func LevelChange(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Reference/Events/load_(ProgressEvent)
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Load(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Load(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("load", selectorOverride, fx)
 }
 
@@ -629,7 +628,7 @@ func Load(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/loadend
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func LoadEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
+func LoadEnd(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("loadend", selectorOverride, fx)
 }
 
@@ -638,7 +637,7 @@ func LoadEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/loadstart
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func LoadStart(fx base.EventHandler, selectorOverride string) *trees.Event {
+func LoadStart(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("loadstart", selectorOverride, fx)
 }
 
@@ -647,7 +646,7 @@ func LoadStart(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/loadeddata
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func LoadedData(fx base.EventHandler, selectorOverride string) *trees.Event {
+func LoadedData(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("loadeddata", selectorOverride, fx)
 }
 
@@ -656,7 +655,7 @@ func LoadedData(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/loadedmetadata
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func LoadedMetadata(fx base.EventHandler, selectorOverride string) *trees.Event {
+func LoadedMetadata(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("loadedmetadata", selectorOverride, fx)
 }
 
@@ -665,7 +664,7 @@ func LoadedMetadata(fx base.EventHandler, selectorOverride string) *trees.Event 
 // https://developer.mozilla.org/docs/Web/Events/lostpointercapture
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Lostpointercapture(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Lostpointercapture(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("lostpointercapture", selectorOverride, fx)
 }
 
@@ -674,7 +673,7 @@ func Lostpointercapture(fx base.EventHandler, selectorOverride string) *trees.Ev
 // https://developer.mozilla.org/docs/Web/Events/mark
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Mark(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Mark(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("mark", selectorOverride, fx)
 }
 
@@ -683,7 +682,7 @@ func Mark(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Reference/Events/message_serversentevents
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Message(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Message(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("message", selectorOverride, fx)
 }
 
@@ -692,7 +691,7 @@ func Message(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/mousedown
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func MouseDown(fx base.EventHandler, selectorOverride string) *trees.Event {
+func MouseDown(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("mousedown", selectorOverride, fx)
 }
 
@@ -701,7 +700,7 @@ func MouseDown(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/mouseenter
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func MouseEnter(fx base.EventHandler, selectorOverride string) *trees.Event {
+func MouseEnter(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("mouseenter", selectorOverride, fx)
 }
 
@@ -710,7 +709,7 @@ func MouseEnter(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/mouseleave
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func MouseLeave(fx base.EventHandler, selectorOverride string) *trees.Event {
+func MouseLeave(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("mouseleave", selectorOverride, fx)
 }
 
@@ -719,7 +718,7 @@ func MouseLeave(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/mousemove
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func MouseMove(fx base.EventHandler, selectorOverride string) *trees.Event {
+func MouseMove(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("mousemove", selectorOverride, fx)
 }
 
@@ -728,7 +727,7 @@ func MouseMove(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/mouseout
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func MouseOut(fx base.EventHandler, selectorOverride string) *trees.Event {
+func MouseOut(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("mouseout", selectorOverride, fx)
 }
 
@@ -737,7 +736,7 @@ func MouseOut(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/mouseover
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func MouseOver(fx base.EventHandler, selectorOverride string) *trees.Event {
+func MouseOver(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("mouseover", selectorOverride, fx)
 }
 
@@ -746,7 +745,7 @@ func MouseOver(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/mouseup
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func MouseUp(fx base.EventHandler, selectorOverride string) *trees.Event {
+func MouseUp(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("mouseup", selectorOverride, fx)
 }
 
@@ -755,7 +754,7 @@ func MouseUp(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/noupdate
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func NoUpdate(fx base.EventHandler, selectorOverride string) *trees.Event {
+func NoUpdate(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("noupdate", selectorOverride, fx)
 }
 
@@ -764,7 +763,7 @@ func NoUpdate(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/nomatch
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Nomatch(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Nomatch(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("nomatch", selectorOverride, fx)
 }
 
@@ -773,7 +772,7 @@ func Nomatch(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/notificationclick
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Notificationclick(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Notificationclick(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("notificationclick", selectorOverride, fx)
 }
 
@@ -782,7 +781,7 @@ func Notificationclick(fx base.EventHandler, selectorOverride string) *trees.Eve
 // https://developer.mozilla.org/docs/Web/Events/obsolete
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Obsolete(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Obsolete(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("obsolete", selectorOverride, fx)
 }
 
@@ -791,7 +790,7 @@ func Obsolete(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/offline
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Offline(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Offline(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("offline", selectorOverride, fx)
 }
 
@@ -800,7 +799,7 @@ func Offline(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/online
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Online(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Online(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("online", selectorOverride, fx)
 }
 
@@ -809,7 +808,7 @@ func Online(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Reference/Events/open_serversentevents
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Open(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Open(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("open", selectorOverride, fx)
 }
 
@@ -818,7 +817,7 @@ func Open(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/orientationchange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func OrientationChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func OrientationChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("orientationchange", selectorOverride, fx)
 }
 
@@ -827,7 +826,7 @@ func OrientationChange(fx base.EventHandler, selectorOverride string) *trees.Eve
 // https://developer.mozilla.org/docs/Web/Events/pagehide
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func PageHide(fx base.EventHandler, selectorOverride string) *trees.Event {
+func PageHide(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pagehide", selectorOverride, fx)
 }
 
@@ -836,7 +835,7 @@ func PageHide(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pageshow
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func PageShow(fx base.EventHandler, selectorOverride string) *trees.Event {
+func PageShow(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pageshow", selectorOverride, fx)
 }
 
@@ -845,7 +844,7 @@ func PageShow(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/paste
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Paste(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Paste(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("paste", selectorOverride, fx)
 }
 
@@ -854,7 +853,7 @@ func Paste(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pause_(SpeechSynthesis)
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Pause(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Pause(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pause", selectorOverride, fx)
 }
 
@@ -863,7 +862,7 @@ func Pause(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/play
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Play(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Play(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("play", selectorOverride, fx)
 }
 
@@ -872,7 +871,7 @@ func Play(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/playing
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Playing(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Playing(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("playing", selectorOverride, fx)
 }
 
@@ -881,7 +880,7 @@ func Playing(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pointerlockchange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func PointerLockChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func PointerLockChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pointerlockchange", selectorOverride, fx)
 }
 
@@ -890,7 +889,7 @@ func PointerLockChange(fx base.EventHandler, selectorOverride string) *trees.Eve
 // https://developer.mozilla.org/docs/Web/Events/pointerlockerror
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func PointerLockError(fx base.EventHandler, selectorOverride string) *trees.Event {
+func PointerLockError(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pointerlockerror", selectorOverride, fx)
 }
 
@@ -899,7 +898,7 @@ func PointerLockError(fx base.EventHandler, selectorOverride string) *trees.Even
 // https://developer.mozilla.org/docs/Web/Events/pointercancel
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Pointercancel(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Pointercancel(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pointercancel", selectorOverride, fx)
 }
 
@@ -908,7 +907,7 @@ func Pointercancel(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pointerdown
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Pointerdown(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Pointerdown(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pointerdown", selectorOverride, fx)
 }
 
@@ -917,7 +916,7 @@ func Pointerdown(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pointerenter
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Pointerenter(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Pointerenter(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pointerenter", selectorOverride, fx)
 }
 
@@ -926,7 +925,7 @@ func Pointerenter(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pointerleave
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Pointerleave(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Pointerleave(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pointerleave", selectorOverride, fx)
 }
 
@@ -935,7 +934,7 @@ func Pointerleave(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pointermove
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Pointermove(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Pointermove(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pointermove", selectorOverride, fx)
 }
 
@@ -944,7 +943,7 @@ func Pointermove(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pointerout
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Pointerout(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Pointerout(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pointerout", selectorOverride, fx)
 }
 
@@ -953,7 +952,7 @@ func Pointerout(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pointerover
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Pointerover(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Pointerover(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pointerover", selectorOverride, fx)
 }
 
@@ -962,7 +961,7 @@ func Pointerover(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pointerup
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Pointerup(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Pointerup(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pointerup", selectorOverride, fx)
 }
 
@@ -971,7 +970,7 @@ func Pointerup(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/popstate
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func PopState(fx base.EventHandler, selectorOverride string) *trees.Event {
+func PopState(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("popstate", selectorOverride, fx)
 }
 
@@ -980,7 +979,7 @@ func PopState(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Reference/Events/progress_(appcache_event)
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Progress(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Progress(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("progress", selectorOverride, fx)
 }
 
@@ -989,7 +988,7 @@ func Progress(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/push
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Push(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Push(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("push", selectorOverride, fx)
 }
 
@@ -998,7 +997,7 @@ func Push(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/pushsubscriptionchange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Pushsubscriptionchange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Pushsubscriptionchange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("pushsubscriptionchange", selectorOverride, fx)
 }
 
@@ -1007,7 +1006,7 @@ func Pushsubscriptionchange(fx base.EventHandler, selectorOverride string) *tree
 // https://developer.mozilla.org/docs/Web/Events/ratechange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func RateChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func RateChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("ratechange", selectorOverride, fx)
 }
 
@@ -1016,7 +1015,7 @@ func RateChange(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/readystatechange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func ReadystateChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func ReadystateChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("readystatechange", selectorOverride, fx)
 }
 
@@ -1025,7 +1024,7 @@ func ReadystateChange(fx base.EventHandler, selectorOverride string) *trees.Even
 // https://developer.mozilla.org/docs/Web/Events/repeatEvent
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func RepeatEvent(fx base.EventHandler, selectorOverride string) *trees.Event {
+func RepeatEvent(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("repeatEvent", selectorOverride, fx)
 }
 
@@ -1034,7 +1033,7 @@ func RepeatEvent(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/reset
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Reset(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Reset(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("reset", selectorOverride, fx)
 }
 
@@ -1043,7 +1042,7 @@ func Reset(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/resize
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Resize(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Resize(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("resize", selectorOverride, fx)
 }
 
@@ -1052,7 +1051,7 @@ func Resize(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/result
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Result(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Result(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("result", selectorOverride, fx)
 }
 
@@ -1061,7 +1060,7 @@ func Result(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/resume
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Resume(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Resume(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("resume", selectorOverride, fx)
 }
 
@@ -1070,7 +1069,7 @@ func Resume(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/SVGAbort
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func SVGAbort(fx base.EventHandler, selectorOverride string) *trees.Event {
+func SVGAbort(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("SVGAbort", selectorOverride, fx)
 }
 
@@ -1079,7 +1078,7 @@ func SVGAbort(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/SVGError
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func SVGError(fx base.EventHandler, selectorOverride string) *trees.Event {
+func SVGError(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("SVGError", selectorOverride, fx)
 }
 
@@ -1088,7 +1087,7 @@ func SVGError(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/SVGLoad
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func SVGLoad(fx base.EventHandler, selectorOverride string) *trees.Event {
+func SVGLoad(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("SVGLoad", selectorOverride, fx)
 }
 
@@ -1097,7 +1096,7 @@ func SVGLoad(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/SVGResize
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func SVGResize(fx base.EventHandler, selectorOverride string) *trees.Event {
+func SVGResize(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("SVGResize", selectorOverride, fx)
 }
 
@@ -1106,7 +1105,7 @@ func SVGResize(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/SVGScroll
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func SVGScroll(fx base.EventHandler, selectorOverride string) *trees.Event {
+func SVGScroll(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("SVGScroll", selectorOverride, fx)
 }
 
@@ -1115,7 +1114,7 @@ func SVGScroll(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/SVGUnload
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func SVGUnload(fx base.EventHandler, selectorOverride string) *trees.Event {
+func SVGUnload(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("SVGUnload", selectorOverride, fx)
 }
 
@@ -1124,7 +1123,7 @@ func SVGUnload(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/SVGZoom
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func SVGZoom(fx base.EventHandler, selectorOverride string) *trees.Event {
+func SVGZoom(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("SVGZoom", selectorOverride, fx)
 }
 
@@ -1133,7 +1132,7 @@ func SVGZoom(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/scroll
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Scroll(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Scroll(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("scroll", selectorOverride, fx)
 }
 
@@ -1142,7 +1141,7 @@ func Scroll(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/seeked
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Seeked(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Seeked(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("seeked", selectorOverride, fx)
 }
 
@@ -1151,7 +1150,7 @@ func Seeked(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/seeking
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Seeking(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Seeking(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("seeking", selectorOverride, fx)
 }
 
@@ -1160,7 +1159,7 @@ func Seeking(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/select
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Select(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Select(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("select", selectorOverride, fx)
 }
 
@@ -1169,7 +1168,7 @@ func Select(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/selectionchange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Selectionchange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Selectionchange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("selectionchange", selectorOverride, fx)
 }
 
@@ -1178,7 +1177,7 @@ func Selectionchange(fx base.EventHandler, selectorOverride string) *trees.Event
 // https://developer.mozilla.org/docs/Web/Events/selectstart
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Selectstart(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Selectstart(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("selectstart", selectorOverride, fx)
 }
 
@@ -1187,7 +1186,7 @@ func Selectstart(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/show
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Show(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Show(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("show", selectorOverride, fx)
 }
 
@@ -1196,7 +1195,7 @@ func Show(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/soundend
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Soundend(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Soundend(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("soundend", selectorOverride, fx)
 }
 
@@ -1205,7 +1204,7 @@ func Soundend(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/soundstart
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Soundstart(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Soundstart(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("soundstart", selectorOverride, fx)
 }
 
@@ -1214,7 +1213,7 @@ func Soundstart(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/speechend
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Speechend(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Speechend(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("speechend", selectorOverride, fx)
 }
 
@@ -1223,7 +1222,7 @@ func Speechend(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/speechstart
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Speechstart(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Speechstart(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("speechstart", selectorOverride, fx)
 }
 
@@ -1232,7 +1231,7 @@ func Speechstart(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/stalled
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Stalled(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Stalled(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("stalled", selectorOverride, fx)
 }
 
@@ -1241,7 +1240,7 @@ func Stalled(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/start_(SpeechSynthesis)
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Start(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Start(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("start", selectorOverride, fx)
 }
 
@@ -1250,7 +1249,7 @@ func Start(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/storage
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Storage(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Storage(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("storage", selectorOverride, fx)
 }
 
@@ -1259,7 +1258,7 @@ func Storage(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/submit
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Submit(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Submit(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("submit", selectorOverride, fx)
 }
 
@@ -1268,7 +1267,7 @@ func Submit(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Reference/Events/success_indexedDB
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Success(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Success(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("success", selectorOverride, fx)
 }
 
@@ -1277,7 +1276,7 @@ func Success(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/suspend
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Suspend(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Suspend(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("suspend", selectorOverride, fx)
 }
 
@@ -1286,7 +1285,7 @@ func Suspend(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/timeupdate
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func TimeUpdate(fx base.EventHandler, selectorOverride string) *trees.Event {
+func TimeUpdate(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("timeupdate", selectorOverride, fx)
 }
 
@@ -1295,7 +1294,7 @@ func TimeUpdate(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/timeout
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Timeout(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Timeout(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("timeout", selectorOverride, fx)
 }
 
@@ -1304,7 +1303,7 @@ func Timeout(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/touchcancel
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func TouchCancel(fx base.EventHandler, selectorOverride string) *trees.Event {
+func TouchCancel(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("touchcancel", selectorOverride, fx)
 }
 
@@ -1313,7 +1312,7 @@ func TouchCancel(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/touchend
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func TouchEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
+func TouchEnd(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("touchend", selectorOverride, fx)
 }
 
@@ -1322,7 +1321,7 @@ func TouchEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/touchenter
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func TouchEnter(fx base.EventHandler, selectorOverride string) *trees.Event {
+func TouchEnter(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("touchenter", selectorOverride, fx)
 }
 
@@ -1331,7 +1330,7 @@ func TouchEnter(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/touchleave
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func TouchLeave(fx base.EventHandler, selectorOverride string) *trees.Event {
+func TouchLeave(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("touchleave", selectorOverride, fx)
 }
 
@@ -1340,7 +1339,7 @@ func TouchLeave(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/touchmove
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func TouchMove(fx base.EventHandler, selectorOverride string) *trees.Event {
+func TouchMove(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("touchmove", selectorOverride, fx)
 }
 
@@ -1349,7 +1348,7 @@ func TouchMove(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/touchstart
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func TouchStart(fx base.EventHandler, selectorOverride string) *trees.Event {
+func TouchStart(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("touchstart", selectorOverride, fx)
 }
 
@@ -1358,7 +1357,7 @@ func TouchStart(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/transitionend
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func TransitionEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
+func TransitionEnd(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("transitionend", selectorOverride, fx)
 }
 
@@ -1367,7 +1366,7 @@ func TransitionEnd(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/unload
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Unload(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Unload(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("unload", selectorOverride, fx)
 }
 
@@ -1376,7 +1375,7 @@ func Unload(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/updateready
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func UpdateReady(fx base.EventHandler, selectorOverride string) *trees.Event {
+func UpdateReady(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("updateready", selectorOverride, fx)
 }
 
@@ -1385,7 +1384,7 @@ func UpdateReady(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Reference/Events/upgradeneeded_indexedDB
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func UpgradeNeeded(fx base.EventHandler, selectorOverride string) *trees.Event {
+func UpgradeNeeded(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("upgradeneeded", selectorOverride, fx)
 }
 
@@ -1394,7 +1393,7 @@ func UpgradeNeeded(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/userproximity
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func UserProximity(fx base.EventHandler, selectorOverride string) *trees.Event {
+func UserProximity(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("userproximity", selectorOverride, fx)
 }
 
@@ -1403,7 +1402,7 @@ func UserProximity(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Reference/Events/versionchange_indexedDB
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func VersionChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func VersionChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("versionchange", selectorOverride, fx)
 }
 
@@ -1412,7 +1411,7 @@ func VersionChange(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/visibilitychange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func VisibilityChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func VisibilityChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("visibilitychange", selectorOverride, fx)
 }
 
@@ -1421,7 +1420,7 @@ func VisibilityChange(fx base.EventHandler, selectorOverride string) *trees.Even
 // https://developer.mozilla.org/docs/Web/Events/voiceschanged
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Voiceschanged(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Voiceschanged(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("voiceschanged", selectorOverride, fx)
 }
 
@@ -1430,7 +1429,7 @@ func Voiceschanged(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/volumechange
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func VolumeChange(fx base.EventHandler, selectorOverride string) *trees.Event {
+func VolumeChange(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("volumechange", selectorOverride, fx)
 }
 
@@ -1439,7 +1438,7 @@ func VolumeChange(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/waiting
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Waiting(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Waiting(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("waiting", selectorOverride, fx)
 }
 
@@ -1448,6 +1447,6 @@ func Waiting(fx base.EventHandler, selectorOverride string) *trees.Event {
 // https://developer.mozilla.org/docs/Web/Events/wheel
 /* This event provides options() to be called when the events is triggered and an optional selector which will override the internal selector mechanism of the trees.Element i.e if the selectorOverride argument is an empty string then trees.Element will create an appropriate selector matching its type and uid value in this format  (ElementType[uid='UID_VALUE']) but if the selector value is not empty then that becomes the default selector used
 match the event with. */
-func Wheel(fx base.EventHandler, selectorOverride string) *trees.Event {
+func Wheel(fx trees.EventHandler, selectorOverride string) *trees.Event {
 	return trees.NewEvent("wheel", selectorOverride, fx)
 }

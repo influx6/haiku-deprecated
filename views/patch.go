@@ -209,6 +209,11 @@ patchloop:
 			continue patchloop
 		}
 
+		// if the target hash is exactly the same with ours skip it
+		if jsutils.GetAttribute(target, "hash") == hash {
+			continue patchloop
+		}
+
 		nchildren := jsutils.ChildNodeList(node)
 		// log.Printf("Checking size of children %s %d", sel, len(nchildren))
 		//if the new node has no children, then just replace it
@@ -220,11 +225,6 @@ patchloop:
 		}
 
 		//here we are not be removed and we do have kids
-
-		// if the target hash is exactly the same with ours skip it
-		if jsutils.GetAttribute(target, "hash") == hash {
-			continue patchloop
-		}
 
 		//cleanout all the targets text-nodes
 		jsutils.CleanAllTextNode(target)

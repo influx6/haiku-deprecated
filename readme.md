@@ -1,9 +1,8 @@
-# [Haiku](https://github.com/influx6/haiku-ui)
+# Haiku
 [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/influx6/haiku)
 
-[Haiku](https://haiku-ui.herokuapp.com/) is a view rendering framework(the V in MVC), built to render on the browser
-or server with little code changes as possible. Built on the solid foundation that [Gopherjs](https://github.com/gopherjs/gopherjs) provides.
-Haiku combines a virtual diffing system to ensure the minimum work done in updating rendered elements and allows the freedom to decide how your data gets into the view.
+Haiku is a view rendering framework(the V in MVC), built to render on the browser
+or server with little code changes as possible. Built on the solid foundation that [Gopherjs](https://github.com/gopherjs/gopherjs) provides. Haiku combines a virtual diffing system to ensure the minimum work done in updating rendered elements and allows the freedom to decide how your data gets into the view.
 
 
 ## Install
@@ -18,6 +17,7 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
     package main
 
     import (
+        "honnef.co/go/js/dom"
     	"github.com/influx6/haiku/trees"
     	"github.com/influx6/haiku/trees/attrs"
     	"github.com/influx6/haiku/trees/elems"
@@ -49,33 +49,31 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
     		},
     	}))
 
-    	videos.RenderHTML() /* =>
-
+    	/*
+    videos.RenderHTML() =>
       <div hash="fUPpf3XsV2"  uid="PkOaCB3C" style="">
-
         <video hash="TzmLsvA7j2"  uid="jq3Xl9gq" src="https://youtube.com/xF5R32YF4" style="">Joyride Lewis!</video>
-
         <video hash="t8jeXh1JrU"  uid="GSv22Nqb" src="https://youtube.com/dox32YF4" style="">Wonderlust Bombs!</video>
-
       </div>  
-
       */
 
-  ```
+    win := dom.GetWindow()
+  	doc := win.Document()
 
-  See [Haiku-ui](https://github.com/influx6/haiku-ui) for a more in depth examples and approaches in using Haiku.
+  	body := doc.QuerySelector("body")
+
+
+  	video.Mount(body.Underlying())
+
+
+  ```
 
 
 ## Goals
   - Create simple and go idiomatic views.
-  - Render on the server or client with minimal code change.
   - Be fast and efficient even when compiled down with [Gopherjs](https://github.com/gopherjs/gopherjs).
 
 ## Current Features
   - State based view management using a state machines.
   - Pure string rendering of views with custom markup structures.
   - DOM Patching/Diffing mechanism
-  - Server-side rendering even within standard go templates
-
-## Dev
-- Go Version: 1.5

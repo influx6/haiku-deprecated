@@ -17,9 +17,9 @@ elements are built and viewed.
 
  You can find them at:
 
-  - [DOMTrees](http://github.com/influx6/faux/domtrees)
-  - [DOMEvents](http://github.com/influx6/faux/domevents)
-  - [DOMViews](http://github.com/influx6/faux/domviews)
+  - [DOMTrees](http://github.com/influx6/faux/tree/master/domtrees)
+  - [DOMEvents](http://github.com/influx6/faux/tree/master/domevents)
+  - [DOMViews](http://github.com/influx6/faux/tree/master/domviews)
 
 
 

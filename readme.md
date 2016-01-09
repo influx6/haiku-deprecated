@@ -18,6 +18,7 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
     package main
 
     import (
+        "honnef.co/go/js/dom"
     	"github.com/influx6/haiku/trees"
     	"github.com/influx6/haiku/trees/attrs"
     	"github.com/influx6/haiku/trees/elems"
@@ -49,21 +50,24 @@ Haiku combines a virtual diffing system to ensure the minimum work done in updat
     		},
     	}))
 
-    	videos.RenderHTML() /* =>
-
+    	/*
+    videos.RenderHTML() =>
       <div hash="fUPpf3XsV2"  uid="PkOaCB3C" style="">
-
         <video hash="TzmLsvA7j2"  uid="jq3Xl9gq" src="https://youtube.com/xF5R32YF4" style="">Joyride Lewis!</video>
-
         <video hash="t8jeXh1JrU"  uid="GSv22Nqb" src="https://youtube.com/dox32YF4" style="">Wonderlust Bombs!</video>
-
       </div>  
-
       */
+      
+    win := dom.GetWindow()
+	doc := win.Document()
+
+	body := doc.QuerySelector("body")
+
+
+	video.Mount(body.Underlying())
+
 
   ```
-
-  See [Haiku-ui](https://github.com/influx6/haiku-ui) for a more in depth examples and approaches in using Haiku.
 
 
 ## Goals

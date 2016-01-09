@@ -8,6 +8,21 @@ updating rendered elements whilst still allowing the freedom to decide how your
 elements are built and viewed.
 
 
+## DevNote
+ Haiku was an interesting experiment and a lot was learnt while developing it,
+ but I have decided to separate out the pieces that provided the total functionality
+ for Haiku into a central repository where you are free to pick which parts fits
+ your needs, Haiku will still be useful but any further development will be done
+ on those separate pieces.
+
+ You can find them at:
+
+  - [DOMTrees](http://github.com/influx6/faux/domtrees)
+  - [DOMEvents](http://github.com/influx6/faux/domevents)
+  - [DOMViews](http://github.com/influx6/faux/domviews)
+
+
+
 ## Install
 
     go get -u github.com/influx6/haiku/...

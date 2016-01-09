@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/influx6/haiku/base"
-	"github.com/influx6/haiku/shared"
+	"github.com/influx6/faux/domevents"
 )
 
 // Mutation defines the capability of an element to state its
@@ -24,7 +23,7 @@ type Mutation interface {
 // event managers.
 type Eventers interface {
 	LoadEvents()
-	UseEventManager(base.EventManagers) bool
+	UseEventManager(domevents.EventManagers) bool
 }
 
 // Markup provide a basic specification type of how a element resolves its content
@@ -76,15 +75,15 @@ func (m MutableBackdoor) SwapHash(hash string) {
 // NewMutable returns a new mutable instance
 func NewMutable() *Mutable {
 	m := &Mutable{
-		uid:  shared.RandString(8),
-		hash: shared.RandString(10),
+		uid:  RandString(8),
+		hash: RandString(10),
 	}
 	return m
 }
 
 // UpdateHash updates the mutable hash value
 func (m *Mutable) UpdateHash() {
-	m.hash = shared.RandString(10)
+	m.hash = RandString(10)
 }
 
 // Remove marks this mutable as removed making this irreversible
@@ -131,7 +130,7 @@ type Element struct {
 	allowChildren   bool
 	allowStyles     bool
 	allowAttributes bool
-	eventManager    base.EventManagers
+	eventManager    domevents.EventManagers
 }
 
 // NewText returns a new Text instance element
@@ -164,7 +163,7 @@ func NewElement(tag string, hasNoEndingTag bool) *Element {
 
 // UseEventManager adds a eventmanager into the markup and if not available before automatically registers
 // the events with it,once an event manager is registered to it,it will and can not be changed
-func (e *Element) UseEventManager(man base.EventManagers) bool {
+func (e *Element) UseEventManager(man domevents.EventManagers) bool {
 	if man == nil {
 		return true
 	}
@@ -507,23 +506,23 @@ type Events interface {
 // Event provide a meta registry for helps in registering events for dom markups
 // which is translated to the nodes themselves
 type Event struct {
-	Meta *base.EventMetable
-	Fx   base.EventHandler
+	Meta *domevents.EventMetable
+	Fx   domevents.EventHandler
 	tree Markup
 }
 
 // EventHandler provides a custom event handler which allows access to the
 // markup producing the event.
-type EventHandler func(base.Event, Markup)
+type EventHandler func(domevents.Event, Markup)
 
 // NewEvent returns a event object that allows registering events to eventlisteners
 func NewEvent(etype, eselector string, efx EventHandler) *Event {
 	ex := Event{
-		Meta: &base.EventMetable{EventType: etype, EventTarget: eselector},
+		Meta: &domevents.EventMetable{EventType: etype, EventTarget: eselector},
 	}
 
 	// wireup the function to get the ev and tree.
-	ex.Fx = func(ev base.Event) {
+	ex.Fx = func(ev domevents.Event) {
 		if efx != nil {
 			efx(ev, ex.tree)
 		}
@@ -627,7 +626,7 @@ type Clonable interface {
 //Clone replicates the style into a unique instance
 func (e *Event) Clone() *Event {
 	return &Event{
-		Meta: &base.EventMetable{EventType: e.Meta.EventType, EventTarget: e.Meta.EventTarget},
+		Meta: &domevents.EventMetable{EventType: e.Meta.EventType, EventTarget: e.Meta.EventTarget},
 		Fx:   e.Fx,
 	}
 }

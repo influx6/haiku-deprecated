@@ -1,8 +1,11 @@
 # Haiku
 [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/influx6/haiku)
 
-Haiku is a view rendering framework(the V in MVC), built to render on the browser
-or server with little code changes as possible. Built on the solid foundation that [Gopherjs](https://github.com/gopherjs/gopherjs) provides. Haiku combines a virtual diffing system to ensure the minimum work done in updating rendered elements and allows the freedom to decide how your data gets into the view.
+Haiku is a view rendering framework(the V in MVC), built to render as fast as possible.
+Built on the solid foundation that [Gopherjs](https://github.com/gopherjs/gopherjs) provides.
+Haiku combines a virtual DOM rendering system to ensure the minimum work done in
+updating rendered elements whilst still allowing the freedom to decide how your
+elements are built and viewed.
 
 
 ## Install
